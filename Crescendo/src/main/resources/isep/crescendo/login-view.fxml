@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="isep.crescendo.controller.UserManagementController"
+            prefWidth="400" prefHeight="300">
+    <VBox spacing="10" alignment="CENTER" layoutX="50" layoutY="30" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="50">
+        <Label text="Bem-vindo!" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+
+        <TextField fx:id="emailField" promptText="Email" maxWidth="250"/>
+        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"/>
+
+        <Button text="Entrar" onAction="#handleLogin" maxWidth="250"/>
+
+        <Label fx:id="messageLabel" textFill="red"/>
+
+        <Hyperlink text="Criar conta" onAction="#handleGoToRegister"/>
+    </VBox>
+</AnchorPane>

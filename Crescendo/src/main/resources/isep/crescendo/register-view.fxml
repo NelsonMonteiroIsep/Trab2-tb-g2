@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="isep.crescendo.controller.UserManagementController"
+            prefWidth="400" prefHeight="300">
+    <VBox spacing="10" layoutX="50" layoutY="30">
+
+        <Label text="Registar Utilizador"/>
+
+        <TextField fx:id="nameField" promptText="Nome completo"/>
+        <TextField fx:id="emailField" promptText="Email"/>
+        <PasswordField fx:id="passwordField" promptText="Password"/>
+
+        <Button text="Registar" onAction="#handleRegister"/>
+
+        <Label fx:id="messageLabel"/>
+    </VBox>
+</AnchorPane>
