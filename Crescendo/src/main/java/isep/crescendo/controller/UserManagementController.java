@@ -1,6 +1,7 @@
 package isep.crescendo.controller;
 
 import isep.crescendo.model.User;
+import isep.crescendo.model.UserRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -10,7 +11,7 @@ import javafx.stage.Stage;
 import java.io.IOException;
 
 public class UserManagementController {
-
+    private final UserRepository userRepo = new UserRepository();
     @FXML
     private TextField nameField;
 
@@ -31,11 +32,8 @@ public class UserManagementController {
 
         try {
             User novoUser = new User(email, nome, password);
+            userRepo.adicionar(novoUser); // guarda na base de dados
 
-            System.out.println("Novo utilizador registado: " + novoUser.getNome());
-            System.out.println("email: " + novoUser.getEmail());
-            System.out.println("pass com hash:"+ novoUser.getPasswordHash());
-            // Voltar para login-view
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/login-view.fxml"));
             Scene scene = new Scene(loader.load(), 400, 300);
 
@@ -47,8 +45,8 @@ public class UserManagementController {
 
         } catch (IllegalArgumentException e) {
             setMessage(e.getMessage(), false);
-        } catch (IOException e) {
-            setMessage("Erro ao voltar para login.", false);
+        } catch (RuntimeException | IOException e) {
+            setMessage("Erro ao registar utilizador: " + e.getMessage(), false);
             e.printStackTrace();
         }
     }
@@ -57,10 +55,18 @@ public class UserManagementController {
         String email = emailField.getText();
         String password = passwordField.getText();
 
-        if (email.equals("admin@email.com") && password.equals("admin123")) {
-            messageLabel.setText("Login bem-sucedido!");
-        } else {
-            messageLabel.setText("Credenciais inválidas.");
+        try {
+            User user = userRepo.procurarPorEmail(email);
+
+            if (user != null && user.verificarPassword(password)) {
+                setMessage("Login bem-sucedido! Bem-vindo, " + user.getNome(), true);
+            } else {
+                setMessage("Credenciais inválidas.", false);
+            }
+
+        } catch (RuntimeException e) {
+            setMessage("Erro na ligação à base de dados.", false);
+            e.printStackTrace();
         }
     }
 

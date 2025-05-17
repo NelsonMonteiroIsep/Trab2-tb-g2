@@ -13,6 +13,7 @@ module isep.crescendo {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires java.sql;
 
     opens isep.crescendo to javafx.fxml;
     exports isep.crescendo;

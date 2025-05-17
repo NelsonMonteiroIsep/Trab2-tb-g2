@@ -53,6 +53,7 @@ dependencies {
         exclude(group = "org.openjfx")
         exclude(group = "org.jetbrains.kotlin")
     }
+    implementation("mysql:mysql-connector-java:8.0.33")
     implementation ("org.jetbrains.kotlin:kotlin-stdlib")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
