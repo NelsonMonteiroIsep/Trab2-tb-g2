@@ -4,15 +4,15 @@ import java.sql.*;
 
 public class UserRepository {
 
-    private static final String DB_URL = "jdbc:mysql://localhost:3306/crescendo"; // Nome da BD
-    private static final String DB_USER = "root"; // teu utilizador
-    private static final String DB_PASSWORD = "123123123"; // tua password
+    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870"; // Nome da BD
+    private static final String DB_USER = "sql7779870"; // teu utilizador
+    private static final String DB_PASSWORD = "vUwAKDaynR"; // tua password
 
-    public UserRepository() {
+     public UserRepository() {
         criarTabelaSeNaoExistir();
     }
 
-    private void criarTabelaSeNaoExistir() {
+   private void criarTabelaSeNaoExistir() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
                 email VARCHAR(255) PRIMARY KEY,
