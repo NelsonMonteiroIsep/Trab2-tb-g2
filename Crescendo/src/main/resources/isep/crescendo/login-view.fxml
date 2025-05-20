@@ -2,21 +2,50 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.image.Image?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="isep.crescendo.controller.UserManagementController"
-            prefWidth="400" prefHeight="300">
-    <VBox spacing="10" alignment="CENTER" layoutX="50" layoutY="30" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="50">
-        <Label text="Bem-vindo!" style="-fx-font-size: 20px; -fx-font-weight: bold;"/>
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="isep.crescendo.controller.UserManagementController"
+           prefWidth="400" prefHeight="300"
+           styleClass="root">
 
-        <TextField fx:id="emailField" promptText="Email" maxWidth="250"/>
-        <PasswordField fx:id="passwordField" promptText="Password" maxWidth="250"/>
+    <VBox fx:id="mainVBox"
+          spacing="10" alignment="CENTER"
+          maxWidth="400" minWidth="200" prefWidth="300">
 
-        <Button text="Entrar" onAction="#handleLogin" maxWidth="250"/>
+        <Label text="LOG IN" styleClass="title-label" />
+
+        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container"
+              maxWidth="400" minWidth="200" prefWidth="300">
+            <ImageView fitHeight="20" fitWidth="20">
+                <image>
+                    <Image url="/isep/crescendo/images/User_Icon.png" />
+                </image>
+            </ImageView>
+            <TextField fx:id="emailField" promptText="Log-in" styleClass="transparent-input"
+                       maxWidth="400" minWidth="200" prefWidth="300"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container"
+              maxWidth="400" minWidth="200" prefWidth="300">
+            <ImageView fitHeight="20" fitWidth="20">
+                <image>
+                    <Image url="/isep/crescendo/images/Lock_Icon.png" />
+                </image>
+            </ImageView>
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"
+                           maxWidth="400" minWidth="200" prefWidth="300"/>
+        </HBox>
+
+        <Button text="🔑 Log in" onAction="#handleLogin"
+                maxWidth="400" minWidth="200" prefWidth="300" styleClass="login-button"/>
 
         <Label fx:id="messageLabel" textFill="red"/>
 
-        <Hyperlink text="Criar conta" onAction="#handleGoToRegister"/>
+        <Hyperlink text="Click here to create an account" onAction="#handleGoToRegister" styleClass="link-label"/>
+
     </VBox>
-</AnchorPane>
+
+</StackPane>

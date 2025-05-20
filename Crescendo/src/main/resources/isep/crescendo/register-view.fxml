@@ -1,21 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns:fx="http://javafx.com/fxml"
-            fx:controller="isep.crescendo.controller.UserManagementController"
-            prefWidth="400" prefHeight="300">
-    <VBox spacing="10" layoutX="50" layoutY="30">
+<StackPane xmlns:fx="http://javafx.com/fxml"
+           fx:controller="isep.crescendo.controller.UserManagementController"
+           prefWidth="400" prefHeight="300"
+           styleClass="root">
 
-        <Label text="Registar Utilizador"/>
+    <VBox fx:id="mainVBox"
+          spacing="10" alignment="CENTER"
+          maxWidth="400" minWidth="200" prefWidth="300">
 
-        <TextField fx:id="nameField" promptText="Nome completo"/>
-        <TextField fx:id="emailField" promptText="Email"/>
-        <PasswordField fx:id="passwordField" promptText="Password"/>
+        <Label text="Registar Utilizador" styleClass="title-label"/>
 
-        <Button text="Registar" onAction="#handleRegister"/>
+        <HBox alignment="CENTER_LEFT" spacing="5" maxWidth="400" minWidth="200" prefWidth="300" styleClass="input-container">
+            <TextField fx:id="nameField" promptText="Nome completo" styleClass="transparent-input"/>
+        </HBox>
 
-        <Label fx:id="messageLabel"/>
+        <HBox alignment="CENTER_LEFT" spacing="5" maxWidth="400" minWidth="200" prefWidth="300" styleClass="input-container">
+            <TextField fx:id="emailField" promptText="Email" styleClass="transparent-input"/>
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="5" maxWidth="400" minWidth="200" prefWidth="300" styleClass="input-container">
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"/>
+        </HBox>
+
+        <Button text="Registar" onAction="#handleRegister"
+                maxWidth="400" minWidth="200" prefWidth="300" styleClass="login-button"/>
+
+        <Label fx:id="messageLabel" textFill="red"/>
+
     </VBox>
-</AnchorPane>
+</StackPane>

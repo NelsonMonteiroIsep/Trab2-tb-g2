@@ -4,11 +4,13 @@ import isep.crescendo.model.User;
 import isep.crescendo.model.UserRepository;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
 
 public class UserManagementController {
     private final UserRepository userRepo = new UserRepository();
@@ -24,6 +26,7 @@ public class UserManagementController {
     @FXML
     private Label messageLabel;
 
+
     @FXML
     private void handleRegister() {
         String nome = nameField.getText();
@@ -32,16 +35,37 @@ public class UserManagementController {
 
         try {
             User novoUser = new User(email, nome, password);
-            userRepo.adicionar(novoUser); // guarda na base de dados
+            userRepo.adicionar(novoUser);
 
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/login-view.fxml"));
-            Scene scene = new Scene(loader.load(), 400, 300);
+            URL fxmlLocation = getClass().getResource("/isep/crescendo/login-view.fxml");
+            System.out.println(fxmlLocation);
 
-            UserManagementController loginController = loader.getController();
-            loginController.setMessage("Registo efetuado com sucesso. Pode agora iniciar sessão.", true);
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+            Parent root = fxmlLoader.load();
+
+            Scene scene = new Scene(root);
+
+            URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+            if (cssLocation != null) {
+                scene.getStylesheets().add(cssLocation.toExternalForm());
+            } else {
+                System.err.println("Arquivo CSS não encontrado!");
+            }
 
             Stage stage = (Stage) nameField.getScene().getWindow();
+
+            // Guarda o tamanho atual da janela
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            stage.setTitle("Login");
             stage.setScene(scene);
+
+            // Restaura o tamanho para evitar resize da janela
+            stage.setWidth(width);
+            stage.setHeight(height);
+
+            stage.show();
 
         } catch (IllegalArgumentException e) {
             setMessage(e.getMessage(), false);
@@ -50,6 +74,7 @@ public class UserManagementController {
             e.printStackTrace();
         }
     }
+
     @FXML
     private void handleLogin() {
         String email = emailField.getText();
@@ -73,10 +98,36 @@ public class UserManagementController {
     @FXML
     private void handleGoToRegister() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/register-view.fxml"));
-            Scene scene = new Scene(loader.load(), 400, 300);
+            URL fxmlLocation = getClass().getResource("/isep/crescendo/register-view.fxml");
+            System.out.println(fxmlLocation);
+
+            FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+            Parent root = fxmlLoader.load();
+
+            Scene scene = new Scene(root);
+
+            URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+            if (cssLocation != null) {
+                scene.getStylesheets().add(cssLocation.toExternalForm());
+            } else {
+                System.err.println("Arquivo CSS não encontrado!");
+            }
+
             Stage stage = (Stage) emailField.getScene().getWindow();
+
+            // Guarda tamanho atual da janela
+            double width = stage.getWidth();
+            double height = stage.getHeight();
+
+            stage.setTitle("Registo");
             stage.setScene(scene);
+
+            // Restaura o tamanho para evitar resize
+            stage.setWidth(width);
+            stage.setHeight(height);
+
+            stage.show();
+
         } catch (IOException e) {
             setMessage("Erro ao carregar tela de registo.", false);
             e.printStackTrace();
@@ -87,7 +138,7 @@ public class UserManagementController {
     private void handleGoToLogin() {
         try {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/login-view.fxml"));
-            Scene scene = new Scene(loader.load(), 400, 300);
+            Scene scene = new Scene(loader.load());
             Stage stage = (Stage) nameField.getScene().getWindow();
             stage.setScene(scene);
         } catch (IOException e) {
@@ -104,4 +155,6 @@ public class UserManagementController {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
     }
+
+
 }
