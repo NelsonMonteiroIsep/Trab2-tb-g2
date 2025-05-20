@@ -7,6 +7,9 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -25,6 +28,10 @@ public class UserManagementController {
 
     @FXML
     private Label messageLabel;
+    @FXML
+    private ImageView backgroundImageView;
+    @FXML
+    private StackPane root;
 
 
     @FXML
@@ -154,6 +161,16 @@ public class UserManagementController {
         } else {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+    public void initialize() {
+        // Load background image
+        Image bgImage = new Image(getClass().getResourceAsStream("/isep/crescendo/images/background.jpg"));
+        backgroundImageView.setImage(bgImage);
+
+        // Bind ImageView size to StackPane size
+        backgroundImageView.fitWidthProperty().bind(root.widthProperty());
+        backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     }
 
 

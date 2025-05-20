@@ -23,6 +23,16 @@
 
 }
 
+.fields-background {
+    -fx-background-color: rgba(0, 0, 0, 0.27);
+    -fx-background-radius: 5;
+    -fx-padding: 10;
+    -fx-border-radius: 2;
+    -fx-border-width: 2;
+    -fx-max-height: 400;
+    -fx-max-width: 500;
+}
+
 .login-button {
     -fx-background-color: #ff4d4d;
     -fx-text-fill: white;
