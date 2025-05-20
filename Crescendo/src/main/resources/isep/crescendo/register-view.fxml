@@ -37,6 +37,6 @@
                 maxWidth="400" minWidth="200" prefWidth="300" styleClass="login-button"/>
 
         <Label fx:id="messageLabel" textFill="red"/>
-
+        <Hyperlink text="← Já tem conta? Faça login" onAction="#handleGoToLogin" styleClass="link-label"/>
     </VBox>
 </StackPane>

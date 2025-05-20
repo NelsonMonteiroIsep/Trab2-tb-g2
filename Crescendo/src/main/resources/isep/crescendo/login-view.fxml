@@ -49,7 +49,7 @@
 
         <Label fx:id="messageLabel" textFill="red"/>
 
-        <Hyperlink text="Click here to create an account" onAction="#handleGoToRegister" styleClass="link-label"/>
+        <Hyperlink text="Clique aqui para criar uma conta" onAction="#handleGoToRegister" styleClass="link-label"/>
 
     </VBox>
 

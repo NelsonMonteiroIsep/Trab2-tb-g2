@@ -2,6 +2,8 @@ package isep.crescendo.controller;
 
 import isep.crescendo.model.User;
 import isep.crescendo.model.UserRepository;
+import isep.crescendo.util.SceneSwitcher;
+import isep.crescendo.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -92,66 +94,44 @@ public class UserManagementController {
 
             if (user != null && user.verificarPassword(password)) {
                 setMessage("Login bem-sucedido! Bem-vindo, " + user.getNome(), true);
+                SessionManager.setCurrentUser(user);
+
+                // Transição para a market-view
+                URL fxmlLocation = getClass().getResource("/isep/crescendo/market-view.fxml");
+                FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+                Parent root = fxmlLoader.load();
+
+                Scene scene = new Scene(root);
+
+                // Aplica CSS, se necessário
+                URL cssLocation = getClass().getResource("/isep/crescendo/styles/market.css");
+                if (cssLocation != null) {
+                    scene.getStylesheets().add(cssLocation.toExternalForm());
+                }
+
+                Stage stage = (Stage) emailField.getScene().getWindow();
+                stage.setTitle("Marketplace");
+                stage.setScene(scene);
+                stage.show();
+
             } else {
                 setMessage("Credenciais inválidas.", false);
             }
 
-        } catch (RuntimeException e) {
-            setMessage("Erro na ligação à base de dados.", false);
+        } catch (RuntimeException | IOException e) {
+            setMessage("Erro ao fazer login: " + e.getMessage(), false);
             e.printStackTrace();
         }
     }
 
     @FXML
     private void handleGoToRegister() {
-        try {
-            URL fxmlLocation = getClass().getResource("/isep/crescendo/register-view.fxml");
-            System.out.println(fxmlLocation);
-
-            FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
-            Parent root = fxmlLoader.load();
-
-            Scene scene = new Scene(root);
-
-            URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
-            if (cssLocation != null) {
-                scene.getStylesheets().add(cssLocation.toExternalForm());
-            } else {
-                System.err.println("Arquivo CSS não encontrado!");
-            }
-
-            Stage stage = (Stage) emailField.getScene().getWindow();
-
-            // Guarda tamanho atual da janela
-            double width = stage.getWidth();
-            double height = stage.getHeight();
-
-            stage.setTitle("Registo");
-            stage.setScene(scene);
-
-            // Restaura o tamanho para evitar resize
-            stage.setWidth(width);
-            stage.setHeight(height);
-
-            stage.show();
-
-        } catch (IOException e) {
-            setMessage("Erro ao carregar tela de registo.", false);
-            e.printStackTrace();
-        }
+        SceneSwitcher.switchScene("/isep/crescendo/register-view.fxml", "/isep/crescendo/styles/login.css", "Registo", emailField);
     }
 
     @FXML
     private void handleGoToLogin() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/login-view.fxml"));
-            Scene scene = new Scene(loader.load());
-            Stage stage = (Stage) nameField.getScene().getWindow();
-            stage.setScene(scene);
-        } catch (IOException e) {
-            setMessage("Erro ao voltar para login.", false);
-            e.printStackTrace();
-        }
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", nameField);
     }
 
     public void setMessage(String msg, boolean isSuccess) {
@@ -172,6 +152,8 @@ public class UserManagementController {
         backgroundImageView.fitWidthProperty().bind(root.widthProperty());
         backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     }
+
+
 
 
 }
