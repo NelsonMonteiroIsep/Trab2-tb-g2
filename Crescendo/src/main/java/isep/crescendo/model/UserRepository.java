@@ -66,4 +66,25 @@ public class UserRepository {
 
         return null;
     }
+
+    public void atualizar(User user) {
+        String sql = "UPDATE users SET nome = ?, password_hash = ? WHERE email = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setString(1, user.getNome());
+            pstmt.setString(2, user.getPasswordHash());
+            pstmt.setString(3, user.getEmail());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new RuntimeException("Nenhum utilizador atualizado, e-mail não encontrado.");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage());
+        }
+    }
 }

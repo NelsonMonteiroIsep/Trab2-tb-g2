@@ -14,6 +14,7 @@ module isep.crescendo {
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
     requires java.sql;
+    requires jakarta.mail;
 
     opens isep.crescendo to javafx.fxml;
     exports isep.crescendo;

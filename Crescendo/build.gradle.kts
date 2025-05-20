@@ -55,6 +55,7 @@ dependencies {
     }
     implementation("mysql:mysql-connector-java:8.0.33")
     implementation ("org.jetbrains.kotlin:kotlin-stdlib")
+    implementation("com.sun.mail:jakarta.mail:2.0.1")
     testImplementation("org.junit.jupiter:junit-jupiter-api:${junitVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${junitVersion}")
 }

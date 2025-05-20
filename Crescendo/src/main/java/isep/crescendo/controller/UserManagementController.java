@@ -34,6 +34,10 @@ public class UserManagementController {
     private ImageView backgroundImageView;
     @FXML
     private StackPane root;
+    @FXML
+    private TextField recoveryEmailField;
+    @FXML
+    private Label recoveryMessageLabel;
 
 
     @FXML
