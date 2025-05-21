@@ -67,6 +67,10 @@ public class UserRepository {
         return null;
     }
 
+    public boolean existeEmail(String email) {
+        return procurarPorEmail(email) != null;
+    }
+
     public void atualizar(User user) {
         String sql = "UPDATE users SET nome = ?, password_hash = ? WHERE email = ?";
 
@@ -87,4 +91,6 @@ public class UserRepository {
             throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage());
         }
     }
+
+
 }

@@ -16,9 +16,13 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class UserManagementController {
     private final UserRepository userRepo = new UserRepository();
+    private static final Map<String, String> tokenToEmailMap = new HashMap<>();
     @FXML
     private TextField nameField;
 
@@ -137,6 +141,12 @@ public class UserManagementController {
     private void handleGoToLogin() {
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", nameField);
     }
+
+    @FXML
+    private void handleGoToRecovery() {
+        SceneSwitcher.switchScene("/isep/crescendo/forgot-password-view.fxml", "/isep/crescendo/styles/login.css", "Recuperar Password", emailField);
+    }
+
 
     public void setMessage(String msg, boolean isSuccess) {
         messageLabel.setText(msg);

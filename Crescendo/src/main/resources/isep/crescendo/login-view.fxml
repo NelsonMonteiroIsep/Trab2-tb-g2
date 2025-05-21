@@ -50,7 +50,7 @@
         <Label fx:id="messageLabel" textFill="red"/>
 
         <Hyperlink text="Clique aqui para criar uma conta" onAction="#handleGoToRegister" styleClass="link-label"/>
-
+        <Hyperlink text="Esqueceste a password?" onAction="#handleGoToRecovery"/>
     </VBox>
 
 </StackPane>
