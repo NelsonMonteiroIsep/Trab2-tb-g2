@@ -12,7 +12,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
-
+import javafx.scene.image.Image;
 
 import java.io.IOException;
 import java.net.URL;
@@ -34,6 +34,9 @@ public class MarketController implements Initializable {
         } else {
             userNameLabel.setText("Crescendo.");
         }
+        Image img = new Image(getClass().getResourceAsStream("/isep/crescendo/images/IconsAmarelo.png"));
+        goToOtherPage.setImage(img);
+
     }
     @FXML
     private void handleLogout() {
@@ -43,9 +46,9 @@ public class MarketController implements Initializable {
     @FXML
     private void handleImageClick() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(""));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/other-page.fxml"));
             Parent root = loader.load();
-            Stage stage = (Stage) goToOtherPage.getScene().getWindow(); // Pega a janela atual
+            Stage stage = (Stage) goToOtherPage.getScene().getWindow();
             stage.setScene(new Scene(root));
         } catch (IOException e) {
             e.printStackTrace();
