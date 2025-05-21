@@ -7,6 +7,9 @@ import isep.crescendo.util.SceneSwitcher;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import java.time.LocalDateTime;
 import isep.crescendo.util.TokenInfo;
@@ -24,9 +27,13 @@ public class ResetPasswordController {
     @FXML
     private Label resetMessageLabel;
     private static final Map<String, TokenInfo> tokens = new HashMap<>();
-    private static final java.time.Duration VALIDITY = java.time.Duration.ofSeconds(15);
+
+    @FXML
+    private StackPane root;
     @FXML
     private TextField emailField;
+    @FXML
+    private ImageView backgroundImageView;
     @FXML
     private Label messageLabel;
     @FXML
@@ -141,5 +148,13 @@ public class ResetPasswordController {
             messageLabel.setText("Email não encontrado.");
             messageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+    public void initialize() {
+        // Load background image
+        Image bgImage = new Image(getClass().getResourceAsStream("/isep/crescendo/images/background.jpg"));
+        backgroundImageView.setImage(bgImage);
+
+        backgroundImageView.fitWidthProperty().bind(root.widthProperty());
+        backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     }
 }
