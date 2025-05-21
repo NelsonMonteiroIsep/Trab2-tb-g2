@@ -8,6 +8,8 @@ import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.util.Duration;
+import java.time.LocalDateTime;
+import isep.crescendo.util.TokenInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,7 +23,8 @@ public class ResetPasswordController {
     private PasswordField newPasswordField;
     @FXML
     private Label resetMessageLabel;
-    private static final Map<String, String> tokenToEmailMap = new HashMap<>();
+    private static final Map<String, TokenInfo> tokens = new HashMap<>();
+    private static final java.time.Duration VALIDITY = java.time.Duration.ofSeconds(15);
     @FXML
     private TextField emailField;
     @FXML
@@ -80,17 +83,27 @@ public class ResetPasswordController {
         }
     }
     public static String gerarTokenParaEmail(String email) {
-        String token = UUID.randomUUID().toString().substring(0, 6); // ex: 6 chars
-        tokenToEmailMap.put(token, email);
+        String token = UUID.randomUUID().toString().substring(0, 6);
+        tokens.put(token, new TokenInfo(email));
         return token;
     }
 
     public static String getEmailByToken(String token) {
-        return tokenToEmailMap.get(token);
+        TokenInfo info = tokens.get(token);
+        if (info == null) return null;
+
+        // verifica expiração
+        if (info.isExpired()) {
+            // expirou: remove e devolve null
+            tokens.remove(token);
+            return null;
+        }
+
+        return info.getEmail();
     }
 
     public static void removeToken(String token) {
-        tokenToEmailMap.remove(token);
+        tokens.remove(token);
     }
 
     @FXML
