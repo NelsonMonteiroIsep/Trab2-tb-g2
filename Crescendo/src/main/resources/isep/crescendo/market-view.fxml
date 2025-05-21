@@ -6,10 +6,46 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.scene.image.ImageView?>
 <AnchorPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="isep.crescendo.controller.MarketController"
-            prefHeight="400.0" prefWidth="600.0">
-    <Label fx:id="userNameLabel" />
-    <Button text="Logout" onAction="#handleLogout" maxWidth="100" />
+            style="-fx-background-color: #28282b;">
+
+
+    <VBox prefWidth="600.0" prefHeight="400.0"
+          AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
+          AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
+
+
+        <HBox prefHeight="60.0" alignment="CENTER_LEFT" spacing="20"
+              style="-fx-background-color: #28282b; -fx-padding: 10;">
+            <Label fx:id="userNameLabel" text="Crescendo." textFill="white" style="-fx-font-size: 16px;-fx-font-family: 'Rightenous';"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Logout" onAction="#handleLogout" maxWidth="100" />
+            <Pane layoutX="50" layoutY="50"
+                  prefWidth="50" prefHeight="50"
+                  style="-fx-border-color: white; -fx-border-width: 2;">
+                <ImageView fx:id="goToOtherPage"
+                           fitWidth="100" fitHeight="100"
+                           pickOnBounds="true" preserveRatio="true"
+                           onMouseClicked="#handleImageClick"
+                            />
+            </Pane>
+        </HBox>
+
+
+
+
+
+
+
+        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;"
+              VBox.vgrow="ALWAYS">
+
+            <Label text="Conteúdo principal aqui" textFill="white"/>
+        </VBox>
+
+    </VBox>
+
 </AnchorPane>
