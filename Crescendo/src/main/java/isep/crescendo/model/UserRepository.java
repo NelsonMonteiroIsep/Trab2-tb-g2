@@ -4,18 +4,19 @@ import java.sql.*;
 
 public class UserRepository {
 
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870"; // Nome da BD
-    private static final String DB_USER = "sql7779870"; // teu utilizador
-    private static final String DB_PASSWORD = "vUwAKDaynR"; // tua password
+    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
+    private static final String DB_USER = "sql7779870";
+    private static final String DB_PASSWORD = "vUwAKDaynR";
 
-     public UserRepository() {
+    public UserRepository() {
         criarTabelaSeNaoExistir();
     }
 
-   private void criarTabelaSeNaoExistir() {
+    private void criarTabelaSeNaoExistir() {
         String sql = """
             CREATE TABLE IF NOT EXISTS users (
-                email VARCHAR(255) PRIMARY KEY,
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                email VARCHAR(255) UNIQUE NOT NULL,
                 nome VARCHAR(100) NOT NULL,
                 password_hash VARCHAR(255) NOT NULL
             );
@@ -30,18 +31,33 @@ public class UserRepository {
     }
 
     public void adicionar(User user) {
-        String sql = "INSERT INTO users (email, nome, password_hash) VALUES (?, ?, ?)";
+        String sqlUser = "INSERT INTO users (email, nome, password_hash) VALUES (?, ?, ?)";
+        String sqlUserId = "SELECT id FROM users WHERE email = ?";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmtUser = conn.prepareStatement(sqlUser);
+             PreparedStatement pstmtUserId = conn.prepareStatement(sqlUserId)) {
 
-            pstmt.setString(1, user.getEmail());
-            pstmt.setString(2, user.getNome());
-            pstmt.setString(3, user.getPasswordHash());
-            pstmt.executeUpdate();
+            // Inserir o utilizador
+            pstmtUser.setString(1, user.getEmail());
+            pstmtUser.setString(2, user.getNome());
+            pstmtUser.setString(3, user.getPasswordHash());
+            pstmtUser.executeUpdate();
+
+            // Buscar o ID recém-criado
+            pstmtUserId.setString(1, user.getEmail());
+            ResultSet rs = pstmtUserId.executeQuery();
+
+            if (rs.next()) {
+                int userId = rs.getInt("id");
+
+                // Criar a carteira com saldo inicial 0
+                CarteiraRepository carteiraRepo = new CarteiraRepository();
+                carteiraRepo.adicionarCarteiraParaUser(userId);
+            }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao adicionar utilizador: " + e.getMessage());
+            throw new RuntimeException("Erro ao adicionar utilizador e criar carteira: " + e.getMessage());
         }
     }
 
@@ -55,9 +71,10 @@ public class UserRepository {
             ResultSet rs = pstmt.executeQuery();
 
             if (rs.next()) {
+                int id = rs.getInt("id");
                 String nome = rs.getString("nome");
                 String hash = rs.getString("password_hash");
-                return new User(email, nome, hash, true);
+                return new User(id, email, nome, hash);
             }
 
         } catch (SQLException e) {
@@ -91,6 +108,4 @@ public class UserRepository {
             throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage());
         }
     }
-
-
 }

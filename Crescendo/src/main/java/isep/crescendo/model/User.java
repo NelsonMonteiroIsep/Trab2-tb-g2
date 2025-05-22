@@ -7,14 +7,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 public class User {
+    private int id;
     private String email;
     private String nome;
     private String passwordHash;
 
     public User(String email, String nome, String plainPassword) {
-        // Validações usando Preconditions
         Preconditions.ensure(email != null && email.contains("@"), "O email é inválido.");
-        Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido. Não pode ser nulo nem vazio.");
+        Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido.");
         Preconditions.ensure(plainPassword != null && plainPassword.length() >= 6, "A password deve ter pelo menos 6 caracteres.");
 
         this.email = email;
@@ -22,10 +22,11 @@ public class User {
         this.passwordHash = hashPassword(plainPassword);
     }
 
-    public User(String email, String nome, String passwordHash, boolean hashIsReady) {
+    public User(int id, String email, String nome, String passwordHash) {
+        this.id = id;
         this.email = email;
         this.nome = nome;
-        this.passwordHash = passwordHash; // já vem "hasheada"
+        this.passwordHash = passwordHash;
     }
 
     private String hashPassword(String password) {
@@ -47,6 +48,12 @@ public class User {
     public boolean verificarPassword(String plainPassword) {
         return Objects.equals(this.passwordHash, hashPassword(plainPassword));
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) { this.id = id; }
 
     public String getEmail() {
         return email;
