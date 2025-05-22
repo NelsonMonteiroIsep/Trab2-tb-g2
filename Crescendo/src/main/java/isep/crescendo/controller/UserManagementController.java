@@ -112,7 +112,7 @@ public class UserManagementController {
                 Scene scene = new Scene(root);
 
                 // Aplica CSS, se necessário
-                URL cssLocation = getClass().getResource("/isep/crescendo/styles/market.css");
+                URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
                 if (cssLocation != null) {
                     scene.getStylesheets().add(cssLocation.toExternalForm());
                 }

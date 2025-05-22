@@ -115,7 +115,7 @@ public class ResetPasswordController {
 
     @FXML
     private void handleGoToLogin() {
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", nameField);
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);
     }
 
 

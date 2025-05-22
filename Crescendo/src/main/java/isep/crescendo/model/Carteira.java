@@ -1,5 +1,12 @@
 package isep.crescendo.model;
 
+import isep.crescendo.util.SessionManager;
+import javafx.fxml.FXML;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
+
+import java.util.Optional;
+
 public class Carteira {
     private int id;
     private int userId;

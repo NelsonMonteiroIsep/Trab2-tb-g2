@@ -17,6 +17,12 @@
 
 }
 
+.saldo-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
 .transparent-input {
     -fx-background-color: transparent;
     -fx-border-color: transparent;

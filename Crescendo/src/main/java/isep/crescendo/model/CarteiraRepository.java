@@ -50,7 +50,7 @@ public class CarteiraRepository {
         }
     }
 
-    public Carteira procurarPorUserId(int userId) {
+    public static Carteira procurarPorUserId(int userId) {
         String sql = "SELECT * FROM carteiras WHERE user_id = ?";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -100,4 +100,6 @@ public class CarteiraRepository {
             throw new RuntimeException("Erro ao atualizar saldo: " + e.getMessage());
         }
     }
+
+
 }
