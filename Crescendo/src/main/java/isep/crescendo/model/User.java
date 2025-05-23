@@ -12,12 +12,19 @@ public class User {
     private String nome;
     private String passwordHash;
     private boolean isAdmin;
+    private static final String specialCharsRegex = ".*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?].*";
 
     public User(String email, String nome, String plainPassword) {
         Preconditions.ensure(email != null && email.contains("@"), "O email é inválido.");
         Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido.");
-        Preconditions.ensure(plainPassword != null && plainPassword.length() >= 6, "A password deve ter pelo menos 6 caracteres.");
-
+        Preconditions.ensure(plainPassword != null, "A password não pode ser vazia.");
+        Preconditions.ensure(plainPassword.length() >= 10, "A password deve ter pelo menos 10 caracteres.");
+        Preconditions.ensure(plainPassword.matches(".*[A-Z].*"), "A password deve conter pelo menos uma letra maiúscula.");
+        Preconditions.ensure(plainPassword.matches(".*\\d.*"), "A password deve conter pelo menos um número.");
+        Preconditions.ensure(
+                plainPassword.matches(specialCharsRegex),
+                "A password deve conter pelo menos um caractere especial."
+        );
         this.email = email;
         this.nome = nome;
         this.passwordHash = hashPassword(plainPassword);

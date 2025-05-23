@@ -115,7 +115,8 @@ public class ResetPasswordController {
 
     @FXML
     private void handleGoToLogin() {
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);
+        if (messageLabel == null) {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
+        }else {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
     }
 
 
@@ -149,6 +150,7 @@ public class ResetPasswordController {
             messageLabel.setStyle("-fx-text-fill: red;");
         }
     }
+
     public void initialize() {
         // Load background image
         Image bgImage = new Image(getClass().getResourceAsStream("/isep/crescendo/images/background.jpg"));
