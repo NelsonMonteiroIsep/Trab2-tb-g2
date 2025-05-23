@@ -13,6 +13,7 @@ import javafx.scene.control.Label;
 import javafx.stage.Stage;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.Image;
+import javafx.scene.text.Font;
 
 import java.io.IOException;
 import java.net.URL;
@@ -29,13 +30,22 @@ public class MarketController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         loggedInUser = SessionManager.getCurrentUser();
 
+        Font righteous = Font.loadFont(
+                getClass().getResourceAsStream("/fonts/Righteous-Regular.ttf"), 48);
+
         if (loggedInUser != null) {
             userNameLabel.setText("Crescendo.");
+            userNameLabel.setFont(righteous);
+
         } else {
             userNameLabel.setText("Crescendo.");
+            userNameLabel.setFont(righteous);
+
         }
         Image img = new Image(getClass().getResourceAsStream("/isep/crescendo/images/IconsAmarelo.png"));
         goToOtherPage.setImage(img);
+
+
 
     }
     @FXML

@@ -7,45 +7,14 @@
 <?import javafx.scene.layout.*?>
 
 <?import javafx.scene.image.ImageView?>
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="isep.crescendo.controller.MarketController"
-            style="-fx-background-color: black;">
-
-
-    <VBox prefWidth="600.0" prefHeight="400.0"
-          AnchorPane.topAnchor="0.0" AnchorPane.leftAnchor="0.0"
-          AnchorPane.rightAnchor="0.0" AnchorPane.bottomAnchor="0.0">
-
-
-        <HBox prefHeight="60.0" alignment="CENTER_LEFT" spacing="20"
-              style="-fx-background-color: black; -fx-padding: 10;">
-            <Label fx:id="userNameLabel" text="Crescendo." textFill="white" style="-fx-font-size: 16px;-fx-font-family: 'Rightenous';"/>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Button text="Logout" onAction="#handleLogout" maxWidth="100" />
-            <Pane layoutX="50" layoutY="50"
-                  prefWidth="50" prefHeight="50"
-                  >
-                <ImageView fx:id="goToOtherPage"
-                           fitWidth="50" fitHeight="50"
-                           pickOnBounds="true" preserveRatio="true"
-                           onMouseClicked="#handleImageClick"
-                          />
-            </Pane>
-        </HBox>
+<VBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="isep.crescendo.controller.MarketController"
+      spacing="20" prefWidth="600" prefHeight="400">
+    <fx:include source="navbar.fxml" />
 
 
 
 
 
-
-
-        <VBox alignment="CENTER" spacing="10" style="-fx-padding: 20;"
-              VBox.vgrow="ALWAYS">
-
-            <Label text="Conteúdo principal aqui" textFill="white"/>
-        </VBox>
-
-    </VBox>
-
-</AnchorPane>
+    <Label text="Bem-vindo à tela principal" style="-fx-font-size: 24px;" />
+</VBox>

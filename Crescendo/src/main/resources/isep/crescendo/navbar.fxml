@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<HBox xmlns:fx="http://javafx.com/fxml"
+      fx:controller="isep.crescendo.controller.MarketController"
+      spacing="20" alignment="CENTER"
+      style="-fx-background-color: black; -fx-padding: 10;">
+    <Label fx:id="userNameLabel" text="Crescendo.">Crescendo.</Label>
+
+    <Pane>
+        <ImageView fx:id="goToOtherPage" fitWidth="32" fitHeight="32" pickOnBounds="true" preserveRatio="true"
+                   onMouseClicked="#handleImageClick" >
+            <image>
+                <Image url="/isep/crescendo/images/IconsAmarelo.png" />
+            </image>
+        </ImageView>
+    </Pane>
+
+</HBox>
