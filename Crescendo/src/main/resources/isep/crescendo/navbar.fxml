@@ -9,9 +9,10 @@
 <?import javafx.scene.image.Image?>
 
 <HBox xmlns:fx="http://javafx.com/fxml"
-      fx:controller="isep.crescendo.controller.MarketController"
+      fx:controller="isep.crescendo.controller.NavBarController"
       spacing="20" alignment="CENTER"
-      style="-fx-background-color: black; -fx-padding: 10;">
+      
+      style="-fx-background-color: #28282b; -fx-padding: 10;">
     <Label fx:id="userNameLabel" text="Crescendo.">Crescendo.</Label>
 
     <Pane>

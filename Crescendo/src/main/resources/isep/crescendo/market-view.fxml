@@ -10,6 +10,7 @@
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.MarketController"
       spacing="20" prefWidth="600" prefHeight="400">
+
     <fx:include source="navbar.fxml" />
 
 
