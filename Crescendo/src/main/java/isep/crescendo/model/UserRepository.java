@@ -1,6 +1,8 @@
 package isep.crescendo.model;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class UserRepository {
 
@@ -14,13 +16,14 @@ public class UserRepository {
 
     private void criarTabelaSeNaoExistir() {
         String sql = """
-            CREATE TABLE IF NOT EXISTS users (
-                id INT AUTO_INCREMENT PRIMARY KEY,
-                email VARCHAR(255) UNIQUE NOT NULL,
-                nome VARCHAR(100) NOT NULL,
-                password_hash VARCHAR(255) NOT NULL
-            );
-        """;
+        CREATE TABLE IF NOT EXISTS users (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            email VARCHAR(255) UNIQUE NOT NULL,
+            nome VARCHAR(100) NOT NULL,
+            password_hash VARCHAR(255) NOT NULL,
+            is_admin BOOLEAN DEFAULT FALSE
+        );
+    """;
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              Statement stmt = conn.createStatement()) {
@@ -31,7 +34,7 @@ public class UserRepository {
     }
 
     public void adicionar(User user) {
-        String sqlUser = "INSERT INTO users (email, nome, password_hash) VALUES (?, ?, ?)";
+        String sqlUser = "INSERT INTO users (email, nome, password_hash, is_admin) VALUES (?, ?, ?, ?)";
         String sqlUserId = "SELECT id FROM users WHERE email = ?";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -42,6 +45,7 @@ public class UserRepository {
             pstmtUser.setString(1, user.getEmail());
             pstmtUser.setString(2, user.getNome());
             pstmtUser.setString(3, user.getPasswordHash());
+            pstmtUser.setBoolean(4, user.isAdmin());
             pstmtUser.executeUpdate();
 
             // Buscar o ID recém-criado
@@ -74,7 +78,9 @@ public class UserRepository {
                 int id = rs.getInt("id");
                 String nome = rs.getString("nome");
                 String hash = rs.getString("password_hash");
-                return new User(id, email, nome, hash);
+                boolean isAdmin = rs.getBoolean("is_admin");  // <- NOVO
+
+                return new User(id, email, nome, hash, isAdmin); // <- Usa novo construtor
             }
 
         } catch (SQLException e) {
@@ -83,6 +89,7 @@ public class UserRepository {
 
         return null;
     }
+
 
     public boolean existeEmail(String email) {
         return procurarPorEmail(email) != null;
@@ -106,6 +113,60 @@ public class UserRepository {
 
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage());
+        }
+    }
+
+    public List<User> listarTodos() {
+        List<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                int id = rs.getInt("id");
+                String email = rs.getString("email");
+                String nome = rs.getString("nome");
+                String hash = rs.getString("password_hash");
+                boolean isAdmin = rs.getBoolean("is_admin");
+
+                users.add(new User(id, email, nome, hash, isAdmin));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar utilizadores: " + e.getMessage());
+        }
+
+        return users;
+    }
+
+    public void atualizarAdmin(User user) {
+        String sql = "UPDATE users SET is_admin = ? WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setBoolean(1, user.isAdmin());
+            pstmt.setInt(2, user.getId());
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar permissões: " + e.getMessage());
+        }
+    }
+
+    public void apagar(int id) {
+        String sql = "DELETE FROM users WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, id);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao apagar utilizador: " + e.getMessage());
         }
     }
 }

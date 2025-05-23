@@ -11,6 +11,7 @@ public class User {
     private String email;
     private String nome;
     private String passwordHash;
+    private boolean isAdmin;
 
     public User(String email, String nome, String plainPassword) {
         Preconditions.ensure(email != null && email.contains("@"), "O email é inválido.");
@@ -28,6 +29,15 @@ public class User {
         this.nome = nome;
         this.passwordHash = passwordHash;
     }
+
+    public User(int id, String email, String nome, String password, boolean isAdmin) {
+        this.id = id;
+        this.email = email;
+        this.nome = nome;
+        this.passwordHash = password;
+        this.isAdmin = isAdmin;
+    }
+
 
     private String hashPassword(String password) {
         try {
@@ -66,6 +76,11 @@ public class User {
     public String getPasswordHash() {
         return passwordHash;
     }
+
+    public boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(boolean admin) {isAdmin = admin;}
+
 
     public void setNome(String nome) {
         Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido.");

@@ -105,22 +105,36 @@ public class UserManagementController {
                 SessionManager.setCurrentUser(user);
 
                 // Transição para a market-view
-                URL fxmlLocation = getClass().getResource("/isep/crescendo/market-view.fxml");
-                FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
-                Parent root = fxmlLoader.load();
+                if (user.isAdmin()) {
+                    URL fxmlLocation = getClass().getResource("/isep/crescendo/admin-user-management-view.fxml");
+                    FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+                    Parent root = fxmlLoader.load();
+                    Scene scene = new Scene(root);
+                    URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+                    if (cssLocation != null) {
+                        scene.getStylesheets().add(cssLocation.toExternalForm());
+                    }
 
-                Scene scene = new Scene(root);
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setTitle("Marketplace");
+                    stage.setScene(scene);
+                    stage.show();
 
-                // Aplica CSS, se necessário
-                URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
-                if (cssLocation != null) {
-                    scene.getStylesheets().add(cssLocation.toExternalForm());
+                } else {
+                    URL fxmlLocation = getClass().getResource("/isep/crescendo/market-view.fxml");
+                    FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+                    Parent root = fxmlLoader.load();
+                    Scene scene = new Scene(root);
+                    URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+                    if (cssLocation != null) {
+                        scene.getStylesheets().add(cssLocation.toExternalForm());
+                    }
+
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setTitle("Marketplace");
+                    stage.setScene(scene);
+                    stage.show();
                 }
-
-                Stage stage = (Stage) emailField.getScene().getWindow();
-                stage.setTitle("Marketplace");
-                stage.setScene(scene);
-                stage.show();
 
             } else {
                 setMessage("Credenciais inválidas.", false);

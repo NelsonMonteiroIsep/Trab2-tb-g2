@@ -40,7 +40,7 @@ public class TransacaoRepository {
 
     public void adicionar(Transacao t) {
         String sql = """
-            INSERT INTO transacoes (carteira_id, moeda, quantidade, valor, tipo, data_hora)
+            INSERT INTO transacoes (carteira_id, id_moeda, quantidade, valor, tipo, data_hora)
             VALUES (?, ?, ?, ?, ?, ?)
         """;
 
