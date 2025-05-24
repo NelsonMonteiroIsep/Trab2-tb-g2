@@ -4,6 +4,7 @@ import isep.crescendo.model.User;
 import isep.crescendo.model.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +13,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -28,7 +30,8 @@ public class UserManagementController {
 
     @FXML
     private TextField emailField;
-
+ @FXML
+ private VBox mainVBox;
     @FXML
     private PasswordField passwordField;
 
@@ -36,6 +39,9 @@ public class UserManagementController {
     private Label messageLabel;
     @FXML
     private ImageView backgroundImageView;
+    @FXML
+    private ImageView logoImageView;
+
     @FXML
     private StackPane root;
     @FXML
@@ -176,7 +182,14 @@ public class UserManagementController {
         Image bgImage = new Image(getClass().getResourceAsStream("/isep/crescendo/images/background.jpg"));
         backgroundImageView.setImage(bgImage);
 
-        // Bind ImageView size to StackPane size
+        if (logoImageView != null) {
+            logoImageView.setPreserveRatio(true);logoImageView.fitWidthProperty().bind(
+                Bindings.min(mainVBox.widthProperty().multiply(0.35), 150)
+        );
+        logoImageView.fitHeightProperty().bind(
+                Bindings.min(mainVBox.heightProperty().multiply(0.2), 150)
+        );}
+
         backgroundImageView.fitWidthProperty().bind(root.widthProperty());
         backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     }
