@@ -1,27 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
 
-<HBox xmlns:fx="http://javafx.com/fxml"
+<HBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.NavBarController"
-      spacing="20" alignment="CENTER"
-      
-      style="-fx-background-color: #28282b; -fx-padding: 10;">
-    <Label fx:id="userNameLabel" text="Crescendo.">Crescendo.</Label>
+      alignment="CENTER_LEFT"
+      spacing="20"
+      prefHeight="60"
+      style="-fx-background-color: #1e1e1e; -fx-padding: 10;">
 
-    <Pane>
-        <ImageView fx:id="goToOtherPage" fitWidth="32" fitHeight="32" pickOnBounds="true" preserveRatio="true"
-                   onMouseClicked="#handleImageClick" >
-            <image>
-                <Image url="/isep/crescendo/images/IconsAmarelo.png" />
-            </image>
-        </ImageView>
-    </Pane>
+    <!-- Logo ou Nome -->
+    <Label text="Crescendo"
+           style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+
+    <!-- Espaço flexível -->
+    <Region HBox.hgrow="ALWAYS" />
+    <Label fx:id="navBarAnyControl" visible="false" />
+
+    <!-- Botões de navegação -->
+    <Button text="Início" onAction="#goHome"
+            style="-fx-background-color: transparent; -fx-text-fill: white;" />
+
+    <Button text="Produtos" onAction="#goProdutos"
+            style="-fx-background-color: transparent; -fx-text-fill: white;" />
+
+    <Button text="Perfil" onAction="#goPerfil"
+            style="-fx-background-color: transparent; -fx-text-fill: white;" />
+
+    <Button text="Sair" onAction="#logout"
+            style="-fx-background-color: #d9534f; -fx-text-fill: white;" />
 
 </HBox>

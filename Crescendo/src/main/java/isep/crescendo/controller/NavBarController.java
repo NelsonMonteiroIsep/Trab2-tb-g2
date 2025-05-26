@@ -1,67 +1,55 @@
 package isep.crescendo.controller;
 
-
-import isep.crescendo.model.User;
 import isep.crescendo.util.SceneSwitcher;
-import isep.crescendo.util.SessionManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Label;
-import javafx.stage.Stage;
-import javafx.scene.image.ImageView;
-import javafx.scene.image.Image;
-import javafx.scene.text.Font;
+import javafx.scene.control.Control;
 
-import java.io.IOException;
-import java.net.URL;
-import java.util.ResourceBundle;
+public class NavBarController {
 
-public class NavBarController implements Initializable {
+
     @FXML
-    private Label userNameLabel;
+    private Control navBarAnyControl;
+
     @FXML
-    private ImageView goToOtherPage;
-    private User loggedInUser;
-
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        loggedInUser = SessionManager.getCurrentUser();
-
-        Font righteous = Font.loadFont(
-                getClass().getResourceAsStream("/fonts/Righteous-Regular.ttf"), 48);
-
-        if (loggedInUser != null) {
-            userNameLabel.setText("Crescendo.");
-            userNameLabel.setFont(righteous);
-
-        } else {
-            userNameLabel.setText("Crescendo.");
-            userNameLabel.setFont(righteous);
-
-        }
-        Image img = new Image(getClass().getResourceAsStream("/isep/crescendo/images/IconsAmarelo.png"));
-        goToOtherPage.setImage(img);
-
-
-
+    private void goHome(ActionEvent event) {
+        SceneSwitcher.switchScene(
+                "/isep/crescendo/market-view.fxml",
+                "/isep/crescendo/styles/login.css",
+                "Página Inicial",
+                navBarAnyControl
+        );
     }
+
     @FXML
-    private void handleLogout() {
-        SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
+    private void goProdutos(ActionEvent event) {
+        SceneSwitcher.switchScene(
+                "/isep/crescendo/produtos.fxml",
+                "/isep/crescendo/styles/login.css",
+                "Produtos",
+                navBarAnyControl
+        );
     }
+
     @FXML
-    private void handleImageClick() {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/other-page.fxml"));
-            Parent root = loader.load();
-            Stage stage = (Stage) goToOtherPage.getScene().getWindow();
-            stage.setScene(new Scene(root));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    private void goPerfil(ActionEvent event) {
+        SceneSwitcher.switchScene(
+                "/isep/crescendo/perfil.fxml",
+                "/isep/crescendo/styles/login.css",
+                "Perfil do Usuário",
+                navBarAnyControl
+        );
+    }
+
+    @FXML
+    private void logout(ActionEvent event) {
+        System.out.println("Usuário fez logout.");
+        // Pode redirecionar para tela de login, se quiser
+        SceneSwitcher.switchScene(
+                "/isep/crescendo/login-view.fxml",
+                "/isep/crescendo/styles/login.css",
+                "Login",
+                navBarAnyControl
+        );
     }
 }

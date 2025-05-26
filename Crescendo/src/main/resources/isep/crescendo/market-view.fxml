@@ -6,16 +6,19 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+
 <?import javafx.scene.image.ImageView?>
 <VBox xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.MarketController"
       spacing="20" prefWidth="600" prefHeight="400">
 
-    <fx:include source="navbar.fxml" />
+
+    <fx:include source="/isep/crescendo/navbar.fxml" />
 
 
 
 
 
-    <Label text="Bem-vindo à tela principal" style="-fx-font-size: 24px;" />
+    <Label text="Bem-vindo à tela principal" style="-fx-font-size: 24px; -fx-background-color: black; -fx-text-fill: white;" />
+
 </VBox>
