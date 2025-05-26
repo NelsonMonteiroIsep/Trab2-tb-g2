@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml"
+            fx:controller="isep.crescendo.controller.AdminController"
+            prefWidth="600" prefHeight="400">
+
+    <top>
+        <Label text="Gestão de Criptomoedas" style="-fx-font-size: 20px; -fx-padding: 15;" BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox spacing="15" alignment="TOP_CENTER" style="-fx-padding: 15;">
+            <TableView fx:id="listaCriptomoedas" prefHeight="280" prefWidth="550">
+                <columns>
+                    <TableColumn fx:id="idCriptoColumn" text="ID" prefWidth="50" />
+                    <TableColumn fx:id="nomeCriptoColumn" text="Nome" prefWidth="150" />
+                    <TableColumn fx:id="simboloColumn" text="Símbolo" prefWidth="80" />
+                    <TableColumn fx:id="descricaoColumn" text="Descrição" prefWidth="180" />
+                    <TableColumn fx:id="ativoColumn" text="Ativo" prefWidth="80" />
+                </columns>
+            </TableView>
+
+            <HBox spacing="20" alignment="CENTER">
+                <Button fx:id="btnCriar" text="Criar Criptomoeda"
+                        onAction="#handleCriar"
+                />
+                <Button fx:id="btnDesativar" text="Ativar/Desativar" onAction="#handleToggleAtivo"/>
+            </HBox>
+        </VBox>
+    </center>
+
+</BorderPane>

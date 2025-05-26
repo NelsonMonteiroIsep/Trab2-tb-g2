@@ -20,6 +20,58 @@
 
 }
 
+.custom-button-blue {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-blue:hover {
+    -fx-background-color: #1976D2;
+}
+
+.custom-button-green {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-green:hover {
+    -fx-background-color: #388E3C;
+}
+
+.custom-button-orange {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-orange:hover {
+    -fx-background-color: #F57C00;
+}
+
+.custom-button-red {
+    -fx-background-color: #F44336;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-red:hover {
+    -fx-background-color: #D32F2F;
+}
+
 .saldo-label {
     -fx-text-fill: #ffffff;
     -fx-font-weight: bold;

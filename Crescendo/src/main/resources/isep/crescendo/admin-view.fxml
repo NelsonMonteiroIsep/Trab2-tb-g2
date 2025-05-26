@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.AdminController">
+    <top>
+        <Label text="Bem-vindo, Administrador" style="-fx-font-size: 24px; -fx-padding: 20px; -fx-alignment: center;" BorderPane.alignment="CENTER"/>
+    </top>
+
+    <center>
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40px;">
+            <Button fx:id="btnUser" text="Gerir Utilizadores" onAction="#handleUserManagement" styleClass="custom-button-blue"/>
+            <Button text="Gerir Criptomoedas" onAction="#handleCripto" styleClass="custom-button-green"/>
+            <Button text="Definições"  styleClass="custom-button-orange"/>
+            <Button text="Terminar Sessão" onAction="#handleLogout" styleClass="custom-button-red"/>
+        </VBox>
+    </center>
+</BorderPane>

@@ -4,7 +4,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.AdminUserController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.AdminController">
     <top>
         <Label text="Gestão de Utilizadores" style="-fx-font-size: 18px; -fx-padding: 10;" BorderPane.alignment="CENTER"/>
     </top>

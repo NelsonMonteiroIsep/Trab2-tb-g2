@@ -112,7 +112,7 @@ public class UserManagementController {
 
                 // Transição para a market-view
                 if (user.isAdmin()) {
-                    URL fxmlLocation = getClass().getResource("/isep/crescendo/admin-user-management-view.fxml");
+                    URL fxmlLocation = getClass().getResource("/isep/crescendo/admin-view.fxml");
                     FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
                     Parent root = fxmlLoader.load();
                     Scene scene = new Scene(root);

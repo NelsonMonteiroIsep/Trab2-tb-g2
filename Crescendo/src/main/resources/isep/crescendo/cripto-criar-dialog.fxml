@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="isep.crescendo.controller.CriptoCriarDialogController"
+      spacing="10" alignment="CENTER" >
+
+    <Label text="Criar nova Criptomoeda" style="-fx-font-size: 18px;"/>
+
+    <TextField fx:id="nomeField" promptText="Nome"/>
+    <TextField fx:id="simboloField" promptText="Símbolo"/>
+    <TextArea fx:id="descricaoArea" promptText="Descrição" prefRowCount="3" wrapText="true"/>
+    <TextField fx:id="imagemUrlField" promptText="URL da Imagem"/>
+    <CheckBox fx:id="ativoCheck" text="Ativo" />
+    <HBox spacing="10" alignment="CENTER_RIGHT">
+        <Button text="Cancelar" onAction="#handleCancelar"/>
+        <Button text="Criar" onAction="#handleSalvar"/>
+    </HBox>
+</VBox>
