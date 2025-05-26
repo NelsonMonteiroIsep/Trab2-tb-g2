@@ -1,9 +1,6 @@
 package isep.crescendo;
 
-import isep.crescendo.model.CarteiraRepository;
-import isep.crescendo.model.CriptomoedaRepository;
-import isep.crescendo.model.UserRepository;
-import isep.crescendo.model.TransacaoRepository;
+import isep.crescendo.model.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -36,6 +33,7 @@ public class Main extends Application {
         new CarteiraRepository();
         new TransacaoRepository();
         new CriptomoedaRepository();
+        new HistoricoValorRepository();
     }
 
     public static void main(String[] args) {

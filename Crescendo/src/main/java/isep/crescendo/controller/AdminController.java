@@ -7,6 +7,8 @@ import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -40,6 +42,9 @@ public class AdminController {
 
     private final UserRepository userRepo = new UserRepository();
     private final ObservableList<User> users = FXCollections.observableArrayList();
+    @FXML
+    private TextField searchField;
+
 
     @FXML
     private TableView<Criptomoeda> listaCriptomoedas;
@@ -49,6 +54,7 @@ public class AdminController {
     @FXML private TableColumn<Criptomoeda, String> simboloColumn;
     @FXML private TableColumn<Criptomoeda, String> descricaoColumn;
     @FXML private TableColumn<Criptomoeda, Boolean> ativoColumn;
+    private ObservableList<User> userList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -60,6 +66,7 @@ public class AdminController {
             isAdminColumn.setCellValueFactory(new PropertyValueFactory<>("admin"));
 
             carregarUtilizadores();
+
         }
 
         if (idCriptoColumn != null && nomeCriptoColumn != null && simboloColumn != null && descricaoColumn != null && ativoColumn != null) {
@@ -268,6 +275,23 @@ public class AdminController {
         } else {
             mostrarAlerta("Selecione uma criptomoeda primeiro.");
         }
+    }
+
+    @FXML
+    private void handlePesquisar() {
+        String filtro = searchField.getText().toLowerCase();
+
+        FilteredList<User> filteredData = new FilteredList<>(users, user -> {
+            if (filtro == null || filtro.isEmpty()) {
+                return true;
+            }
+            return user.getNome().toLowerCase().contains(filtro) ||
+                    user.getEmail().toLowerCase().contains(filtro);
+        });
+
+        SortedList<User> sortedData = new SortedList<>(filteredData);
+        sortedData.comparatorProperty().bind(userTable.comparatorProperty());
+        userTable.setItems(sortedData);
     }
 
     }
