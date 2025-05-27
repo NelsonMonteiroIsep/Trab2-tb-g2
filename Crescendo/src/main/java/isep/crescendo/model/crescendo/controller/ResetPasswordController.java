@@ -1,16 +1,19 @@
-package isep.crescendo.controller;
+package isep.crescendo.model.crescendo.controller;
 
-import isep.crescendo.Repository.User;
-import isep.crescendo.util.EmailService;
-import isep.crescendo.util.SceneSwitcher;
+import isep.crescendo.model.crescendo.model.User;
+import isep.crescendo.model.crescendo.model.UserRepository;
+import isep.crescendo.model.crescendo.util.EmailService;
+import isep.crescendo.model.crescendo.util.SceneSwitcher;
+import isep.crescendo.model.crescendo.util.TokenInfo;
 import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
-import isep.crescendo.util.TokenInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +40,7 @@ public class ResetPasswordController {
     @FXML
     private TextField nameField;
 
-    private final User userRepo = new User();
+    private final UserRepository userRepo = new UserRepository();
 
 
     @FXML
@@ -53,7 +56,7 @@ public class ResetPasswordController {
         String email = getEmailByToken(token);
 
         if (email != null) {
-            isep.crescendo.model.User user = userRepo.procurarPorEmail(email);
+            User user = userRepo.procurarPorEmail(email);
             if (user != null) {
                 try {
                     user.setPassword(novaPassword);
@@ -113,8 +116,10 @@ public class ResetPasswordController {
 
     @FXML
     private void handleGoToLogin() {
-        if (messageLabel == null) {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
-        }else {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
+        if (messageLabel == null) {
+            SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
+        }else {
+            SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
     }
 
 

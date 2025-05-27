@@ -1,14 +1,17 @@
-package isep.crescendo.controller;
+package isep.crescendo.model.crescendo.controller;
 
-import isep.crescendo.Repository.User;
-import isep.crescendo.util.SceneSwitcher;
-import isep.crescendo.util.SessionManager;
+import isep.crescendo.model.crescendo.model.User;
+import isep.crescendo.model.crescendo.model.UserRepository;
+import isep.crescendo.model.crescendo.util.SceneSwitcher;
+import isep.crescendo.model.crescendo.util.SessionManager;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
@@ -21,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserManagementController {
-    private final User userRepo = new User();
+    private final UserRepository userRepo = new UserRepository();
     private static final Map<String, String> tokenToEmailMap = new HashMap<>();
     @FXML
     private TextField nameField;
@@ -55,7 +58,7 @@ public class UserManagementController {
         String password = passwordField.getText();
 
         try {
-            isep.crescendo.model.User novoUser = new isep.crescendo.model.User(email, nome, password);
+            User novoUser = new User(email, nome, password);
             userRepo.adicionar(novoUser);
 
             URL fxmlLocation = getClass().getResource("/isep/crescendo/login-view.fxml");
@@ -102,7 +105,7 @@ public class UserManagementController {
         String password = passwordField.getText();
 
         try {
-            isep.crescendo.model.User user = userRepo.procurarPorEmail(email);
+            User user = userRepo.procurarPorEmail(email);
 
             if (user != null && user.verificarPassword(password)) {
                 setMessage("Login bem-sucedido! Bem-vindo, " + user.getNome(), true);

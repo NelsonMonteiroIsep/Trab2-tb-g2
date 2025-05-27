@@ -1,9 +1,13 @@
-package isep.crescendo.controller;
+package isep.crescendo.model.crescendo.controller;
 
-import isep.crescendo.Repository.Criptomoeda;
-import isep.crescendo.Repository.HistoricoValor;
+import isep.crescendo.model.crescendo.model.Criptomoeda;
+import isep.crescendo.model.crescendo.model.CriptomoedaRepository;
+import isep.crescendo.model.crescendo.model.HistoricoValorRepository;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
 import java.sql.Timestamp;
@@ -21,7 +25,7 @@ public class CriptoCriarDialogController {
 
     private Stage dialogStage;
     private boolean confirmado = false;
-    private isep.crescendo.model.Criptomoeda novaCripto;
+    private Criptomoeda novaCripto;
 
     public void setDialogStage(Stage stage) {
         this.dialogStage = stage;
@@ -31,7 +35,7 @@ public class CriptoCriarDialogController {
         return confirmado;
     }
 
-    public isep.crescendo.model.Criptomoeda getNovaCripto() {
+    public Criptomoeda getNovaCripto() {
         return novaCripto;
     }
 
@@ -60,20 +64,20 @@ public class CriptoCriarDialogController {
             return;
         }
 
-        novaCripto = new isep.crescendo.model.Criptomoeda();
+        novaCripto = new Criptomoeda();
         novaCripto.setNome(nomeField.getText());
         novaCripto.setSimbolo(simboloField.getText());
         novaCripto.setDescricao(descricaoArea.getText());
         novaCripto.setImagemUrl(imagemUrlField.getText());
         novaCripto.setAtivo(ativoCheck.isSelected());
-        novaCripto.setDataCriacao(new java.sql.Timestamp(System.currentTimeMillis()));
+        novaCripto.setDataCriacao(new Timestamp(System.currentTimeMillis()));
 
         // Salvar criptomoeda
-        Criptomoeda repo = new Criptomoeda();
+        CriptomoedaRepository repo = new CriptomoedaRepository();
         repo.adicionar(novaCripto);
         Timestamp dataHoraAtual = Timestamp.valueOf(LocalDateTime.now());
         // Guardar valor inicial no histórico
-        HistoricoValor historicoRepo = new HistoricoValor();
+        HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
         historicoRepo.adicionarValor(novaCripto.getId(), dataHoraAtual.toLocalDateTime(), valorInicial);
 
         confirmado = true;

@@ -4,7 +4,25 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="" />
+    <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/MenuLateral-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoCriarDialogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoCriarDialogController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/ResetPasswordController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/ResetPasswordController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/CarteiraRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Carteira.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/CriptomoedaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Criptomoeda.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/HistoricoValorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/HistoricoValor.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/TransacaoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Transacao.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -31,6 +49,14 @@
         </projects_view>
       </state>
     </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="FxmlFile" />
+        <option value="Class" />
+      </list>
+    </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -59,13 +85,15 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "Application.Main.executor": "Run",
+    "Gradle.Build Crescendo.executor": "Run",
     "Gradle.Crescendo [:isep.crescendo.Main.main()].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Funcionalidade---RecuperarPassword",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "main",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Utilizador/Documents/GitHub/Trab2-tb-g2/Crescendo/build.gradle.kts",
+    "last_opened_file_path": "C:/Users/Rafael Ferraria/Documents/GitHub/Trab2-tb-g2/Crescendo/src/main/java/isep/crescendo/model",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
     "node.js.selected.package.eslint": "(autodetect)",
@@ -77,6 +105,14 @@
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Rafael Ferraria\Documents\GitHub\Trab2-tb-g2\Crescendo\src\main\java\isep\crescendo\model" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Rafael Ferraria\Documents\GitHub\Trab2-tb-g2\Crescendo\src\main\java\isep\crescendo" />
+    </key>
+  </component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
@@ -92,8 +128,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26053.27" />
-        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26053.27" />
+        <option value="bundled-jdk-9823dce3aa75-125ca727e0f0-intellij.indexing.shared.core-IU-243.23654.189" />
+        <option value="bundled-js-predefined-d6986cc7102b-822845ee3bb5-JavaScript-IU-243.23654.189" />
       </set>
     </attachedChunks>
   </component>
@@ -107,6 +143,7 @@
       <updated>1747687149721</updated>
       <workItem from="1747687151780" duration="1058000" />
       <workItem from="1747849420159" duration="10087000" />
+      <workItem from="1748377060173" duration="1306000" />
     </task>
     <servers />
   </component>

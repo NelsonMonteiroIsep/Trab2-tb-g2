@@ -1,9 +1,6 @@
-package isep.crescendo.model;
-
-import isep.crescendo.model.Transacao;
+package isep.crescendo.model.crescendo.model;
 
 import java.sql.*;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 

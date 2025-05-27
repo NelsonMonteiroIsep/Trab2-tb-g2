@@ -23,17 +23,9 @@
 
     <!-- MENU LATERAL -->
     <left>
-        <VBox spacing="20" style="-fx-background-color: #252526; -fx-padding: 30px;" alignment="TOP_CENTER">
-            <Label text="📊 Market" style="-fx-text-fill: white; -fx-font-size: 20px;" />
-            <Button text="🏠 Portfolio" styleClass="menu-button-dark"/>
-            <Button text="💳 Carteira" styleClass="menu-button-dark" />
-            <Button text="📤 Enviar" styleClass="menu-button-dark"/>
-            <Button text="📥 Receber" styleClass="menu-button-dark"/>
-            <Button text="🔁 Swap" styleClass="menu-button-dark"/>
-            <Button text="💼 Gestão" styleClass="menu-button-dark"/>
-            <Button text="🚪 Sair" onAction="#handleLogout" styleClass="menu-button-dark"/>
-        </VBox>
+        <fx:include source="MenuLateral-view.fxml"/>
     </left>
+
 
     <!-- CONTEÚDO PRINCIPAL -->
     <center>

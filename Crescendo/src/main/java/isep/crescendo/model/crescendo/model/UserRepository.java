@@ -1,4 +1,4 @@
-package isep.crescendo.model;
+package isep.crescendo.model.crescendo.model;
 
 import java.sql.*;
 import java.util.ArrayList;

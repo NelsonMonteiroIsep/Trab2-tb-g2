@@ -1,8 +1,11 @@
-package isep.crescendo.controller;
+package isep.crescendo.model.crescendo.controller;
 
-import isep.crescendo.Repository.User;
-import isep.crescendo.util.SceneSwitcher;
-import isep.crescendo.util.SessionManager;
+import isep.crescendo.model.crescendo.model.Criptomoeda;
+import isep.crescendo.model.crescendo.model.CriptomoedaRepository;
+import isep.crescendo.model.crescendo.model.User;
+import isep.crescendo.model.crescendo.model.UserRepository;
+import isep.crescendo.model.crescendo.util.SceneSwitcher;
+import isep.crescendo.model.crescendo.util.SessionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -13,25 +16,23 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import isep.crescendo.Repository.Criptomoeda;
 
 import java.io.IOException;
 import java.util.Optional;
 
 public class AdminController {
 
-    private final Criptomoeda criptoRepo = new Criptomoeda();
-    private final ObservableList<isep.crescendo.model.Criptomoeda> criptomoedas = FXCollections.observableArrayList();
-    @FXML private TableView<isep.crescendo.model.User> userTable;
-    @FXML private TableColumn<isep.crescendo.model.User, Integer> idColumn;
-    @FXML private TableColumn<isep.crescendo.model.User, String> nomeColumn;
-    @FXML private TableColumn<isep.crescendo.model.User, String> emailColumn;
-    @FXML private TableColumn<isep.crescendo.model.User, Boolean> isAdminColumn;
+    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+    private final ObservableList<Criptomoeda> criptomoedas = FXCollections.observableArrayList();
+    @FXML private TableView<User> userTable;
+    @FXML private TableColumn<User, Integer> idColumn;
+    @FXML private TableColumn<User, String> nomeColumn;
+    @FXML private TableColumn<User, String> emailColumn;
+    @FXML private TableColumn<User, Boolean> isAdminColumn;
     @FXML private Button btnUser;
     @FXML
     private Button btnCriar, btnDesativar;
@@ -43,21 +44,21 @@ public class AdminController {
     private Label labelTotalMoedas;
 
 
-    private final User userRepo = new User();
-    private final ObservableList<isep.crescendo.model.User> users = FXCollections.observableArrayList();
+    private final UserRepository userRepo = new UserRepository();
+    private final ObservableList<User> users = FXCollections.observableArrayList();
     @FXML
     private TextField searchField;
 
 
     @FXML
-    private TableView<isep.crescendo.model.Criptomoeda> listaCriptomoedas;
+    private TableView<Criptomoeda> listaCriptomoedas;
 
-    @FXML private TableColumn<isep.crescendo.model.Criptomoeda, Integer> idCriptoColumn;
-    @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> nomeCriptoColumn;
-    @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> simboloColumn;
-    @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> descricaoColumn;
-    @FXML private TableColumn<isep.crescendo.model.Criptomoeda, Boolean> ativoColumn;
-    private ObservableList<isep.crescendo.model.User> userList = FXCollections.observableArrayList();
+    @FXML private TableColumn<Criptomoeda, Integer> idCriptoColumn;
+    @FXML private TableColumn<Criptomoeda, String> nomeCriptoColumn;
+    @FXML private TableColumn<Criptomoeda, String> simboloColumn;
+    @FXML private TableColumn<Criptomoeda, String> descricaoColumn;
+    @FXML private TableColumn<Criptomoeda, Boolean> ativoColumn;
+    private ObservableList<User> userList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
@@ -83,7 +84,7 @@ public class AdminController {
             ativoColumn.setCellValueFactory(new PropertyValueFactory<>("ativo"));
 
             // Se quiser, adicionar cellFactory para 'ativo' para mostrar "Sim"/"Não"
-            ativoColumn.setCellFactory(column -> new TableCell<isep.crescendo.model.Criptomoeda, Boolean>() {
+            ativoColumn.setCellFactory(column -> new TableCell<Criptomoeda, Boolean>() {
                 @Override
                 protected void updateItem(Boolean ativo, boolean empty) {
                     super.updateItem(ativo, empty);
@@ -112,7 +113,7 @@ public class AdminController {
 
     @FXML
     private void handleEditarNome() {
-        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
+        User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null) {
             TextInputDialog dialog = new TextInputDialog(selecionado.getNome());
             dialog.setTitle("Editar Nome");
@@ -132,7 +133,7 @@ public class AdminController {
 
     @FXML
     private void handleTornarAdmin() {
-        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
+        User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null && !selecionado.isAdmin()) {
             selecionado.setAdmin(true);
             userRepo.atualizarAdmin(selecionado);
@@ -142,7 +143,7 @@ public class AdminController {
 
     @FXML
     private void handleRemoverAdmin() {
-        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
+        User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null && selecionado.isAdmin()) {
             selecionado.setAdmin(false);
             userRepo.atualizarAdmin(selecionado);
@@ -152,7 +153,7 @@ public class AdminController {
 
     @FXML
     private void handleApagarUtilizador() {
-        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
+        User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null) {
             Alert confirm = new Alert(AlertType.CONFIRMATION, "Tem a certeza que quer apagar este utilizador?", ButtonType.YES, ButtonType.NO);
             confirm.setTitle("Confirmar remoção");
@@ -238,7 +239,7 @@ public class AdminController {
             dialogStage.showAndWait();
 
             if (controller.isConfirmado()) {
-                isep.crescendo.model.Criptomoeda cripto = controller.getNovaCripto();
+                Criptomoeda cripto = controller.getNovaCripto();
 
                 // Atualiza a lista observável ligada à tabela
                 criptomoedas.add(cripto);
@@ -255,7 +256,7 @@ public class AdminController {
 
     @FXML
     private void handleToggleAtivo() {
-        isep.crescendo.model.Criptomoeda selecionada = listaCriptomoedas.getSelectionModel().getSelectedItem();
+        Criptomoeda selecionada = listaCriptomoedas.getSelectionModel().getSelectedItem();
         if (selecionada != null) {
             boolean estadoAtual = selecionada.isAtivo();
             selecionada.setAtivo(!estadoAtual);
@@ -280,7 +281,7 @@ public class AdminController {
     private void handlePesquisar() {
         String filtro = searchField.getText().toLowerCase();
 
-        FilteredList<isep.crescendo.model.User> filteredData = new FilteredList<>(users, user -> {
+        FilteredList<User> filteredData = new FilteredList<>(users, user -> {
             if (filtro == null || filtro.isEmpty()) {
                 return true;
             }
@@ -288,7 +289,7 @@ public class AdminController {
                     user.getEmail().toLowerCase().contains(filtro);
         });
 
-        SortedList<isep.crescendo.model.User> sortedData = new SortedList<>(filteredData);
+        SortedList<User> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(userTable.comparatorProperty());
         userTable.setItems(sortedData);
     }

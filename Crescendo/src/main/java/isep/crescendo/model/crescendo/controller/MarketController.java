@@ -1,11 +1,8 @@
-package isep.crescendo.controller;
+package isep.crescendo.model.crescendo.controller;
 
-import isep.crescendo.Repository.Carteira;
-import isep.crescendo.Repository.Criptomoeda;
-import isep.crescendo.Repository.HistoricoValor;
-import isep.crescendo.model.*;
-import isep.crescendo.util.SceneSwitcher;
-import isep.crescendo.util.SessionManager;
+import isep.crescendo.model.crescendo.model.*;
+import isep.crescendo.model.crescendo.util.SceneSwitcher;
+import isep.crescendo.model.crescendo.util.SessionManager;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
@@ -43,11 +40,11 @@ public class MarketController implements Initializable {
     @FXML private Label infoLabel;
     @FXML private TextField campoPesquisaMoeda;
     private ContextMenu sugestoesPopup = new ContextMenu();
-    private final Criptomoeda criptoRepo = new Criptomoeda();
-    private final HistoricoValor historicoRepo = new HistoricoValor();
+    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
     @FXML private ComboBox<String> intervaloSelecionadoBox;
     @FXML private ListView<String> listaSugestoes;
-    private isep.crescendo.model.Criptomoeda criptoSelecionada;
+    private Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
 
@@ -73,7 +70,7 @@ public class MarketController implements Initializable {
 
 
         if (saldoLabel != null) {
-            saldoLabel.setText(String.format("%.2f €", isep.crescendo.model.Carteira.getSaldo()));
+            saldoLabel.setText(String.format("%.2f €", Carteira.getSaldo()));
         }
 
 
@@ -83,7 +80,7 @@ public class MarketController implements Initializable {
                 return;
             }
 
-            List<isep.crescendo.model.Criptomoeda> correspondencias = criptoRepo.getAllCriptomoedas().stream()
+            List<Criptomoeda> correspondencias = criptoRepo.getAllCriptomoedas().stream()
                     .filter(c -> c.getNome().toLowerCase().contains(newText.toLowerCase()) ||
                             c.getSimbolo().toLowerCase().contains(newText.toLowerCase()))
                     .toList();
@@ -111,6 +108,11 @@ public class MarketController implements Initializable {
         });
 
     }
+    @FXML
+    private void handleLogout() {
+        SessionManager.setCurrentUser(null);
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
+    }
 
     @FXML
     private void handleAdicionarSaldo() {
@@ -129,8 +131,8 @@ public class MarketController implements Initializable {
                 }
 
                 int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
-                Carteira carteiraRepo = new Carteira();
-                isep.crescendo.model.Carteira carteira = carteiraRepo.procurarPorUserId(userId);
+                CarteiraRepository carteiraRepo = new CarteiraRepository();
+                Carteira carteira = carteiraRepo.procurarPorUserId(userId);
 
                 if (carteira != null) {
                     double novoSaldo = carteira.getSaldo() + valor;
@@ -162,7 +164,7 @@ public class MarketController implements Initializable {
     private void atualizarSaldoLabel() {
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
-            isep.crescendo.model.Carteira carteira = Carteira.procurarPorUserId(currentUser.getId());
+            Carteira carteira = CarteiraRepository.procurarPorUserId(currentUser.getId());
 
             if (carteira != null) {
                 saldoLabel.setText(String.format("%.2f €", carteira.getSaldo()));
@@ -201,8 +203,8 @@ public class MarketController implements Initializable {
         atualizarGraficoComCripto(criptoSelecionada);
     }
 
-    private void atualizarGraficoComCripto(isep.crescendo.model.Criptomoeda cripto) {
-        List<isep.crescendo.model.HistoricoValor> historico = historicoRepo.listarPorCripto(cripto.getId());
+    private void atualizarGraficoComCripto(Criptomoeda cripto) {
+        List<HistoricoValor> historico = historicoRepo.listarPorCripto(cripto.getId());
         String intervalo = intervaloSelecionadoBox.getValue();
         String periodo = periodoSelecionadoBox.getValue();
 
@@ -227,7 +229,7 @@ public class MarketController implements Initializable {
             default -> limite = agora.minusWeeks(1);
         }
 
-        List<isep.crescendo.model.HistoricoValor> filtrados = historico.stream()
+        List<HistoricoValor> filtrados = historico.stream()
                 .filter(hv -> hv.getData().isAfter(limite))
                 .toList();
 
@@ -243,7 +245,7 @@ public class MarketController implements Initializable {
         }
 
         Map<String, Double> dadosFiltrados = new LinkedHashMap<>();
-        for (isep.crescendo.model.HistoricoValor hv : filtrados) {
+        for (HistoricoValor hv : filtrados) {
             String chave = hv.getData().format(formatter);
             dadosFiltrados.putIfAbsent(chave, hv.getValor()); // mantém o primeiro valor do grupo
         }
