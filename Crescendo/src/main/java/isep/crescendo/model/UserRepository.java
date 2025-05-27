@@ -169,4 +169,18 @@ public class UserRepository {
             throw new RuntimeException("Erro ao apagar utilizador: " + e.getMessage());
         }
     }
+
+    public int countUsers() {
+        String query = "SELECT COUNT(*) FROM users";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(query)) {
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
 }

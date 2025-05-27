@@ -1,7 +1,8 @@
 .root {
     -fx-background-color: linear-gradient(to bottom, #111, #333);
-    -fx-padding: 100px;
+
 }
+
 
 .title-label {
     -fx-font-size: 18px;
@@ -105,5 +106,136 @@
 
 .link-label {
     -fx-text-fill: #ff4d4d;
+}
+
+.admin-button-blue {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-green {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-orange {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-red {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-blue:hover,
+.admin-button-green:hover,
+.admin-button-orange:hover,
+.admin-button-red:hover {
+    -fx-opacity: 0.9;
+    -fx-cursor: hand;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-pref-width: 160px;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #16a085;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+    -fx-pref-width: 180px;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.5, 0, 2);
+    -fx-alignment: center;
+}
+
+.card-title {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.card-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.menu-button-dark {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-background-radius: 5px;
+}
+.menu-button-dark:hover {
+    -fx-background-color: #3c3c3c;
+}
+
+.admin-button-blue-dark {
+    -fx-background-color: #1565c0;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-green-dark {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-orange-dark {
+    -fx-background-color: #ef6c00;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-red-dark {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.card-dark {
+    -fx-background-color: #2d2d30;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-alignment: center;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, black, 5, 0, 0, 1);
+}
+
+.card-title-dark {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #cccccc;
+}
+
+.card-value-dark {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
 }
 

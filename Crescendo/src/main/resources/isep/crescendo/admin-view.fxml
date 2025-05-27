@@ -1,20 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.AdminController">
+<BorderPane xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.AdminController"
+            style="-fx-background-color: #1e1e1e;" prefHeight="1000.0" prefWidth="1200.0">
+
+    <!-- TOP BAR -->
     <top>
-        <Label text="Bem-vindo, Administrador" style="-fx-font-size: 24px; -fx-padding: 20px; -fx-alignment: center;" BorderPane.alignment="CENTER"/>
+        <HBox spacing="10" style="-fx-background-color: #2d2d30; -fx-padding: 15px;" alignment="CENTER_RIGHT">
+            <Region HBox.hgrow="ALWAYS"/>
+            <TextField fx:id="searchField" promptText="Pesquisar..."
+                       style="-fx-background-radius: 10; -fx-padding: 5 10; -fx-background-color: #3c3c3c; -fx-text-fill: white;"/>
+            <Button text="🔍" style="-fx-background-color: #00796b; -fx-text-fill: white; -fx-background-radius: 10;"/>
+        </HBox>
     </top>
 
-    <center>
-        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 40px;">
-            <Button fx:id="btnUser" text="Gerir Utilizadores" onAction="#handleUserManagement" styleClass="custom-button-blue"/>
-            <Button text="Gerir Criptomoedas" onAction="#handleCripto" styleClass="custom-button-green"/>
-            <Button text="Definições"  styleClass="custom-button-orange"/>
-            <Button text="Terminar Sessão" onAction="#handleLogout" styleClass="custom-button-red"/>
+    <!-- LEFT MENU -->
+    <left>
+        <VBox spacing="20" style="-fx-background-color: #252526; -fx-padding: 30px;" alignment="TOP_CENTER">
+            <Label text="👤 Admin" style="-fx-text-fill: white; -fx-font-size: 18px;"/>
+            <Button text="🏠 Dashboard" styleClass="menu-button-dark" onAction="#handleDash"/>
+            <Button text="👥 Utilizadores" styleClass="menu-button-dark" onAction="#handleUserManagement"/>
+            <Button text="💰 Criptomoedas" styleClass="menu-button-dark"/>
+            <Button text="⚙️ Definições" styleClass="menu-button-dark"/>
+            <Button text="🚪 Sair" onAction="#handleLogout" styleClass="menu-button-dark"/>
         </VBox>
+    </left>
+
+    <!-- MAIN CONTENT -->
+    <center>
+        <ScrollPane fitToWidth="true" fitToHeight="true" style="-fx-padding: 20px;">
+            <TilePane fx:id="tilePane" hgap="20" vgap="20" prefColumns="3"
+                      style="-fx-alignment: center;"
+                      maxWidth="1.7976931348623157E308"
+                      maxHeight="1.7976931348623157E308">
+                <VBox styleClass="card-dark">
+                    <Label text="Total Utilizadores" styleClass="card-title-dark"/>
+                    <Label fx:id="labelTotalUsers" text="0" styleClass="card-value-dark"/>
+                </VBox>
+                <VBox styleClass="card-dark">
+                    <Label text="Total Investido" styleClass="card-title-dark"/>
+                    <Label text="13,600" styleClass="card-value-dark"/>
+                </VBox>
+                <VBox styleClass="card-dark">
+                    <Label text="Atividade" styleClass="card-title-dark"/>
+                    <ProgressBar progress="0.6" prefWidth="150"/>
+                    <Label text="60%" styleClass="card-value-dark"/>
+                </VBox>
+            </TilePane>
+        </ScrollPane>
     </center>
+
 </BorderPane>

@@ -40,6 +40,13 @@ public class AdminController {
     @FXML
     private Button btnCriar, btnDesativar;
 
+    @FXML
+    private Label labelTotalUsers;
+
+    @FXML
+    private Label labelTotalMoedas;
+
+
     private final UserRepository userRepo = new UserRepository();
     private final ObservableList<User> users = FXCollections.observableArrayList();
     @FXML
@@ -58,6 +65,9 @@ public class AdminController {
 
     @FXML
     public void initialize() {
+        if (labelTotalUsers != null){
+        int totalUsers = userRepo.countUsers();
+        labelTotalUsers.setText(String.valueOf(totalUsers));}
 
         if (idColumn != null && nomeColumn != null && emailColumn != null && isAdminColumn != null) {
             idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
@@ -189,7 +199,7 @@ public class AdminController {
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login",btnUser );
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login",searchField );
     }
 
     @FXML
@@ -198,27 +208,20 @@ public class AdminController {
                 "/isep/crescendo/admin-cripto-view.fxml",
                 "/isep/crescendo/styles/login.css",
                 "Admin Cripto",
-                btnUser
+                searchField
         );
     }
 
-
-
     @FXML
-    private void handleBtnHoverIn(MouseEvent event) {
-        Button btn = (Button) event.getSource();
-        btn.setStyle(btn.getStyle().replace("-fx-background-color:", "-fx-background-color: #66bb6a;")); // ou outro tom
+    private void handleDash() {
+        SceneSwitcher.switchScene(
+                "/isep/crescendo/admin-view.fxml",
+                "/isep/crescendo/styles/login.css",
+                "Admin Cripto",
+                searchField
+        );
     }
 
-    @FXML
-    private void handleBtnHoverOut(MouseEvent event) {
-        Button btn = (Button) event.getSource();
-        if (btn == btnCriar) {
-            btn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 16px; -fx-pref-width: 180; -fx-pref-height: 60; -fx-background-radius: 8;");
-        } else if (btn == btnDesativar) {
-            btn.setStyle("-fx-background-color: #F44336; -fx-text-fill: white; -fx-font-size: 16px; -fx-pref-width: 180; -fx-pref-height: 60; -fx-background-radius: 8;");
-        }
-    }
 
 
     @FXML
