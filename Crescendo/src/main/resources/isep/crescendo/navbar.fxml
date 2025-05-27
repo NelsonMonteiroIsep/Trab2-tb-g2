@@ -10,7 +10,7 @@
       alignment="CENTER_LEFT"
       spacing="20"
       prefHeight="60"
-      style="-fx-background-color: #1e1e1e; -fx-padding: 10;">
+      style="-fx-background-color: black; -fx-padding: 10;">
 
     <!-- Logo ou Nome -->
     <Label text="Crescendo"
@@ -22,9 +22,6 @@
 
     <!-- Botões de navegação -->
     <Button text="Início" onAction="#goHome"
-            style="-fx-background-color: transparent; -fx-text-fill: white;" />
-
-    <Button text="Produtos" onAction="#goProdutos"
             style="-fx-background-color: transparent; -fx-text-fill: white;" />
 
     <Button text="Perfil" onAction="#goPerfil"
