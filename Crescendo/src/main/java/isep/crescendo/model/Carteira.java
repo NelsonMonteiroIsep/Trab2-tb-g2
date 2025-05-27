@@ -10,7 +10,7 @@ import java.util.Optional;
 public class Carteira {
     private int id;
     private int userId;
-    private double saldo;
+    private static double saldo;
 
     public Carteira(int userId, double saldo) {
         this.userId = userId;
@@ -25,7 +25,7 @@ public class Carteira {
 
     public int getId() { return id; }
     public int getUserId() { return userId; }
-    public double getSaldo() { return saldo; }
+    public static double getSaldo() { return saldo; }
 
     public void setId(int id) { this.id = id; }
     public void setSaldo(double saldo) { this.saldo = saldo; }

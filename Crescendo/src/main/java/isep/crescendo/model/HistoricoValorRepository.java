@@ -57,7 +57,7 @@ public class HistoricoValorRepository {
 
     public List<HistoricoValor> listarPorCripto(int criptoId) {
         List<HistoricoValor> lista = new ArrayList<>();
-        String sql = "SELECT * FROM historico_valores WHERE cripto_id = ? ORDER BY data DESC";
+        String sql = "SELECT * FROM historico_valores WHERE cripto_id = ? ORDER BY data ";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {

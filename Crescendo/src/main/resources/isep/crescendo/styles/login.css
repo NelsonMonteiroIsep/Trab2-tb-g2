@@ -239,3 +239,26 @@
     -fx-text-fill: #ffffff;
 }
 
+.chart {
+    -fx-background-color: #2d2d30;
+}
+
+.chart-plot-background {
+    -fx-background-color: #1e1e1e;
+}
+
+.axis-label, .axis-tick-label {
+    -fx-text-fill: white;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2px;
+    -fx-stroke: #00e676;
+}
+
+.chart-line-symbol {
+    -fx-background-color: white, #00e676;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+}
+
