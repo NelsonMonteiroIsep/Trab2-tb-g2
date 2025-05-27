@@ -46,7 +46,7 @@ public class MarketController implements Initializable {
     private final Criptomoeda criptoRepo = new Criptomoeda();
     private final HistoricoValor historicoRepo = new HistoricoValor();
     @FXML private ComboBox<String> intervaloSelecionadoBox;
-    @FXML private ListView<String> listaSugestoes;
+
     private isep.crescendo.model.Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
@@ -68,7 +68,6 @@ public class MarketController implements Initializable {
 
         atualizarSaldoLabel();
 
-        campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> atualizarSugestoes(newText));
 
 
 
@@ -269,20 +268,6 @@ public class MarketController implements Initializable {
     }
 
 
-    private void atualizarSugestoes(String termo) {
-        if (termo.isBlank()) {
-            listaSugestoes.getItems().clear();
-            return;
-        }
-
-        List<String> resultados = criptoRepo.getAllCriptomoedas().stream()
-                .filter(c -> c.getNome().toLowerCase().contains(termo.toLowerCase())
-                        || c.getSimbolo().toLowerCase().contains(termo.toLowerCase()))
-                .map(c -> c.getNome() + " (" + c.getSimbolo() + ")")
-                .toList();
-
-        listaSugestoes.getItems().setAll(resultados);
-    }
 
     }
 
