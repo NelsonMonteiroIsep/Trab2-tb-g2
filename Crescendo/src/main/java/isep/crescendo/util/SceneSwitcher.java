@@ -37,6 +37,7 @@ public class SceneSwitcher {
             stage.setScene(scene);
             stage.setWidth(width);
             stage.setHeight(height);
+            stage.setResizable(true);
             stage.show();
 
         } catch (IOException e) {

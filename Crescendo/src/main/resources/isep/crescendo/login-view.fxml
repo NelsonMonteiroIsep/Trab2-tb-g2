@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.*?>
@@ -18,39 +17,59 @@
     <!-- Main content -->
     <VBox fx:id="mainVBox" styleClass="fields-background"
           spacing="10" alignment="CENTER"
-          maxWidth="400" minWidth="200" prefWidth="300">
+          maxWidth="600"  maxHeight="600" fillWidth="true"
+    >
 
-        <Label text="LOG IN" styleClass="title-label" />
+        <Region prefHeight="5" maxHeight="10" VBox.vgrow="NEVER"/>
 
-        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container"
-              maxWidth="400" minWidth="200" prefWidth="300">
-            <ImageView fitHeight="20" fitWidth="20">
-                <image>
-                    <Image url="/isep/crescendo/images/User_Icon.png" />
-                </image>
-            </ImageView>
-            <TextField fx:id="emailField" promptText="Log-in" styleClass="transparent-input"
-                       maxWidth="400" minWidth="200" prefWidth="300"/>
-        </HBox>
+        <!-- Logo Image -->
+        <ImageView fx:id="logoImageView" preserveRatio="true" smooth="true" fitWidth="150">
+            <image>
+                <Image url="/isep/crescendo/images/Logo.png" />
+            </image>
+        </ImageView>
 
-        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container"
-              maxWidth="400" minWidth="200" prefWidth="300">
-            <ImageView fitHeight="20" fitWidth="20">
-                <image>
-                    <Image url="/isep/crescendo/images/Lock_Icon.png" />
-                </image>
-            </ImageView>
-            <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"
-                           maxWidth="400" minWidth="200" prefWidth="300"/>
-        </HBox>
+        <!-- Dynamic spacer to push label downward slightly -->
+        <Region prefHeight="30"/>
 
-        <Button text="🔑 Log in" onAction="#handleLogin"
-                maxWidth="400" minWidth="200" prefWidth="300" styleClass="login-button"/>
+        <!-- Label -->
+        <Label text="LOG IN" styleClass="title-label"/>
 
-        <Label fx:id="messageLabel" textFill="red"/>
+    <!-- Email input container -->
+    <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity" >
 
-        <Hyperlink text="Clique aqui para criar uma conta" onAction="#handleGoToRegister" styleClass="link-label"/>
+        <ImageView fitHeight="20" fitWidth="20">
+            <image>
+                <Image url="/isep/crescendo/images/User_Icon.png" />
+            </image>
+        </ImageView>
 
-    </VBox>
+        <TextField fx:id="emailField" promptText="Log-in" styleClass="transparent-input"
+                   maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+    </HBox>
 
-</StackPane>
+    <!-- Password input container -->
+    <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity" >
+
+        <ImageView fitHeight="20" fitWidth="20">
+            <image>
+                <Image url="/isep/crescendo/images/Lock_Icon.png" />
+            </image>
+        </ImageView>
+
+        <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"
+                       maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+    </HBox>
+
+    <Button text="🔑 Log in" onAction="#handleLogin"
+            maxWidth="Infinity" styleClass="login-button" />
+
+    <Label fx:id="messageLabel" textFill="red"/>
+        <Region VBox.vgrow="ALWAYS" />
+        <VBox alignment="CENTER" spacing="5" maxWidth="Infinity">
+            <Hyperlink text="Clique aqui para criar uma conta" onAction="#handleGoToRegister" styleClass="link-label"/>
+            <Hyperlink text="Esqueceste a password?" onAction="#handleGoToRecovery"/>
+        </VBox>
+</VBox>
+
+        </StackPane>

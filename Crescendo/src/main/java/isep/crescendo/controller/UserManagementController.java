@@ -4,6 +4,7 @@ import isep.crescendo.model.User;
 import isep.crescendo.model.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,19 +13,25 @@ import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 
 public class UserManagementController {
     private final UserRepository userRepo = new UserRepository();
+    private static final Map<String, String> tokenToEmailMap = new HashMap<>();
     @FXML
     private TextField nameField;
 
     @FXML
     private TextField emailField;
-
+ @FXML
+ private VBox mainVBox;
     @FXML
     private PasswordField passwordField;
 
@@ -33,7 +40,14 @@ public class UserManagementController {
     @FXML
     private ImageView backgroundImageView;
     @FXML
+    private ImageView logoImageView;
+
+    @FXML
     private StackPane root;
+    @FXML
+    private TextField recoveryEmailField;
+    @FXML
+    private Label recoveryMessageLabel;
 
 
     @FXML
@@ -97,22 +111,36 @@ public class UserManagementController {
                 SessionManager.setCurrentUser(user);
 
                 // Transição para a market-view
-                URL fxmlLocation = getClass().getResource("/isep/crescendo/market-view.fxml");
-                FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
-                Parent root = fxmlLoader.load();
+                if (user.isAdmin()) {
+                    URL fxmlLocation = getClass().getResource("/isep/crescendo/admin-view.fxml");
+                    FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+                    Parent root = fxmlLoader.load();
+                    Scene scene = new Scene(root);
+                    URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+                    if (cssLocation != null) {
+                        scene.getStylesheets().add(cssLocation.toExternalForm());
+                    }
 
-                Scene scene = new Scene(root);
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setTitle("Marketplace");
+                    stage.setScene(scene);
+                    stage.show();
 
-                // Aplica CSS, se necessário
-                URL cssLocation = getClass().getResource("/isep/crescendo/styles/market.css");
-                if (cssLocation != null) {
-                    scene.getStylesheets().add(cssLocation.toExternalForm());
+                } else {
+                    URL fxmlLocation = getClass().getResource("/isep/crescendo/market-view.fxml");
+                    FXMLLoader fxmlLoader = new FXMLLoader(fxmlLocation);
+                    Parent root = fxmlLoader.load();
+                    Scene scene = new Scene(root);
+                    URL cssLocation = getClass().getResource("/isep/crescendo/styles/login.css");
+                    if (cssLocation != null) {
+                        scene.getStylesheets().add(cssLocation.toExternalForm());
+                    }
+
+                    Stage stage = (Stage) emailField.getScene().getWindow();
+                    stage.setTitle("Marketplace");
+                    stage.setScene(scene);
+                    stage.show();
                 }
-
-                Stage stage = (Stage) emailField.getScene().getWindow();
-                stage.setTitle("Marketplace");
-                stage.setScene(scene);
-                stage.show();
 
             } else {
                 setMessage("Credenciais inválidas.", false);
@@ -134,6 +162,12 @@ public class UserManagementController {
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", nameField);
     }
 
+    @FXML
+    private void handleGoToRecovery() {
+        SceneSwitcher.switchScene("/isep/crescendo/forgot-password-view.fxml", "/isep/crescendo/styles/login.css", "Recuperar Password", emailField);
+    }
+
+
     public void setMessage(String msg, boolean isSuccess) {
         messageLabel.setText(msg);
         if (isSuccess) {
@@ -148,7 +182,14 @@ public class UserManagementController {
         Image bgImage = new Image(getClass().getResourceAsStream("/isep/crescendo/images/background.jpg"));
         backgroundImageView.setImage(bgImage);
 
-        // Bind ImageView size to StackPane size
+        if (logoImageView != null) {
+            logoImageView.setPreserveRatio(true);logoImageView.fitWidthProperty().bind(
+                Bindings.min(mainVBox.widthProperty().multiply(0.35), 150)
+        );
+        logoImageView.fitHeightProperty().bind(
+                Bindings.min(mainVBox.heightProperty().multiply(0.2), 150)
+        );}
+
         backgroundImageView.fitWidthProperty().bind(root.widthProperty());
         backgroundImageView.fitHeightProperty().bind(root.heightProperty());
     }

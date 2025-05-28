@@ -1,5 +1,6 @@
 package isep.crescendo;
 
+import isep.crescendo.model.*;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -28,6 +29,11 @@ public class Main extends Application {
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();
+        new UserRepository();
+        new CarteiraRepository();
+        new TransacaoRepository();
+        new CriptomoedaRepository();
+        new HistoricoValorRepository();
     }
 
     public static void main(String[] args) {

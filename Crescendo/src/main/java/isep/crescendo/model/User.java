@@ -7,26 +7,44 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
 public class User {
+    private int id;
     private String email;
     private String nome;
     private String passwordHash;
+    private boolean isAdmin;
+    private static final String specialCharsRegex = ".*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?].*";
 
     public User(String email, String nome, String plainPassword) {
-        // Validações usando Preconditions
         Preconditions.ensure(email != null && email.contains("@"), "O email é inválido.");
-        Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido. Não pode ser nulo nem vazio.");
-        Preconditions.ensure(plainPassword != null && plainPassword.length() >= 6, "A password deve ter pelo menos 6 caracteres.");
-
+        Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido.");
+        Preconditions.ensure(plainPassword != null, "A password não pode ser vazia.");
+        Preconditions.ensure(plainPassword.length() >= 10, "A password deve ter pelo menos 10 caracteres.");
+        Preconditions.ensure(plainPassword.matches(".*[A-Z].*"), "A password deve conter pelo menos uma letra maiúscula.");
+        Preconditions.ensure(plainPassword.matches(".*\\d.*"), "A password deve conter pelo menos um número.");
+        Preconditions.ensure(
+                plainPassword.matches(specialCharsRegex),
+                "A password deve conter pelo menos um caractere especial."
+        );
         this.email = email;
         this.nome = nome;
         this.passwordHash = hashPassword(plainPassword);
     }
 
-    public User(String email, String nome, String passwordHash, boolean hashIsReady) {
+    public User(int id, String email, String nome, String passwordHash) {
+        this.id = id;
         this.email = email;
         this.nome = nome;
-        this.passwordHash = passwordHash; // já vem "hasheada"
+        this.passwordHash = passwordHash;
     }
+
+    public User(int id, String email, String nome, String password, boolean isAdmin) {
+        this.id = id;
+        this.email = email;
+        this.nome = nome;
+        this.passwordHash = password;
+        this.isAdmin = isAdmin;
+    }
+
 
     private String hashPassword(String password) {
         try {
@@ -48,6 +66,12 @@ public class User {
         return Objects.equals(this.passwordHash, hashPassword(plainPassword));
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) { this.id = id; }
+
     public String getEmail() {
         return email;
     }
@@ -59,6 +83,11 @@ public class User {
     public String getPasswordHash() {
         return passwordHash;
     }
+
+    public boolean isAdmin() {return isAdmin;}
+
+    public void setAdmin(boolean admin) {isAdmin = admin;}
+
 
     public void setNome(String nome) {
         Preconditions.ensure(nome != null && !nome.trim().isEmpty(), "O nome é inválido.");
