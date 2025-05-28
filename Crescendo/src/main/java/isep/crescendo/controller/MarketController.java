@@ -49,18 +49,6 @@ public class MarketController implements Initializable {
     @FXML private ImageView coinLogo;
 
     @Override
-    public void start(Stage primaryStage) {
-        StackPane root = new StackPane();
-        root.setStyle("-fx-background-color: black;");
-
-        Scene scene = new Scene(root, 800, 600);
-        primaryStage.setTitle("Minha Aplicação");
-        primaryStage.setScene(scene);
-        primaryStage.show();
-    }
-
-    public static void main(String[] args) {
-        launch(args);
     public void initialize(URL location, ResourceBundle resources) {
         loggedInUser = SessionManager.getCurrentUser();
         intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
