@@ -6,12 +6,12 @@
       spacing="20" style="-fx-background-color: #252526; -fx-padding: 30px;" alignment="TOP_CENTER">
 
     <Label fx:id="menu_label" text="📊 Market" style="-fx-text-fill: white; -fx-font-size: 20px;" />
-    <Button text="🏠 Portfolio" styleClass="menu-button-dark"/>
-    <Button text="💳 Carteira" styleClass="menu-button-dark" />
-    <Button text="📤 Enviar" styleClass="menu-button-dark"/>
-    <Button text="📥 Receber" styleClass="menu-button-dark"/>
-    <Button text="🔁 Swap" styleClass="menu-button-dark"/>
-    <Button text="💼 Gestão" styleClass="menu-button-dark"/>
+    <Button text="🏠 Portfolio" onAction="#handleRedirectPortfolio" styleClass="menu-button-dark"/>
+    <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" />
+    <Button text="📤 Enviar" onAction="#handleRedirectEnviar" styleClass="menu-button-dark"/>
+    <Button text="📥 Receber" onAction="#handleRedirectReceber" styleClass="menu-button-dark"/>
+    <Button text="🔁 Swap" onAction="#handleRedirectSwap" styleClass="menu-button-dark"/>
+    <Button text="💼 Gestão" onAction="#handleRedirectGestao" styleClass="menu-button-dark"/>
     <Button text="🚪 Sair" onAction="#handleLogout" styleClass="menu-button-dark"/>
 
 </VBox>

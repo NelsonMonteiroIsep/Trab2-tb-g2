@@ -2,6 +2,7 @@ package isep.crescendo.controller;
 
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 
@@ -12,5 +13,29 @@ public class MenuLateralController {
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", menu_label);
+    }
+    @FXML
+    private void handleRedirectWallet(){
+        SceneSwitcher.switchScene("/isep/crescendo/wallet-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+    }
+
+    public void handleRedirectPortfolio(ActionEvent actionEvent) {
+        SceneSwitcher.switchScene("/isep/crescendo/portfolio-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+    }
+
+    public void handleRedirectEnviar(ActionEvent actionEvent) {
+        SceneSwitcher.switchScene("/isep/crescendo/enviar-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+    }
+
+    public void handleRedirectReceber(ActionEvent actionEvent) {
+        SceneSwitcher.switchScene("/isep/crescendo/receber-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+    }
+
+    public void handleRedirectSwap(ActionEvent actionEvent) {
+        SceneSwitcher.switchScene("/isep/crescendo/swap-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+    }
+
+    public void handleRedirectGestao(ActionEvent actionEvent) {
+        SceneSwitcher.switchScene("/isep/crescendo/gestao-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
     }
 }

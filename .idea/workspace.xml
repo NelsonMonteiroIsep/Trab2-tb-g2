@@ -5,23 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/MenuLateral-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UnderConstructionController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/enviar-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/gestao-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/portfolio-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/receber-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/swap-view.fxml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/wallet-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoCriarDialogController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoCriarDialogController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/ResetPasswordController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/ResetPasswordController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/CarteiraRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Carteira.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/CriptomoedaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Criptomoeda.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/HistoricoValorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/HistoricoValor.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/TransacaoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/Transacao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/User.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/MenuLateral-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/MenuLateral-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -82,31 +75,32 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Gradle.Build Crescendo.executor": "Run",
-    "Gradle.Crescendo [:isep.crescendo.Main.main()].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Rafael Ferraria/Documents/GitHub/Trab2-tb-g2/Crescendo/src/main/java/isep/crescendo/model",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build Crescendo.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Crescendo [:isep.crescendo.Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Rafael Ferraria/Documents/GitHub/Trab2-tb-g2/Crescendo/src/main/resources/isep/crescendo&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\Rafael Ferraria\Documents\GitHub\Trab2-tb-g2\Crescendo\src\main\resources\isep\crescendo" />
       <recent name="C:\Users\Rafael Ferraria\Documents\GitHub\Trab2-tb-g2\Crescendo\src\main\java\isep\crescendo\model" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -143,7 +137,8 @@
       <updated>1747687149721</updated>
       <workItem from="1747687151780" duration="1058000" />
       <workItem from="1747849420159" duration="10087000" />
-      <workItem from="1748377060173" duration="1306000" />
+      <workItem from="1748377060173" duration="3913000" />
+      <workItem from="1748388590652" duration="1460000" />
     </task>
     <servers />
   </component>
