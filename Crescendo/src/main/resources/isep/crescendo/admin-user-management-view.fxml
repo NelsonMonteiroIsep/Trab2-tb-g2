@@ -54,8 +54,8 @@
 
             <HBox spacing="15" alignment="CENTER">
                 <Button text="Editar Nome" onAction="#handleEditarNome" styleClass="admin-button-blue-dark"/>
+                <Button text="Editar Email" onAction="#handleEditarEmail" styleClass="admin-button-blue-dark"/>
                 <Button text="Tornar Admin" onAction="#handleTornarAdmin" styleClass="admin-button-green-dark"/>
-                <Button text="Remover Admin" onAction="#handleRemoverAdmin" styleClass="admin-button-orange-dark"/>
                 <Button text="Apagar Utilizador" onAction="#handleApagarUtilizador" styleClass="admin-button-red-dark"/>
             </HBox>
         </VBox>

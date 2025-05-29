@@ -1,5 +1,6 @@
 package isep.crescendo.controller;
 
+import isep.crescendo.Repository.Carteira;
 import isep.crescendo.Repository.User;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
@@ -123,7 +124,8 @@ public class AdminController {
             result.ifPresent(novoNome -> {
                 selecionado.setNome(novoNome);
                 userRepo.atualizar(selecionado);
-                carregarUtilizadores();
+                carregarUtilizadores();      // <--- repõe dados da DB
+                userTable.refresh();
             });
         } else {
             mostrarAlerta("Selecione um utilizador primeiro.");
@@ -134,21 +136,29 @@ public class AdminController {
     private void handleTornarAdmin() {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null && !selecionado.isAdmin()) {
+
+            isep.crescendo.model.Carteira carteira = isep.crescendo.Repository.Carteira.procurarPorUserId(selecionado.getId());
+
+            if (carteira != null && carteira.getSaldo() > 0) {
+                mostrarAlerta("Não é possível tornar admin. O utilizador tem saldo na carteira.");
+                return;
+            }
+
+            // Apagar carteira se existir
+            if (carteira != null && carteira.getSaldo() == 0) {
+                Carteira.apagarPorUserId(selecionado.getId());
+            }
+
             selecionado.setAdmin(true);
             userRepo.atualizarAdmin(selecionado);
             carregarUtilizadores();
+            mostrarAlerta("Utilizador promovido a admin com sucesso.");
+        } else {
+            mostrarAlerta("Selecione um utilizador primeiro.");
         }
     }
 
-    @FXML
-    private void handleRemoverAdmin() {
-        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
-        if (selecionado != null && selecionado.isAdmin()) {
-            selecionado.setAdmin(false);
-            userRepo.atualizarAdmin(selecionado);
-            carregarUtilizadores();
-        }
-    }
+
 
     @FXML
     private void handleApagarUtilizador() {
@@ -161,6 +171,32 @@ public class AdminController {
                 userRepo.apagar(selecionado.getId());
                 carregarUtilizadores();
             }
+        } else {
+            mostrarAlerta("Selecione um utilizador primeiro.");
+        }
+    }
+
+    @FXML
+    private void handleEditarEmail() {
+        isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
+        if (selecionado != null) {
+            TextInputDialog dialog = new TextInputDialog(selecionado.getEmail());
+            dialog.setTitle("Editar Email");
+            dialog.setHeaderText("Editar email do utilizador");
+            dialog.setContentText("Novo email:");
+
+            Optional<String> result = dialog.showAndWait();
+            result.ifPresent(novoEmail -> {
+                if (!novoEmail.matches("^[\\w-.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
+                    mostrarAlerta("Email inválido.");
+                    return;
+                }
+
+                selecionado.setEmail(novoEmail);
+                userRepo.atualizar(selecionado);
+                carregarUtilizadores();      // <--- repõe dados da DB
+                userTable.refresh();
+            });
         } else {
             mostrarAlerta("Selecione um utilizador primeiro.");
         }

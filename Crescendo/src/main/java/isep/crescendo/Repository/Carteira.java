@@ -30,6 +30,17 @@ public class Carteira {
         }
     }
 
+    public static void apagarPorUserId(int userId) {
+        String sql = "DELETE FROM carteiras WHERE user_id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, userId);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao apagar carteira: " + e.getMessage());
+        }
+    }
+
     public void adicionar(isep.crescendo.model.Carteira carteira) {
         String sql = "INSERT INTO carteiras (user_id, saldo) VALUES (?, ?)";
 

@@ -96,23 +96,22 @@ public class User {
     }
 
     public void atualizar(isep.crescendo.model.User user) {
-        String sql = "UPDATE users SET nome = ?, password_hash = ? WHERE email = ?";
+        String sql = "UPDATE users SET nome = ?, email = ? WHERE id = ?";
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, user.getNome());
-            pstmt.setString(2, user.getPasswordHash());
-            pstmt.setString(3, user.getEmail());
+            stmt.setString(1, user.getNome());
+            stmt.setString(2, user.getEmail());
+            stmt.setInt(3, user.getId());
 
-            int affectedRows = pstmt.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new RuntimeException("Nenhum utilizador atualizado, e-mail não encontrado.");
+            int rows = stmt.executeUpdate();
+            if (rows == 0) {
+                throw new RuntimeException("Nenhum utilizador atualizado, ID não encontrado.");
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage());
+            throw new RuntimeException("Erro ao atualizar utilizador: " + e.getMessage(), e);
         }
     }
 
