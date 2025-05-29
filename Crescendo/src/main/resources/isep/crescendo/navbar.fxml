@@ -12,9 +12,7 @@
       prefHeight="60"
       style="-fx-background-color: black; -fx-padding: 10;">
 
-    <!-- Logo ou Nome -->
-    <Label text="Crescendo"
-           style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;" />
+
 
     <!-- Espaço flexível -->
     <Region HBox.hgrow="ALWAYS" />
@@ -23,12 +21,11 @@
 
 
         <Region HBox.hgrow="ALWAYS"/>
-        <Label fx:id="userNameLabel" text="Bem-vindo!" style="-fx-text-fill: white; -fx-font-size: 14px;"/>
-        <Label fx:id="saldoLabel" text="0.00 €" style="-fx-text-fill: white; -fx-font-size: 16px;" />
+        <Label fx:id="userNameLabel" text="Bem-vindo!" style="-fx-text-fill: white; -fx-font-size: 14px;-fx-font-weight: bold;"/>
+        <Label fx:id="saldoLabel" text="0.00 €" style="-fx-text-fill: white; -fx-font-size: 16px;-fx-font-weight: bold;" />
         <Button text="🔔" style="-fx-background-color: transparent; -fx-text-fill: white;"/>
 
 
-    <Button text="Sair" onAction="#handleLogout"
-            style="-fx-background-color: #d9534f; -fx-text-fill: white;" />
+
 
 </HBox>

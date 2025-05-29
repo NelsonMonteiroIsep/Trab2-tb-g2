@@ -9,6 +9,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
 import java.io.IOException;
@@ -17,6 +18,8 @@ import java.util.ResourceBundle;
 
 
 public class MarketController implements Initializable {
+
+
 
     public Label navBarAnyControl;
     @FXML
@@ -42,10 +45,13 @@ public class MarketController implements Initializable {
             System.err.println("Erro: coinContainer não foi injetado pelo FXML!");
         }
 
+
+
+
     }
     private void loadCoinComponents() {
         try {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 5; i++) {
                 FXMLLoader loader = new FXMLLoader(
                         getClass().getResource("/isep/crescendo/coin-componente.fxml"));
                 VBox coinComponent = loader.load();

@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="" />
+    <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/navbar.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/navbar.fxml" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -64,28 +71,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Application.Main.executor": "Run",
-    "Gradle.Build Crescendo.executor": "Run",
-    "Gradle.Crescendo [:isep.crescendo.Main.main()].executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "Funcionalidade---RecuperarPassword",
-    "ignore.virus.scanning.warn.message": "true",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Utilizador/Documents/GitHub/Trab2-tb-g2/Crescendo/build.gradle.kts",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "project.structure.last.edited": "Libraries",
-    "project.structure.proportion": "0.0",
-    "project.structure.side.proportion": "0.0",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.Main.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Build Crescendo.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.Crescendo [:isep.crescendo.Main.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;Market&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Utilizador/Documents/GitHub/Trab2-tb-g2/Crescendo/build.gradle.kts&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Libraries&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.0&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="Main" type="Application" factoryName="Application">
       <option name="ALTERNATIVE_JRE_PATH" value="ms-21" />
@@ -116,6 +123,8 @@
       <updated>1747687149721</updated>
       <workItem from="1747687151780" duration="1058000" />
       <workItem from="1747849420159" duration="10087000" />
+      <workItem from="1748475541952" duration="6254000" />
+      <workItem from="1748481865764" duration="1119000" />
     </task>
     <servers />
   </component>

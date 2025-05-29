@@ -15,6 +15,15 @@
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.CoinComponent"
-      style="-fx-background-color: WHITE   ; -fx-padding: 10;" spacing="10">
+
+      prefHeight="100" prefWidth="500"
+      maxHeight="100"
+      style="-fx-background-color: #28282b;
+             -fx-padding: 10;
+             -fx-border-radius: 5;
+             -fx-background-radius: 5;"
+      spacing="5">
+
     <Label text="Bitcoin" fx:id="coinLabel" style="-fx-text-fill: white;" />
+
 </VBox>

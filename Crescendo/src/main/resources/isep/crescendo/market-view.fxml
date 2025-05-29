@@ -5,28 +5,31 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.*?>
 
-<StackPane xmlns="http://javafx.com/javafx"
+<VBox xmlns="http://javafx.com/javafx"
            xmlns:fx="http://javafx.com/fxml"
            fx:controller="isep.crescendo.controller.MarketController"
-           style="-fx-background-color: black;">
+           style="-fx-background-color: black;"
+      prefHeight="Infinity">
 
     <!-- Navbar no topo -->
     <VBox>
         <fx:include source="/isep/crescendo/navbar.fxml" />
     </VBox>
 
-    <BorderPane>
+    <BorderPane >
         <!-- MENU LATERAL -->
         <left>
-            <VBox spacing="30"
+            <VBox
+                    spacing="30"
                   alignment="TOP_CENTER"
                   prefWidth="200"
-                  prefHeight="300"
+                  prefHeight="1200"
+                    maxHeight="Infinity"
                   maxWidth="200"
                   style="-fx-background-color: #28282b;
                          -fx-padding: 30px;
-                         -fx-background-radius: 0 20 20 0;
-                         -fx-border-radius: 0 20 20 0;">
+                         -fx-background-radius: 0 5 0 0;
+                         -fx-border-radius: 0 5 0 0;">
                 <VBox.margin>
                     <Insets top="200" right="0" bottom="20" left="0" />
                 </VBox.margin>
@@ -50,15 +53,20 @@
                        visible="false"
                        style="-fx-text-fill: white; -fx-font-size: 20px;" />
                 <VBox alignment="CENTER_LEFT">
-                    <Button text="🚪 Sair" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
+                    <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900;"/>
                 </VBox>
             </VBox>
         </left>
 
-        <!-- Conteúdo principal -->
-        
+        <!-- CONTEÚDO PRINCIPAL -->
+        <center>
+            <VBox fx:id="coinContainer" spacing="10">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
 
-
+        </center>
     </BorderPane>
 
-</StackPane>
+</VBox>
