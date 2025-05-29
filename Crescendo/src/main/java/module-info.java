@@ -15,6 +15,7 @@ module isep.crescendo {
     requires com.almasb.fxgl.all;
     requires java.sql;
     requires jakarta.mail;
+    requires com.fasterxml.jackson.core;
 
     opens isep.crescendo to javafx.fxml;
     exports isep.crescendo;

@@ -1,22 +1,29 @@
 package isep.crescendo.controller;
 
+import com.fasterxml.jackson.core.json.DupDetector;
+import isep.crescendo.model.Criptomoeda;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
+
+import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 
 public class CoinComponent {
-
-    public Label coinSymbol;
-    public Label coinName;
-    public Label coinPrice;
-    public Label priceChangeArrow;
-    public Label priceChangePercent;
-    public Pane miniChart;
-    public ImageView coinImage;
+    @FXML private Label nomeLabel;
+    @FXML private Label simboloLabel;
+    @FXML private Label descricaoLabel;
+    @FXML private ImageView imagemView;
+    private Criptomoeda moeda;
 
     @FXML
     private Label coinLabel;
@@ -26,5 +33,34 @@ public class CoinComponent {
         public void setCoinName(String name) {
             coinLabel.setText(name);
         }
+    @FXML
+    public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
+        try {
+            Parent newPage = FXMLLoader.load(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+            Scene newScene = new Scene(newPage);
+
+            Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+            stage.setScene(newScene);
+            stage.show();
+
+        } catch (IOException e) {
+            e.printStackTrace(); // Ou melhor: logar o erro
+        }
+    }
+
+
+    public void setCriptomoeda(Criptomoeda moeda) {
+        this.moeda = moeda;
+
+        nomeLabel.setText(moeda.getNome());
+        simboloLabel.setText(moeda.getSimbolo());
+        descricaoLabel.setText(moeda.getDescricao());
+
+
+        if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
+            imagemView.setImage(new Image(moeda.getImagemUrl(), true));
+        }
+    }
+
 }
 

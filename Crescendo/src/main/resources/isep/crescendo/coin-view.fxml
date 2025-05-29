@@ -13,7 +13,7 @@
 
 
 
-
+    <Label fx:id="saldoLabel" text="Saldo: 0.00" />
 
 
     <!-- CONTEÚDO PRINCIPAL -->
