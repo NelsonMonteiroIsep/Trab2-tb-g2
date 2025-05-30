@@ -12,20 +12,23 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 
+<?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.CoinComponent"
       onMouseClicked="#handleClick"
-      prefHeight="100" prefWidth="500"
-      maxHeight="100"
+      prefHeight="50" prefWidth="500"
+      maxHeight="50"
       style="-fx-background-color: #28282b;
-             -fx-padding: 10;
              -fx-border-radius: 5;
-             -fx-background-radius: 5;"
-      spacing="5">
+             -fx-background-radius: 5;
+-fx-padding: 10 10 10 30;"
+      spacing="0">
+    <VBox.margin>
+        <Insets right="10"/>
+    </VBox.margin>
 
-
-    <ImageView fx:id="imagemView" fitHeight="50" fitWidth="50" />
+    <ImageView fx:id="imagemView" fitHeight="30" fitWidth="30" />
     <Label fx:id="coinLabel" style="-fx-text-fill: white;" />
     <Label fx:id="simboloLabel" style="-fx-text-fill: white;" />
     <Label fx:id="descricaoLabel" style="-fx-text-fill: white;" />

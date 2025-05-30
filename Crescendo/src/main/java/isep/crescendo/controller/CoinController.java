@@ -59,7 +59,11 @@ public class CoinController implements Initializable {
         periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
         periodoSelecionadoBox.setValue("Última semana");
 
-
+        if (loggedInUser != null) {
+            userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
+        } else {
+            userNameLabel.setText("Bem-vindo, visitante!");
+        }
 
 
         atualizarSaldoLabel();

@@ -22,6 +22,10 @@ public class MarketController implements Initializable {
 
 
     public Label navBarAnyControl;
+    public Label symbolLabel;
+    public Label nameLabel;
+    public Label priceLabel;
+    public Label percentageLabel;
     @FXML
     private Label userNameLabel;
 

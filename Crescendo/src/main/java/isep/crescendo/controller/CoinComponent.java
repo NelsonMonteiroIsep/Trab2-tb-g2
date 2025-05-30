@@ -36,15 +36,25 @@ public class CoinComponent {
     @FXML
     public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
         try {
+
             Parent newPage = FXMLLoader.load(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+
             Scene newScene = new Scene(newPage);
 
+            newScene.getStylesheets().add(getClass().getResource("/isep/crescendo/styles/login.css").toExternalForm());
+
             Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
+
+            // 5. Define a nova Scene no Stage
             stage.setScene(newScene);
+
+            // 6. Mostra o Stage (atualiza a janela)
             stage.show();
 
         } catch (IOException e) {
-            e.printStackTrace(); // Ou melhor: logar o erro
+            e.printStackTrace();
+            System.err.println("Erro ao carregar a cena ou o CSS.");
+            System.err.println("Verifique os caminhos do FXML e do CSS.");
         }
     }
 
