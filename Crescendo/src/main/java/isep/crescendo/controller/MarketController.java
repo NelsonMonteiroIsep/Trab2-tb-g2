@@ -12,6 +12,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.control.Label;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 
@@ -64,7 +65,7 @@ public class MarketController implements Initializable {
 
             for (Criptomoeda moeda : moedas) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
-                VBox coinComponent = loader.load();
+                HBox     coinComponent = loader.load();
                 CoinComponent controller = loader.getController();
                 controller.setCriptomoeda(moeda);
                 coinContainer.getChildren().add(coinComponent);

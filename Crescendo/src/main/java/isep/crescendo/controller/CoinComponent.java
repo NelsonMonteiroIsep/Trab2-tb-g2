@@ -38,16 +38,31 @@ public class CoinComponent {
 
     public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
         try {
+
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+
+
             Parent newPage = loader.load();
 
-            // Passa a moeda selecionada para o CoinController
+
+            Scene newScene = new Scene(newPage);
+
+
+            newScene.getStylesheets().add(getClass().getResource("/isep/crescendo/styles/login.css").toExternalForm());
+
+
             CoinController controller = loader.getController();
+
+
             controller.setCriptomoeda(this.moeda);
 
-            // Troca a cena
+
             Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-            stage.setScene(new Scene(newPage));
+
+
+            stage.setScene(newScene);
+
+
             stage.show();
 
 

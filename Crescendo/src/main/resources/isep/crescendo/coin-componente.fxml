@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.Pane?>
 
 <?import javafx.geometry.Insets?>
-<VBox xmlns="http://javafx.com/javafx"
+<HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.CoinComponent"
       onMouseClicked="#handleClick"
@@ -24,13 +24,13 @@
              -fx-background-radius: 5;
 -fx-padding: 10 10 10 30;"
       spacing="0">
-    <VBox.margin>
+    <HBox.margin>
         <Insets right="10"/>
-    </VBox.margin>
+    </HBox.margin>
 
     <ImageView fx:id="imagemView" fitHeight="50" fitWidth="50" />
     <Label fx:id="nomeLabel" style="-fx-text-fill: white;" /> <!-- <- AQUI -->
     <Label fx:id="simboloLabel" style="-fx-text-fill: white;" />
     <Label fx:id="descricaoLabel" style="-fx-text-fill: white;" />
 
-</VBox>
+</HBox>
