@@ -28,12 +28,9 @@
         <Insets right="10"/>
     </VBox.margin>
 
-    <ImageView fx:id="imagemView" fitHeight="30" fitWidth="30" />
-    <Label fx:id="coinLabel" style="-fx-text-fill: white;" />
+    <ImageView fx:id="imagemView" fitHeight="50" fitWidth="50" />
+    <Label fx:id="nomeLabel" style="-fx-text-fill: white;" /> <!-- <- AQUI -->
     <Label fx:id="simboloLabel" style="-fx-text-fill: white;" />
     <Label fx:id="descricaoLabel" style="-fx-text-fill: white;" />
-
-
-
 
 </VBox>

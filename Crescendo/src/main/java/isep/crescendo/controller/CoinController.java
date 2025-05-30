@@ -25,7 +25,7 @@ public class CoinController implements Initializable {
     private Label userNameLabel;
 
     private User loggedInUser;
-
+    private Criptomoeda moeda;
     @FXML
     private Label saldoLabel;
 
@@ -50,6 +50,10 @@ public class CoinController implements Initializable {
     private Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
+    @FXML private Label nomeLabel;
+    @FXML private Label simboloLabel;
+    @FXML private Label descricaoLabel;
+    @FXML private ImageView imagemView;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -109,7 +113,6 @@ public class CoinController implements Initializable {
                 sugestoesPopup.show(campoPesquisaMoeda, Side.BOTTOM, 0, 0);
             }
         });
-
     }
 
     @FXML
@@ -275,6 +278,7 @@ public class CoinController implements Initializable {
     }
 
 
+
     private void atualizarSugestoes(String termo) {
         if (termo.isBlank()) {
             listaSugestoes.getItems().clear();
@@ -288,6 +292,27 @@ public class CoinController implements Initializable {
                 .toList();
 
         listaSugestoes.getItems().setAll(resultados);
+    }
+
+    public void setCriptomoeda(Criptomoeda moeda) {
+        this.moeda = moeda;
+        this.criptoSelecionada = moeda;
+        // Atualiza UI com os dados da moeda clicada
+        if (moeda != null) {
+            saldoLabel.setText("Saldo: 0.00 " + moeda.getSimbolo()); // ou algum valor calculado
+            infoLabel.setText(moeda.getNome()); // Exibe o nome da moeda no lugar da "variação"
+
+            if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
+                try {
+                    coinLogo.setImage(new Image(moeda.getImagemUrl(), true));
+                } catch (IllegalArgumentException e) {
+                    coinLogo.setImage(null);
+                }
+            } else {
+                coinLogo.setImage(null);
+            }
+        }
+        atualizarGrafico();
     }
 
 

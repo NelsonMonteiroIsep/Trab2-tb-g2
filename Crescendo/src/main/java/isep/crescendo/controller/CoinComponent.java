@@ -34,27 +34,25 @@ public class CoinComponent {
             coinLabel.setText(name);
         }
     @FXML
+
+
     public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
         try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+            Parent newPage = loader.load();
 
-            Parent newPage = FXMLLoader.load(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+            // Passa a moeda selecionada para o CoinController
+            CoinController controller = loader.getController();
+            controller.setCriptomoeda(this.moeda);
 
-            Scene newScene = new Scene(newPage);
-
-            newScene.getStylesheets().add(getClass().getResource("/isep/crescendo/styles/login.css").toExternalForm());
-
+            // Troca a cena
             Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-
-            // 5. Define a nova Scene no Stage
-            stage.setScene(newScene);
-
-            // 6. Mostra o Stage (atualiza a janela)
+            stage.setScene(new Scene(newPage));
             stage.show();
 
+
         } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println("Erro ao carregar a cena ou o CSS.");
-            System.err.println("Verifique os caminhos do FXML e do CSS.");
+            e.printStackTrace(); // Ou melhor: logar o erro
         }
     }
 
@@ -67,8 +65,18 @@ public class CoinComponent {
         descricaoLabel.setText(moeda.getDescricao());
 
 
-        if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
-            imagemView.setImage(new Image(moeda.getImagemUrl(), true));
+        String imagemUrl = moeda.getImagemUrl();
+
+        if (imagemUrl != null && !imagemUrl.trim().isEmpty()) {
+            try {
+                Image imagem = new Image(imagemUrl, true);
+                imagemView.setImage(imagem);
+            } catch (IllegalArgumentException e) {
+                System.err.println("Imagem inválida, não será carregada: " + imagemUrl);
+                imagemView.setImage(null); // ou simplesmente ignora
+            }
+        } else {
+            imagemView.setImage(null);
         }
     }
 
