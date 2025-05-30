@@ -34,17 +34,25 @@ public class CoinComponent {
             coinLabel.setText(name);
         }
     @FXML
+
+
     public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
         try {
-            Parent newPage = FXMLLoader.load(getClass().getResource("/isep/crescendo/coin-view.fxml"));
-            Scene newScene = new Scene(newPage);
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-view.fxml"));
+            Parent newPage = loader.load();
 
+            // Passa a moeda selecionada para o CoinController
+            CoinController controller = loader.getController();
+            controller.setCriptomoeda(this.moeda);
+
+            // Troca a cena
             Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-            stage.setScene(newScene);
+            stage.setScene(new Scene(newPage));
             stage.show();
 
+
         } catch (IOException e) {
-            e.printStackTrace(); // Ou melhor: logar o erro
+            e.printStackTrace();
         }
     }
 
@@ -57,8 +65,18 @@ public class CoinComponent {
         descricaoLabel.setText(moeda.getDescricao());
 
 
-        if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
-            imagemView.setImage(new Image(moeda.getImagemUrl(), true));
+        String imagemUrl = moeda.getImagemUrl();
+
+        if (imagemUrl != null && !imagemUrl.trim().isEmpty()) {
+            try {
+                Image imagem = new Image(imagemUrl, true);
+                imagemView.setImage(imagem);
+            } catch (IllegalArgumentException e) {
+                System.err.println("Imagem inválida, não será carregada: " + imagemUrl);
+                imagemView.setImage(null); // ou simplesmente ignora
+            }
+        } else {
+            imagemView.setImage(null);
         }
     }
 

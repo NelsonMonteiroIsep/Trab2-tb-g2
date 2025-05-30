@@ -1,9 +1,12 @@
 package isep.crescendo.controller;
 
 import eu.hansolo.fx.countries.CountryPane;
+import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.model.CriptomoedaRepository;
 import isep.crescendo.model.User;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -26,6 +29,8 @@ public class MarketController implements Initializable {
     private Label userNameLabel;
 
     private User loggedInUser;
+
+    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
 
     @FXML
     private VBox coinContainer;
@@ -51,16 +56,18 @@ public class MarketController implements Initializable {
     }
     private void loadCoinComponents() {
         try {
-            for (int i = 0; i < 5; i++) {
-                FXMLLoader loader = new FXMLLoader(
-                        getClass().getResource("/isep/crescendo/coin-componente.fxml"));
+            ObservableList<Criptomoeda> moedas = criptomoedaRepository.getAllCriptomoedas();
+
+            for (Criptomoeda moeda : moedas) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
                 VBox coinComponent = loader.load();
                 CoinComponent controller = loader.getController();
-                controller.setCoinName("Bitcoin " + (i+1));
+                controller.setCriptomoeda(moeda);
                 coinContainer.getChildren().add(coinComponent);
             }
+
         } catch (IOException e) {
-            System.err.println("Erro ao carregar componentes:");
+            System.err.println("Erro ao carregar componente de moeda:");
             e.printStackTrace();
         }
     }
