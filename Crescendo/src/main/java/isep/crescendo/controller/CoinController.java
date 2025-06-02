@@ -3,7 +3,9 @@ package isep.crescendo.controller;
 import isep.crescendo.model.*;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
@@ -13,7 +15,11 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import isep.crescendo.model.CriptomoedaRepository;
+import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -44,7 +50,7 @@ public class CoinController implements Initializable {
     private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
     private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
     @FXML private ComboBox<String> intervaloSelecionadoBox;
-
+    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
 
     @FXML private ListView<String> listaSugestoes;
     private Criptomoeda criptoSelecionada;
@@ -54,6 +60,8 @@ public class CoinController implements Initializable {
     @FXML private Label simboloLabel;
     @FXML private Label descricaoLabel;
     @FXML private ImageView imagemView;
+    @FXML
+    private VBox rightContainer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -186,6 +194,18 @@ public class CoinController implements Initializable {
         alert.setHeaderText(null);
         alert.setContentText(mensagem);
         alert.showAndWait();
+    }
+    @FXML
+    private void listarMoedas() throws IOException {
+        ObservableList<Criptomoeda> moedas = criptomoedaRepository.getAllCriptomoedas();
+
+        for (Criptomoeda moeda : moedas) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
+            VBox coinComponent = loader.load();
+            CoinListViewController controller = loader.getController();
+            controller.setCriptomoeda(moeda);
+            rightContainer.getChildren().add(coinComponent);
+        }
     }
 
     @FXML

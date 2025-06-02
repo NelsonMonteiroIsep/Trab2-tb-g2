@@ -5,11 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinListViewController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-list-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-view.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/rightbar-componente.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/rightbar-componente.fxml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/styles/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/styles/login.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -61,6 +64,9 @@
     &quot;accountId&quot;: &quot;9dfa27a3-2c53-45c7-9ecf-c6d4f3ed26ea&quot;
   }
 }</component>
+  <component name="HighlightingSettingsPerFile">
+    <setting file="file://$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-list-view.fxml" root0="SKIP_INSPECTION" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
   &quot;associatedIndex&quot;: 6
@@ -78,9 +84,10 @@
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "#2 on coin-view",
+    "git-widget-placeholder": "coin-view",
     "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
+    "last_directory_selection": "C:/Users/Utilizador/Documents/GitHub/Trab2-tb-g2/Crescendo/src/main/java/isep/crescendo",
     "last_opened_file_path": "C:/Users/Rafael Ferraria/Documents/GitHub/Trab2-tb-g2/Crescendo/src/main/resources/isep/crescendo",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -135,7 +142,9 @@
       <workItem from="1748377060173" duration="3913000" />
       <workItem from="1748388590652" duration="1460000" />
       <workItem from="1748631652853" duration="241000" />
-      <workItem from="1748631922115" duration="3045000" />
+      <workItem from="1748631922115" duration="3358000" />
+      <workItem from="1748709790439" duration="6020000" />
+      <workItem from="1748891880229" duration="6768000" />
     </task>
     <servers />
   </component>
