@@ -79,13 +79,13 @@
 
         </center>
         <right>
-            <VBox fx:id="coinContainer" spacing="10">
-                <padding>
-                    <Insets top="10" right="10" bottom="10" left="10"/>
-                </padding>
-            </VBox>
+            <!--    <VBox fx:id="coinContainer" spacing="10">
+                 <padding>
+                     <Insets top="10" right="10" bottom="10" left="10"/>
+                 </padding>
+             </VBox>-->
 
-        </right>
-    </BorderPane>
+         </right>
+     </BorderPane>
 
-</VBox>
+ </VBox>
