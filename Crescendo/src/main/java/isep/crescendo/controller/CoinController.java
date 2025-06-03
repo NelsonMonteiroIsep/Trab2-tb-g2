@@ -1,9 +1,11 @@
-package isep.crescendo.model.crescendo.controller;
+package isep.crescendo.controller;
 
-import isep.crescendo.model.crescendo.model.*;
-import isep.crescendo.model.crescendo.util.SceneSwitcher;
-import isep.crescendo.model.crescendo.util.SessionManager;
+import isep.crescendo.model.*;
+import isep.crescendo.util.SceneSwitcher;
+import isep.crescendo.util.SessionManager;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
@@ -13,18 +15,23 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import isep.crescendo.model.CriptomoedaRepository;
+import javafx.scene.layout.VBox;
 
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-public class MarketController implements Initializable {
+public class CoinController implements Initializable {
+    public Label navBarAnyControl;
     @FXML
     private Label userNameLabel;
 
     private User loggedInUser;
-
+    private Criptomoeda moeda;
     @FXML
     private Label saldoLabel;
 
@@ -43,25 +50,33 @@ public class MarketController implements Initializable {
     private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
     private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
     @FXML private ComboBox<String> intervaloSelecionadoBox;
+    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
+
     @FXML private ListView<String> listaSugestoes;
     private Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
+    @FXML private Label nomeLabel;
+    @FXML private Label simboloLabel;
+    @FXML private Label descricaoLabel;
+    @FXML private ImageView imagemView;
+    @FXML
+    private VBox rightContainer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        loggedInUser = SessionManager.getCurrentUser();
+
         intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
         intervaloSelecionadoBox.setValue("Horas");
         periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
         periodoSelecionadoBox.setValue("Última semana");
-
 
         if (loggedInUser != null) {
             userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
         } else {
             userNameLabel.setText("Bem-vindo, visitante!");
         }
+
 
         atualizarSaldoLabel();
 
@@ -106,8 +121,8 @@ public class MarketController implements Initializable {
                 sugestoesPopup.show(campoPesquisaMoeda, Side.BOTTOM, 0, 0);
             }
         });
-
     }
+
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
@@ -180,6 +195,18 @@ public class MarketController implements Initializable {
         alert.setContentText(mensagem);
         alert.showAndWait();
     }
+    @FXML
+    private void listarMoedas() throws IOException {
+        ObservableList<Criptomoeda> moedas = criptomoedaRepository.getAllCriptomoedas();
+
+        for (Criptomoeda moeda : moedas) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
+            VBox coinComponent = loader.load();
+            CoinListViewController controller = loader.getController();
+            controller.setCriptomoeda(moeda);
+            rightContainer.getChildren().add(coinComponent);
+        }
+    }
 
     @FXML
     private void handlePesquisarMoeda() {
@@ -202,7 +229,7 @@ public class MarketController implements Initializable {
 
         atualizarGraficoComCripto(criptoSelecionada);
     }
-
+    @FXML
     private void atualizarGraficoComCripto(Criptomoeda cripto) {
         List<HistoricoValor> historico = historicoRepo.listarPorCripto(cripto.getId());
         String intervalo = intervaloSelecionadoBox.getValue();
@@ -271,6 +298,7 @@ public class MarketController implements Initializable {
     }
 
 
+
     private void atualizarSugestoes(String termo) {
         if (termo.isBlank()) {
             listaSugestoes.getItems().clear();
@@ -285,6 +313,28 @@ public class MarketController implements Initializable {
 
         listaSugestoes.getItems().setAll(resultados);
     }
+
+    public void setCriptomoeda(Criptomoeda moeda) {
+        this.moeda = moeda;
+        this.criptoSelecionada = moeda;
+        // Atualiza UI com os dados da moeda clicada
+        if (moeda != null) {
+            saldoLabel.setText("Saldo: 0.00 " + moeda.getSimbolo()); // ou algum valor calculado
+            infoLabel.setText(moeda.getNome()); // Exibe o nome da moeda no lugar da "variação"
+
+            if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
+                try {
+                    coinLogo.setImage(new Image(moeda.getImagemUrl(), true));
+                } catch (IllegalArgumentException e) {
+                    coinLogo.setImage(null);
+                }
+            } else {
+                coinLogo.setImage(null);
+            }
+        }
+        atualizarGrafico();
+    }
+
 
     }
 

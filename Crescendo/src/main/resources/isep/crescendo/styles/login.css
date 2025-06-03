@@ -240,15 +240,15 @@
 }
 
 .chart {
-    -fx-background-color: #2d2d30;
+    -fx-background-color: black;
 }
 
 .chart-plot-background {
-    -fx-background-color: #1e1e1e;
+    -fx-background-color: black;
 }
 
 .axis-label, .axis-tick-label {
-    -fx-text-fill: white;
+    -fx-text-fill: black;
 }
 
 .chart-series-line {
@@ -257,8 +257,98 @@
 }
 
 .chart-line-symbol {
-    -fx-background-color: white, #00e676;
+    -fx-background-color: black, #00e676;
     -fx-background-radius: 6px;
     -fx-padding: 4px;
 }
+/* ... (Seu CSS existente do Minimal Dark, até aqui está tudo igual) ... */
 
+/* --- Right Panel Insights --- */
+.right-panel-insights {
+    -fx-background-color: #2A2A2A; /* Cor de fundo para o painel direito, um pouco mais claro que o root */
+    -fx-border-width: 0 0 0 1px;
+    -fx-border-color: #383838; /* Linha divisória fina */
+}
+
+.panel-separator {
+    -fx-background-color: #383838;
+    -fx-pref-height: 1px;
+}
+
+/* --- ListView (marketInsightListView) --- */
+.market-insight-list {
+    -fx-background-color: #1F1F1F; /* Fundo do ListView agora será preto (ou muito escuro) */
+    -fx-padding: 0;
+    -fx-border-color: transparent; /* Sem borda para o ListView em si */
+    -fx-selection-bar: transparent; /* Remove a barra de seleção azul padrão */
+    -fx-placeholder-text-fill: #A0A0A0; /* Cor para o texto do placeholder (se não houver itens) */
+}
+
+/* Garante que o ScrollPane interno do ListView também seja transparente/preto */
+.market-insight-list .scroll-pane {
+    -fx-background-color: transparent;
+}
+.market-insight-list .scroll-pane .viewport {
+    -fx-background-color: transparent; /* A área visível do conteúdo */
+}
+.market-insight-list .scroll-pane .content {
+    -fx-background-color: transparent; /* Onde as células estão */
+}
+
+/* Estilo para as Células Individuais do ListView */
+.market-insight-list .list-cell {
+    -fx-background-color: transparent; /* Fundo transparente para cada célula */
+    -fx-padding: 10px 5px; /* Espaçamento interno da célula */
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-fill: #E0E0E0; /* Cor do texto padrão da célula */
+    -fx-border-color: #383838; /* Linha divisória entre células */
+    -fx-border-width: 0 0 1px 0; /* Apenas uma linha na parte inferior */
+}
+
+/* Remove a borda inferior da última célula para um visual mais limpo */
+.market-insight-list .list-cell:last-child {
+    -fx-border-width: 0;
+}
+
+/* Estilo no hover sobre as células */
+.market-insight-list .list-cell:filled:hover {
+    -fx-background-color: #282828; /* Fundo ligeiramente mais escuro no hover */
+    -fx-cursor: hand;
+}
+
+/* Estilo quando uma célula é selecionada (opcional, pode ser invisível se selection-bar é transparent) */
+.market-insight-list .list-cell:filled:selected {
+    -fx-background-color: #008ADF; /* Exemplo de cor de seleção */
+    -fx-text-fill: white;
+}
+
+/* --- Estilos para o CONTEÚDO dentro das células do ListView --- */
+/* Se você estiver usando uma CellFactory customizada como no MarketController anterior */
+.market-insight-item-layout { /* Exemplo: se o root da sua célula é um HBox com esta classe */
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 12px;
+}
+.market-insight-item-name { /* Exemplo de Label para o nome da moeda */
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.market-insight-item-symbol { /* Exemplo de Label para o símbolo */
+    -fx-text-fill: #A0A0A0;
+    -fx-font-size: 11px;
+}
+.market-insight-item-price { /* Exemplo de Label para o preço */
+    -fx-text-fill: #4CAF50; /* Verde */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.market-insight-item-change-positive { /* Exemplo de Label para variação positiva */
+    -fx-text-fill: #4CAF50;
+    -fx-font-size: 11px;
+}
+.market-insight-item-change-negative { /* Exemplo de Label para variação negativa */
+    -fx-text-fill: #F44336;
+    -fx-font-size: 11px;
+}
+
+/* ... (Restante do seu CSS existente) ... */

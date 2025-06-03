@@ -1,12 +1,15 @@
-package isep.crescendo.controller;
+
 
 import isep.crescendo.Repository.Carteira;
 import isep.crescendo.Repository.Criptomoeda;
 import isep.crescendo.Repository.HistoricoValor;
+import isep.crescendo.controller.CoinComponent;
 import isep.crescendo.model.*;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Side;
 import javafx.scene.chart.CategoryAxis;
@@ -16,20 +19,39 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.Node;
+import javafx.scene.control.Label;
+import javafx.scene.layout.Priority;
 
+
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.ResourceBundle;
 
 public class MarketController implements Initializable {
+
+
+
+    public Label navBarAnyControl;
+    public Label symbolLabel;
+    public Label nameLabel;
+    public Label priceLabel;
+    public Label percentageLabel;
     @FXML
     private Label userNameLabel;
 
     private User loggedInUser;
 
+   
     @FXML
     private Label saldoLabel;
+    @FXML
+    private VBox coinContainer;
 
     @FXML
     private TextField saldoField;
@@ -66,7 +88,11 @@ public class MarketController implements Initializable {
             userNameLabel.setText("Bem-vindo, visitante!");
         }
 
-        atualizarSaldoLabel();
+        if (coinContainer != null) {
+            loadCoinComponents();
+        } else {
+            System.err.println("Erro: coinContainer não foi injetado pelo FXML!");
+        }
 
 
 
@@ -267,11 +293,31 @@ public class MarketController implements Initializable {
         }
     }
 
-
-
+    @FXML
+    private void handleLogout() {
+        SessionManager.setCurrentUser(null);
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
     }
 
+}
 
+private void loadCoinComponents() {
+    try {
+        ObservableList<isep.crescendo.model.Criptomoeda> moedas = criptoRepo.getAllCriptomoedas();
+
+        for (isep.crescendo.model.Criptomoeda moeda : moedas) {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
+            HBox coinComponent = loader.load();
+            CoinComponent controller = loader.getController();
+            controller.setCriptomoeda(moeda);
+            coinContainer.getChildren().add(coinComponent);
+        }
+
+    } catch (IOException e) {
+        System.err.println("Erro ao carregar componente de moeda:");
+        e.printStackTrace();
+    }
+}
 
 
 
