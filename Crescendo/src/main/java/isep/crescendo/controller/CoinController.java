@@ -53,6 +53,9 @@ public class CoinController implements Initializable {
     @FXML private Label descricaoLabel;
     @FXML private ImageView imagemView;
     @FXML private VBox rightContainer;
+    @FXML private TextField quantidadeCompraField;
+    @FXML private TextField precoCompraField;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -115,6 +118,8 @@ public class CoinController implements Initializable {
         SessionManager.setCurrentUser(null);
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
     }
+
+
 
     @FXML
     private void handleAdicionarSaldo() {
@@ -304,5 +309,57 @@ public class CoinController implements Initializable {
             }
         }
         atualizarGrafico();
+    }
+
+    @FXML
+    private void handleComprar() {
+        if (criptoSelecionada == null) {
+            mostrarErro("Selecione uma moeda primeiro.");
+            return;
+        }
+
+        try {
+            double quantidade = Double.parseDouble(quantidadeCompraField.getText());
+            double preco = Double.parseDouble(precoCompraField.getText());
+
+            if (quantidade <= 0 || preco <= 0) {
+                mostrarErro("Quantidade e preço devem ser maiores que 0.");
+                return;
+            }
+
+            int userId = SessionManager.getCurrentUser().getId();
+            isep.crescendo.Repository.Carteira carteiraRepo = new isep.crescendo.Repository.Carteira();
+            Carteira carteira = carteiraRepo.procurarPorUserId(userId);
+
+            double saldoDisponivel = carteira != null ? carteira.getSaldo() : 0;
+            double custoTotal = quantidade * preco;
+
+            if (saldoDisponivel < custoTotal) {
+                mostrarErro("Saldo insuficiente.");
+                return;
+            }
+
+            // Criar ordem de compra
+            isep.crescendo.model.Transacao ordemCompra = new isep.crescendo.model.Transacao(
+                    userId,
+                    String.valueOf(criptoSelecionada.getId()),
+                    quantidade,
+                    preco,
+                    "compra",
+                    LocalDateTime.now()
+            );
+
+            // Processar ordem
+            isep.crescendo.Repository.Transacao transacaoRepo = new isep.crescendo.Repository.Transacao();
+            transacaoRepo.processarCompraParcial(ordemCompra, criptoSelecionada.getId());
+
+            // Deduzir saldo da carteira
+            carteiraRepo.atualizarSaldo(userId, saldoDisponivel - custoTotal);
+            atualizarSaldoLabel();
+            infoLabel.setText("Ordem de compra enviada com sucesso!");
+
+        } catch (NumberFormatException e) {
+            mostrarErro("Valores inválidos. Use apenas números.");
+        }
     }
 }

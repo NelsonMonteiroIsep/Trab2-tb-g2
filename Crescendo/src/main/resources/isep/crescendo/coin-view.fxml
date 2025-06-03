@@ -71,8 +71,18 @@
                     </yAxis>
                 </LineChart>
 
+
+
                 <!-- Informação -->
                 <Label fx:id="infoLabel" text="Última variação: +0.00%" style="-fx-text-fill: #00e676;"/>
+
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <Label text="Quantidade:" style="-fx-text-fill: white;"/>
+                    <TextField fx:id="quantidadeCompraField" promptText="ex: 1.5" prefWidth="100"/>
+                    <Label text="Preço por unidade (€):" style="-fx-text-fill: white;"/>
+                    <TextField fx:id="precoCompraField" promptText="ex: 25000" prefWidth="100"/>
+                    <Button text="Comprar" onAction="#handleComprar"/>
+                </HBox>
 
             </VBox>
         </center>
