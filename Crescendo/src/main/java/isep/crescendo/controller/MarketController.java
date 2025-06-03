@@ -1,4 +1,4 @@
-
+package isep.crescendo.controller;
 
 import isep.crescendo.Repository.Carteira;
 import isep.crescendo.Repository.Criptomoeda;
@@ -67,19 +67,25 @@ public class MarketController implements Initializable {
     private ContextMenu sugestoesPopup = new ContextMenu();
     private final Criptomoeda criptoRepo = new Criptomoeda();
     private final HistoricoValor historicoRepo = new HistoricoValor();
-    @FXML private ComboBox<String> intervaloSelecionadoBox;
 
     private isep.crescendo.model.Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
+    @FXML private ComboBox<String> intervaloSelecionadoBox;
+
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loggedInUser = SessionManager.getCurrentUser();
-        intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
-        intervaloSelecionadoBox.setValue("Horas");
-        periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
-        periodoSelecionadoBox.setValue("Última semana");
+        if (intervaloSelecionadoBox != null && periodoSelecionadoBox != null) {
+            intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
+            intervaloSelecionadoBox.setValue("Horas");
+
+            periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
+            periodoSelecionadoBox.setValue("Última semana");
+        } else {
+            System.err.println("intervaloSelecionadoBox ou periodoSelecionadoBox está null.");
+        }
 
 
         if (loggedInUser != null) {
@@ -101,7 +107,7 @@ public class MarketController implements Initializable {
             saldoLabel.setText(String.format("%.2f €", isep.crescendo.model.Carteira.getSaldo()));
         }
 
-
+        if (campoPesquisaMoeda != null){
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.length() < 1) {
                 sugestoesPopup.hide();
@@ -135,6 +141,7 @@ public class MarketController implements Initializable {
             }
         });
 
+    }
     }
 
     @FXML
@@ -298,26 +305,27 @@ public class MarketController implements Initializable {
         SessionManager.setCurrentUser(null);
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
     }
+    private void loadCoinComponents() {
+        try {
+            ObservableList<isep.crescendo.model.Criptomoeda> moedas = criptoRepo.getAllCriptomoedas();
 
-}
+            for (isep.crescendo.model.Criptomoeda moeda : moedas) {
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
+                HBox coinComponent = loader.load();
+                CoinComponent controller = loader.getController();
+                controller.setCriptomoeda(moeda);
+                coinContainer.getChildren().add(coinComponent);
+            }
 
-private void loadCoinComponents() {
-    try {
-        ObservableList<isep.crescendo.model.Criptomoeda> moedas = criptoRepo.getAllCriptomoedas();
-
-        for (isep.crescendo.model.Criptomoeda moeda : moedas) {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
-            HBox coinComponent = loader.load();
-            CoinComponent controller = loader.getController();
-            controller.setCriptomoeda(moeda);
-            coinContainer.getChildren().add(coinComponent);
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar componente de moeda:");
+            e.printStackTrace();
         }
 
-    } catch (IOException e) {
-        System.err.println("Erro ao carregar componente de moeda:");
-        e.printStackTrace();
+
     }
 }
+
 
 
 

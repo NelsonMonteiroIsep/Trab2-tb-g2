@@ -1,7 +1,6 @@
 package isep.crescendo.controller;
 
 import isep.crescendo.model.Criptomoeda;
-import isep.crescendo.model.CriptomoedaRepository;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -19,7 +18,7 @@ public class RightBarController {
     @FXML
     private Button refreshButton; // Link to your refresh button
 
-    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
+    private isep.crescendo.Repository.Criptomoeda criptomoedaRepository = new isep.crescendo.Repository.Criptomoeda();
 
     @FXML
     public void initialize() {

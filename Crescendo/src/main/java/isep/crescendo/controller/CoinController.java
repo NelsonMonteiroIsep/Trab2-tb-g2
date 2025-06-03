@@ -1,6 +1,9 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.model.*;
+import isep.crescendo.model.Carteira;
+import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.model.HistoricoValor;
+import isep.crescendo.model.User;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
 import javafx.collections.ObservableList;
@@ -15,10 +18,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import isep.crescendo.model.CriptomoedaRepository;
 import javafx.scene.layout.VBox;
-
 import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
@@ -27,19 +27,12 @@ import java.util.*;
 
 public class CoinController implements Initializable {
     public Label navBarAnyControl;
-    @FXML
-    private Label userNameLabel;
-
+    @FXML private Label userNameLabel;
     private User loggedInUser;
     private Criptomoeda moeda;
-    @FXML
-    private Label saldoLabel;
-
-    @FXML
-    private TextField saldoField;
-
+    @FXML private Label saldoLabel;
+    @FXML private TextField saldoField;
     private double saldo = 0.0;
-
     @FXML private ComboBox<String> moedaSelecionadaBox;
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis eixoX;
@@ -47,47 +40,41 @@ public class CoinController implements Initializable {
     @FXML private Label infoLabel;
     @FXML private TextField campoPesquisaMoeda;
     private ContextMenu sugestoesPopup = new ContextMenu();
-    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
-    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
-    @FXML private ComboBox<String> intervaloSelecionadoBox;
-    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
-
+    private final isep.crescendo.Repository.Criptomoeda criptoRepo = new isep.crescendo.Repository.Criptomoeda();
+    private final isep.crescendo.Repository.HistoricoValor historicoRepo = new isep.crescendo.Repository.HistoricoValor();
+    private final isep.crescendo.Repository.Criptomoeda criptomoedaRepository = new isep.crescendo.Repository.Criptomoeda();
     @FXML private ListView<String> listaSugestoes;
     private Criptomoeda criptoSelecionada;
+    @FXML private ComboBox<String> intervaloSelecionadoBox;
     @FXML private ComboBox<String> periodoSelecionadoBox;
     @FXML private ImageView coinLogo;
     @FXML private Label nomeLabel;
     @FXML private Label simboloLabel;
     @FXML private Label descricaoLabel;
     @FXML private ImageView imagemView;
-    @FXML
-    private VBox rightContainer;
+    @FXML private VBox rightContainer;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
         intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
         intervaloSelecionadoBox.setValue("Horas");
         periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
         periodoSelecionadoBox.setValue("Última semana");
 
+        loggedInUser = SessionManager.getCurrentUser();
         if (loggedInUser != null) {
             userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
         } else {
             userNameLabel.setText("Bem-vindo, visitante!");
         }
 
-
         atualizarSaldoLabel();
 
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> atualizarSugestoes(newText));
 
-
-
         if (saldoLabel != null) {
             saldoLabel.setText(String.format("%.2f €", Carteira.getSaldo()));
         }
-
 
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.length() < 1) {
@@ -145,8 +132,8 @@ public class CoinController implements Initializable {
                     return;
                 }
 
-                int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
-                CarteiraRepository carteiraRepo = new CarteiraRepository();
+                int userId = SessionManager.getCurrentUser().getId();
+                isep.crescendo.Repository.Carteira carteiraRepo = new isep.crescendo.Repository.Carteira();
                 Carteira carteira = carteiraRepo.procurarPorUserId(userId);
 
                 if (carteira != null) {
@@ -169,25 +156,18 @@ public class CoinController implements Initializable {
             infoLabel.setText("Selecione ou pesquise uma criptomoeda.");
             return;
         }
-
         atualizarGraficoComCripto(criptoSelecionada);
     }
 
     @FXML
-
-
     private void atualizarSaldoLabel() {
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
-            Carteira carteira = CarteiraRepository.procurarPorUserId(currentUser.getId());
-
-            if (carteira != null) {
-                saldoLabel.setText(String.format("%.2f €", carteira.getSaldo()));
-            } else {
-                saldoLabel.setText("0.00 €");
-            }
+            Carteira carteira = isep.crescendo.Repository.Carteira.procurarPorUserId(currentUser.getId());
+            saldoLabel.setText(String.format("%.2f €", carteira != null ? carteira.getSaldo() : 0.0));
         }
     }
+
     private void mostrarErro(String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");
@@ -195,10 +175,10 @@ public class CoinController implements Initializable {
         alert.setContentText(mensagem);
         alert.showAndWait();
     }
+
     @FXML
     private void listarMoedas() throws IOException {
         ObservableList<Criptomoeda> moedas = criptomoedaRepository.getAllCriptomoedas();
-
         for (Criptomoeda moeda : moedas) {
             FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));
             VBox coinComponent = loader.load();
@@ -216,25 +196,23 @@ public class CoinController implements Initializable {
             return;
         }
 
-        criptoSelecionada = criptoRepo.getAllCriptomoedas()
-                .stream()
+        criptoSelecionada = criptoRepo.getAllCriptomoedas().stream()
                 .filter(c -> c.getNome().toLowerCase().contains(termo) || c.getSimbolo().equalsIgnoreCase(termo))
                 .findFirst()
                 .orElse(null);
 
         if (criptoSelecionada == null) {
             infoLabel.setText("Moeda não encontrada.");
-            return;
+        } else {
+            atualizarGraficoComCripto(criptoSelecionada);
         }
-
-        atualizarGraficoComCripto(criptoSelecionada);
     }
+
     @FXML
     private void atualizarGraficoComCripto(Criptomoeda cripto) {
         List<HistoricoValor> historico = historicoRepo.listarPorCripto(cripto.getId());
         String intervalo = intervaloSelecionadoBox.getValue();
         String periodo = periodoSelecionadoBox.getValue();
-
 
         if (cripto != null && cripto.getImagemUrl() != null && !cripto.getImagemUrl().isBlank()) {
             try {
@@ -245,41 +223,37 @@ public class CoinController implements Initializable {
         } else {
             coinLogo.setImage(null);
         }
-        // Filtro por período
+
         LocalDateTime agora = LocalDateTime.now();
-        LocalDateTime limite;
-        switch (periodo) {
-            case "Último dia" -> limite = agora.minusDays(1);
-            case "Última semana" -> limite = agora.minusWeeks(1);
-            case "Último mês" -> limite = agora.minusMonths(1);
-            case "Último ano" -> limite = agora.minusYears(1);
-            default -> limite = agora.minusWeeks(1);
-        }
+        LocalDateTime limite = switch (periodo) {
+            case "Último dia" -> agora.minusDays(1);
+            case "Última semana" -> agora.minusWeeks(1);
+            case "Último mês" -> agora.minusMonths(1);
+            case "Último ano" -> agora.minusYears(1);
+            default -> agora.minusWeeks(1);
+        };
 
         List<HistoricoValor> filtrados = historico.stream()
                 .filter(hv -> hv.getData().isAfter(limite))
                 .toList();
 
-        // Agrupamento por intervalo
-        DateTimeFormatter formatter;
-        switch (intervalo) {
-            case "Minutos" -> formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
-            case "Horas" -> formatter = DateTimeFormatter.ofPattern("dd/MM HH:00");
-            case "Dias" -> formatter = DateTimeFormatter.ofPattern("dd/MM");
-            case "Meses" -> formatter = DateTimeFormatter.ofPattern("MM/yyyy");
-            case "Anos" -> formatter = DateTimeFormatter.ofPattern("yyyy");
-            default -> formatter = DateTimeFormatter.ofPattern("dd/MM");
-        }
+        DateTimeFormatter formatter = switch (intervalo) {
+            case "Minutos" -> DateTimeFormatter.ofPattern("dd/MM HH:mm");
+            case "Horas" -> DateTimeFormatter.ofPattern("dd/MM HH:00");
+            case "Dias" -> DateTimeFormatter.ofPattern("dd/MM");
+            case "Meses" -> DateTimeFormatter.ofPattern("MM/yyyy");
+            case "Anos" -> DateTimeFormatter.ofPattern("yyyy");
+            default -> DateTimeFormatter.ofPattern("dd/MM");
+        };
 
         Map<String, Double> dadosFiltrados = new LinkedHashMap<>();
         for (HistoricoValor hv : filtrados) {
             String chave = hv.getData().format(formatter);
-            dadosFiltrados.putIfAbsent(chave, hv.getValor()); // mantém o primeiro valor do grupo
+            dadosFiltrados.putIfAbsent(chave, hv.getValor());
         }
 
         XYChart.Series<String, Number> serie = new XYChart.Series<>();
         serie.setName(cripto.getSimbolo() + " (" + intervalo + ", " + periodo + ")");
-
         for (Map.Entry<String, Double> entry : dadosFiltrados.entrySet()) {
             serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
         }
@@ -297,8 +271,6 @@ public class CoinController implements Initializable {
         }
     }
 
-
-
     private void atualizarSugestoes(String termo) {
         if (termo.isBlank()) {
             listaSugestoes.getItems().clear();
@@ -306,8 +278,8 @@ public class CoinController implements Initializable {
         }
 
         List<String> resultados = criptoRepo.getAllCriptomoedas().stream()
-                .filter(c -> c.getNome().toLowerCase().contains(termo.toLowerCase())
-                        || c.getSimbolo().toLowerCase().contains(termo.toLowerCase()))
+                .filter(c -> c.getNome().toLowerCase().contains(termo.toLowerCase()) ||
+                        c.getSimbolo().toLowerCase().contains(termo.toLowerCase()))
                 .map(c -> c.getNome() + " (" + c.getSimbolo() + ")")
                 .toList();
 
@@ -317,10 +289,9 @@ public class CoinController implements Initializable {
     public void setCriptomoeda(Criptomoeda moeda) {
         this.moeda = moeda;
         this.criptoSelecionada = moeda;
-        // Atualiza UI com os dados da moeda clicada
         if (moeda != null) {
-            saldoLabel.setText("Saldo: 0.00 " + moeda.getSimbolo()); // ou algum valor calculado
-            infoLabel.setText(moeda.getNome()); // Exibe o nome da moeda no lugar da "variação"
+            saldoLabel.setText("Saldo: 0.00 " + moeda.getSimbolo());
+            infoLabel.setText(moeda.getNome());
 
             if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
                 try {
@@ -334,11 +305,4 @@ public class CoinController implements Initializable {
         }
         atualizarGrafico();
     }
-
-
-    }
-
-
-
-
-
+}
