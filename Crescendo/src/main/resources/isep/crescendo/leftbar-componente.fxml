@@ -2,12 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.Region?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="isep.crescendo.controller.MarketController"
+      fx:controller="isep.crescendo.controller.LeftBarController"
       spacing="30"
       alignment="CENTER_LEFT"
       prefWidth="200"
@@ -19,17 +19,13 @@
                          -fx-padding: 30px;
                          -fx-background-radius: 0 5 0 0;
                          -fx-border-radius: 0 5 0 0;">
-    <VBox.margin>
-        <Insets top="200"/>
-    </VBox.margin>
-
     <Label text="Crescendo."
            style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;"/>
 
     <Region VBox.vgrow="ALWAYS"/>
 
     <Button text="🏠 Portfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="💳 Carteira" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
+    <Button text="💳 Carteira" styleClass="menu-button-dark" onAction="#handleRedirectWallet" style="-fx-text-fill: #CC9900;"/>
     <Button text="📤 Enviar" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="📥 Receber" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="🔁 Swap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
