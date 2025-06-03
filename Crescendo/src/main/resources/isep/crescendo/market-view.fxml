@@ -31,61 +31,17 @@
         <!-- CONTEÚDO PRINCIPAL -->
         <center>
 
-                <VBox spacing="15" style="-fx-background-color: #2d2d30; -fx-padding: 20; -fx-background-radius: 10;" prefWidth="900">
 
-                    <!-- Linha de topo: Pesquisa + filtros alinhados à direita -->
-                    <HBox spacing="20" alignment="CENTER_LEFT">
-                        <!-- Logotipo -->
-                        <ImageView fx:id="coinLogo" fitHeight="32" fitWidth="32"
-                                   style="-fx-background-radius: 16;" />
-
-                        <!-- Campo de pesquisa -->
-                        <HBox spacing="10" alignment="CENTER_LEFT">
-                            <Label text="Pesquisar moeda:" style="-fx-text-fill: white;" />
-                            <TextField fx:id="campoPesquisaMoeda"
-                                       promptText="Pesquisar moeda..."
-                                       style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="200"/>
-                        </HBox>
-
-                        <Region HBox.hgrow="ALWAYS" />
-
-                        <!-- Filtros -->
-                        <HBox spacing="10" alignment="CENTER_RIGHT">
-                            <Label text="Intervalo:" style="-fx-text-fill: white;" />
-                            <ComboBox fx:id="intervaloSelecionadoBox" onAction="#atualizarGrafico"
-                                      style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="150"/>
-
-                            <Label text="Período:" style="-fx-text-fill: white;" />
-                            <ComboBox fx:id="periodoSelecionadoBox" onAction="#atualizarGrafico"
-                                      style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="150"/>
-                        </HBox>
-                    </HBox>
-
-                    <!-- Gráfico -->
-                    <LineChart fx:id="lineChart" prefHeight="400" prefWidth="860"
-                               animated="false" createSymbols="true">
-                        <xAxis>
-                            <CategoryAxis fx:id="eixoX" label="Data" />
-                        </xAxis>
-                        <yAxis>
-                            <NumberAxis fx:id="eixoY" label="Valor (€)" autoRanging="true" forceZeroInRange="false"/>
-                        </yAxis>
-                    </LineChart>
-
-                    <!-- Informação -->
-                    <Label fx:id="infoLabel" text="Última variação: +0.00%" style="-fx-text-fill: #00e676;" />
-
+                <VBox fx:id="coinContainer" spacing="10">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
                 </VBox>
 
-        </center>
-        <right>
-            <!--    <VBox fx:id="coinContainer" spacing="10">
-                 <padding>
-                     <Insets top="10" right="10" bottom="10" left="10"/>
-                 </padding>
-             </VBox>-->
 
-         </right>
+
+        </center>
+
      </BorderPane>
 
  </VBox>
