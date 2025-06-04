@@ -73,7 +73,7 @@ public class CriptoAlgoritmo {
     private void setPhaseDuration(CyclePhase phase) {
         switch (phase) {
             case ADOCAO:
-                phaseDuration = 50 + random.nextInt(20);
+                phaseDuration = 60 + random.nextInt(25);
                 break;
             case EUFORIA:
                 phaseDuration = 30 + random.nextInt(10);
