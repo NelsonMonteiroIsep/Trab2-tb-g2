@@ -1,90 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.scene.layout.*?>
 <?import javafx.scene.control.*?>
-<?import javafx.scene.image.ImageView?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.chart.*?>
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Font?>
 
-<?import javafx.scene.chart.LineChart?>
-<?import javafx.scene.chart.CategoryAxis?>
-<?import javafx.scene.chart.NumberAxis?>
-<VBox xmlns:fx="http://javafx.com/fxml" fx:controller="isep.crescendo.controller.CoinController"
-      style="-fx-background-color: #1e1e1e;" prefHeight="800.0" prefWidth="1200.0">
-
-    <VBox>
-
-        <fx:include source="/isep/crescendo/navbar.fxml"/>
-
-    </VBox>
-
-
-    <BorderPane>
-        <left>
-
-            <fx:include source="leftbar-componente.fxml"/>
+<VBox xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="isep.crescendo.controller.CoinController"
+      prefHeight="700" prefWidth="1000"
+      style="-fx-background-color: #1a1a1a;"> <HBox fx:id="navbarContainer" alignment="CENTER_LEFT" style="-fx-background-color: #0d0d0d; -fx-padding: 10;">
+    <padding>
+        <Insets top="5" right="10" bottom="5" left="10"/>
+    </padding>
+    <Label fx:id="navBarAnyControl" text="Detalhes da Criptomoeda" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
+    <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT" spacing="15">
+        <Label fx:id="userNameLabel" style="-fx-text-fill: #a0a0a0; -fx-font-size: 14px;"/>
+        <Button text="Logout" onAction="#handleLogout" style="-fx-background-color: #e74c3c; -fx-text-fill: white; -fx-font-weight: bold;"/>
+    </HBox>
+</HBox>
 
 
-        </left>
-        <Label fx:id="userNameLabel" visible="false"
-               style="-fx-text-fill: white; -fx-font-size: 20px;"/>
-        <Label fx:id="saldoLabel" text="Saldo: 0.00" visible="false"/>
-        <!-- CONTEÚDO PRINCIPAL -->
-        <center>
-            <VBox spacing="15" style="-fx-background-color: black; -fx-padding: 20; " prefWidth="900">
+    <HBox spacing="20" VBox.vgrow="ALWAYS">
+        <padding>
+            <Insets top="20" right="20" bottom="20" left="20"/>
+        </padding>
 
-                <!-- Linha de topo: Pesquisa + filtros alinhados à direita -->
-                <HBox spacing="20" alignment="CENTER_LEFT">
-                    <!-- Logotipo -->
-                    <ImageView fx:id="coinLogo" fitHeight="32" fitWidth="32"
-                               style="-fx-background-radius: 16;"/>
+        <VBox spacing="15" prefWidth="300" style="-fx-background-color: #28282b; -fx-padding: 15; -fx-background-radius: 10;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <ImageView fx:id="coinLogo" fitHeight="70" fitWidth="70" preserveRatio="true"/>
+                <VBox>
+                    <Label fx:id="nomeLabel" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #ecf0f1;"/>
+                    <Label fx:id="simboloLabel" style="-fx-font-size: 20px; -fx-text-fill: #bdc3c7;"/>
+                </VBox>
+            </HBox>
+            <Label fx:id="descricaoLabel" wrapText="true" style="-fx-text-fill: #a0a0a0; -fx-font-size: 14px;"/>
 
-                    <!-- Campo de pesquisa -->
-                    <HBox spacing="10" alignment="CENTER_LEFT">
-                        <Label text="Pesquisar moeda:" style="-fx-text-fill: white;"/>
-                        <TextField fx:id="campoPesquisaMoeda"
-                                   promptText="Pesquisar moeda..."
-                                   style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="200"/>
-                    </HBox>
+            <Separator style="-fx-background-color: #444;"/>
 
-                    <Region HBox.hgrow="ALWAYS"/>
-
-                    <!-- Filtros -->
-                    <HBox spacing="10" alignment="CENTER_RIGHT">
-                        <Label text="Intervalo:" style="-fx-text-fill: white;"/>
-                        <ComboBox fx:id="intervaloSelecionadoBox" onAction="#atualizarGrafico"
-                                  style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="150"/>
-
-                        <Label text="Período:" style="-fx-text-fill: white;"/>
-                        <ComboBox fx:id="periodoSelecionadoBox" onAction="#atualizarGrafico"
-                                  style="-fx-background-color: #3c3c3c; -fx-text-fill: white;" prefWidth="150"/>
-                    </HBox>
-                </HBox>
-
-                <!-- Gráfico -->
-                <LineChart fx:id="lineChart" prefHeight="400" prefWidth="860"
-                           animated="false">
-                    <xAxis>
-                        <CategoryAxis fx:id="eixoX" label="Data"/>
-                    </xAxis>
-                    <yAxis>
-                        <NumberAxis fx:id="eixoY" label="Valor (€)" forceZeroInRange="false"/>
-                    </yAxis>
-                </LineChart>
-
-                <!-- Informação -->
-                <Label fx:id="infoLabel" text="Última variação: +0.00%" style="-fx-text-fill: #00e676;"/>
-
+            <VBox spacing="5">
+                <Label text="Seu Saldo:" style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;"/>
+                <Label fx:id="saldoLabel" style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: #2ecc71;"/>
+                <Button text="Adicionar Saldo" onAction="#handleAdicionarSaldo" style="-fx-background-color: #3498db; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
             </VBox>
-        </center>
-        <right>
 
-                <fx:include source="/isep/crescendo/rightbar-componente.fxml" />
+            <Separator style="-fx-background-color: #444;"/>
 
+            <VBox spacing="5">
+                <Label text="Pesquisar Moeda:" style="-fx-font-size: 16px; -fx-text-fill: #ecf0f1;"/>
+                <TextField fx:id="campoPesquisaMoeda" promptText="Nome ou Símbolo" style="-fx-background-color: #444; -fx-text-fill: white; -fx-prompt-text-fill: #bbb; -fx-background-radius: 5;"/>
+                <Button text="Pesquisar" onAction="#handlePesquisarMoeda" style="-fx-background-color: #f39c12; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 8 15; -fx-background-radius: 5;"/>
+            </VBox>
 
+            <Separator style="-fx-background-color: #444;"/>
 
+            <Label fx:id="infoLabel" text="Carregando dados..." style="-fx-font-weight: bold; -fx-text-fill: #fff; -fx-font-size: 14px;"/>
 
-        </right>
-    </BorderPane>
+        </VBox>
 
+        <VBox HBox.hgrow="ALWAYS" spacing="10" style="-fx-background-color: #28282b; -fx-padding: 15; -fx-background-radius: 10;">
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Intervalo:" style="-fx-text-fill: white;"/>
+                <ComboBox fx:id="intervaloSelecionadoBox" promptText="Intervalo" style="-fx-background-color: #444; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                <Label text="Período:" style="-fx-text-fill: white;"/>
+                <ComboBox fx:id="periodoSelecionadoBox" promptText="Período" style="-fx-background-color: #444; -fx-text-fill: white; -fx-background-radius: 5;"/>
+                <Button text="Atualizar Gráfico" onAction="#atualizarGrafico" style="-fx-background-color: #27ae60; -fx-text-fill: white; -fx-font-weight: bold; -fx-padding: 5 10; -fx-background-radius: 5;"/>
+            </HBox>
 
+            <LineChart fx:id="lineChart" VBox.vgrow="ALWAYS" style="-fx-background-color: #333; -fx-background-radius: 10;">
+                <xAxis>
+                    <CategoryAxis fx:id="eixoX" label="Tempo" style="-fx-tick-label-fill: white; -fx-axis-label-fill: #bbb;"/>
+                </xAxis>
+                <yAxis>
+                    <NumberAxis fx:id="eixoY" label="Valor (€)" style="-fx-tick-label-fill: white; -fx-axis-label-fill: #bbb;"/>
+                </yAxis>
+            </LineChart>
+        </VBox>
+    </HBox>
 </VBox>

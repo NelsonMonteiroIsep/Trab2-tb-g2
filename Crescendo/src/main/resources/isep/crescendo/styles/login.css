@@ -352,3 +352,121 @@
 }
 
 /* ... (Restante do seu CSS existente) ... */
+
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+.chart {
+    -fx-background-color: #1e1e1e; /* Fundo escuro para o gráfico */
+}
+
+.chart-plot-background {
+    -fx-background-color: #1e1e1e; /* Fundo escuro da área de plotagem */
+}
+
+/* Estilos dos eixos e labels */
+.axis-label {
+    -fx-text-fill: #cccccc; /* Cor do texto dos labels dos eixos */
+    -fx-font-size: 12px;
+}
+
+.axis-tick-label {
+    -fx-text-fill: #999999; /* Cor do texto dos marcadores do eixo */
+    -fx-font-size: 10px;
+}
+
+/* Estilos das linhas de grade (opcional, pode manter transparente se preferir) */
+.chart-vertical-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade verticais */
+    -fx-stroke-dash-array: 2 4; /* Pontilhadas */
+    -fx-stroke-width: 0.5;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade horizontais */
+    -fx-stroke-dash-array: 2 4;
+    -fx-stroke-width: 0.5;
+}
+
+/* Esconder os marcadores dos ticks (opcional, se quiser uma aparência mais limpa) */
+.axis-tick-mark {
+    -fx-stroke: transparent;
+}
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+
+
+/* src/main/resources/isep/crescendo/styles/chart-styles.css */
+
+/* Estilos de fundo do gráfico (se coin.css não sobrescrever) */
+.chart {
+    -fx-background-color: #1e1e1e; /* Fundo escuro para o gráfico */
+}
+
+.chart-plot-background {
+    -fx-background-color: #1e1e1e; /* Fundo escuro da área de plotagem */
+}
+
+/* Estilos dos eixos e labels */
+.axis-label {
+    -fx-text-fill: #cccccc; /* Cor do texto dos labels dos eixos */
+    -fx-font-size: 12px;
+}
+
+.axis-tick-label {
+    -fx-text-fill: #999999; /* Cor do texto dos marcadores do eixo */
+    -fx-font-size: 10px;
+}
+
+/* Estilos das linhas de grade (opcional, pode manter transparente se preferir) */
+.chart-vertical-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade verticais */
+    -fx-stroke-dash-array: 2 4; /* Pontilhadas */
+    -fx-stroke-width: 0.5;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade horizontais */
+    -fx-stroke-dash-array: 2 4;
+    -fx-stroke-width: 0.5;
+}
+
+/* Esconder os marcadores dos ticks (opcional, se quiser uma aparência mais limpa) */
+.axis-tick-mark {
+    -fx-stroke: transparent;
+}
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+
+
+/* --- Estilos para a ÚNICA série do gráfico --- */
+
+/* Série 0: Histórico e Tempo Real combinados */
+.chart-series-line.series0 {
+    -fx-stroke: #00e676; /* Verde vibrante para a linha combinada */
+    -fx-stroke-width: 2.5px;
+}
+
+/* Remover os símbolos dos pontos na linha (opcional) */
+.chart-line-symbol {
+    -fx-background-color: transparent, transparent;
+    -fx-background-radius: 0px;
+    -fx-padding: 0px;
+}
+
+/* Ajustes na legenda (se houver, embora com uma série só não precise) */
+.chart-legend {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: white;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-color: -fx-background; /* Herda a cor da série */
+}
