@@ -43,7 +43,7 @@
                         <VBox>
                             <Label text="Saldo Disponivel" style="-fx-text-fill: white;-fx-font-size: 24px;"/>
                             <Region prefHeight="50"/>
-                            <Label text="15k" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
+                            <Label fx:id="saldoLabel" text="15k" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
                         </VBox>
                     </HBox>
                 </HBox>

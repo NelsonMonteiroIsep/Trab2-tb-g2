@@ -86,7 +86,8 @@ public class MarketController implements Initializable {
 
 
         if (loggedInUser != null) {
-            userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
+            userNameLabel.setText(loggedInUser.getNome());
+
         } else {
             userNameLabel.setText("Bem-vindo, visitante!");
         }

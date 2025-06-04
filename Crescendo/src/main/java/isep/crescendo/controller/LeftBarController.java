@@ -21,7 +21,7 @@ public class LeftBarController {
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", menu_label);
+        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", userNameLabel);
     }
     @FXML
     private void handleRedirectWallet(ActionEvent mouseEvent){
