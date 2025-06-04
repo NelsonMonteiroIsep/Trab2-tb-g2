@@ -1,12 +1,12 @@
 // src/main/java/isep/crescendo/controller/CoinController.java
 package isep.crescendo.controller;
 
-import isep.crescendo.model.*; // Importa Criptomoeda, HistoricoValor
-import isep.crescendo.model.CriptomoedaRepository; // Presume que você tem um repositório para Criptomoedas
-import isep.crescendo.model.CarteiraRepository; // Presume que você tem um repositório para Carteira
-import isep.crescendo.model.HistoricoValorRepository; // Presume que você tem um repositório para HistoricoValor (opcional para DB)
-import isep.crescendo.util.SceneSwitcher; // Seu utilitário para trocar de cena
-import isep.crescendo.util.SessionManager; // Seu utilitário para gerenciar a sessão do utilizador
+import isep.crescendo.model.*;
+import isep.crescendo.model.CriptomoedaRepository;
+import isep.crescendo.model.CarteiraRepository;
+import isep.crescendo.model.HistoricoValorRepository;
+import isep.crescendo.util.SceneSwitcher;
+import isep.crescendo.util.SessionManager;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,47 +27,48 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
-import java.util.stream.Collectors; // Para usar Collectors.toList()
+import java.util.stream.Collectors;
 
 public class CoinController implements Initializable {
 
-    // Variáveis FXML (ligadas aos elementos do coin-view.fxml)
-    @FXML public Label navBarAnyControl; // Para o título da navbar ou controle de cena
-    @FXML private Label userNameLabel; // Para exibir o nome do utilizador logado
-    @FXML private Label saldoLabel; // Para exibir o saldo do utilizador
-    @FXML private TextField saldoField; // (Não usado diretamente neste código, mas pode ser para input de saldo)
+    @FXML public Label navBarAnyControl;
+    @FXML private Label userNameLabel;
+    @FXML private Label saldoLabel;
+    @FXML private TextField saldoField;
 
-    @FXML private LineChart<String, Number> lineChart; // O gráfico de linha
-    @FXML private CategoryAxis eixoX; // Eixo X do gráfico (tempo)
-    @FXML private NumberAxis eixoY; // Eixo Y do gráfico (valor)
-    @FXML private Label infoLabel; // Para exibir informações em tempo real ou mensagens de status
+    @FXML private LineChart<String, Number> lineChart;
+    @FXML private CategoryAxis eixoX;
+    @FXML private NumberAxis eixoY;
+    @FXML private Label infoLabel;
 
-    @FXML private TextField campoPesquisaMoeda; // Campo para pesquisar outras moedas
-    @FXML private ComboBox<String> intervaloSelecionadoBox; // ComboBox para selecionar intervalo de tempo
-    @FXML private ComboBox<String> periodoSelecionadoBox; // ComboBox para selecionar período de tempo
+    @FXML private TextField campoPesquisaMoeda;
+    @FXML private ComboBox<String> intervaloSelecionadoBox;
+    @FXML private ComboBox<String> periodoSelecionadoBox;
 
-    @FXML private ImageView coinLogo; // Imagem/logo da moeda
-    @FXML private Label nomeLabel; // Nome da moeda
-    @FXML private Label simboloLabel; // Símbolo da moeda
-    @FXML private Label descricaoLabel; // Descrição da moeda
+    @FXML private ImageView coinLogo;
+    @FXML private Label nomeLabel;
+    @FXML private Label simboloLabel;
+    @FXML private Label descricaoLabel;
 
-    // Variáveis internas do controlador
-    private User loggedInUser; // O utilizador atualmente logado
-    private Criptomoeda criptoSelecionada; // A criptomoeda que está a ser exibida nesta tela
+    private User loggedInUser;
+    private Criptomoeda criptoSelecionada;
 
-    // Repositórios para aceder aos dados (certifique-se de que existem ou adapte)
     private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
-    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository(); // Opcional, para DB
+    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
 
-    private ContextMenu sugestoesPopup = new ContextMenu(); // Para sugestões de pesquisa
+    private ContextMenu sugestoesPopup = new ContextMenu();
 
-    private CriptoAlgoritmo criptoAlgoritmoAtivo; // A instância do simulador de preço para a moeda atual
-    private Timeline graficoRealtimeUpdater; // Timeline para atualizar o gráfico em tempo real
-    private static final int REALTIME_UPDATE_INTERVAL_MS = 1000; // Intervalo de atualização do gráfico (1 seg)
+    private XYChart.Series<String, Number> dataSeries;
+
+    private CriptoAlgoritmo criptoAlgoritmoAtivo;
+    private Timeline graficoRealtimeUpdater;
+    private static final int REALTIME_UPDATE_INTERVAL_MS = 1000;
+
+    private List<HistoricoValor> allChartData = new ArrayList<>();
+    // private int realtimeStartIndex = -1; // Não é estritamente necessário para uma única série
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        // Inicialização do utilizador logado
         loggedInUser = SessionManager.getCurrentUser();
         if (loggedInUser != null) {
             userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
@@ -75,258 +76,247 @@ public class CoinController implements Initializable {
             userNameLabel.setText("Bem-vindo, visitante!");
         }
 
-        // Inicialização dos ComboBoxes do gráfico
         intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
-        intervaloSelecionadoBox.setValue("Horas"); // Valor padrão
+        intervaloSelecionadoBox.setValue("Horas");
         periodoSelecionadoBox.getItems().addAll("Último dia", "Última semana", "Último mês", "Último ano");
-        periodoSelecionadoBox.setValue("Última semana"); // Valor padrão
+        periodoSelecionadoBox.setValue("Última semana");
 
-        // Configuração do gráfico
+        intervaloSelecionadoBox.valueProperty().addListener((obs, oldVal, newVal) -> atualizarGrafico());
+        periodoSelecionadoBox.valueProperty().addListener((obs, oldVal, newVal) -> atualizarGrafico());
+
+        atualizarSaldoLabel();
+
         lineChart.setTitle("Histórico de Preço");
         eixoX.setLabel("Tempo");
         eixoY.setLabel("Valor (€)");
-        lineChart.setCreateSymbols(false); // Não mostra pontos nos dados
-        lineChart.setAnimated(false); // Desativa animações para melhor desempenho em tempo real
-        lineChart.setLegendVisible(false); // Oculta a legenda
+        lineChart.setCreateSymbols(false);
+        lineChart.setAnimated(false);
+        lineChart.setLegendVisible(false);
 
-        // Listener para o campo de pesquisa de moedas
+        // *** IMPORTANTE: A série DEVE ser inicializada e adicionada ao gráfico UMA VEZ. ***
+        dataSeries = new XYChart.Series<>();
+        dataSeries.setName("Preço da Criptomoeda");
+        lineChart.getData().add(dataSeries); // Garante que a série está no gráfico
+
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> {
-            if (newText.length() < 1) { // Esconde sugestões se o campo estiver vazio
+            if (newText.length() < 1) {
                 sugestoesPopup.hide();
                 return;
             }
 
-            // Filtra criptomoedas com base no texto de pesquisa
             List<Criptomoeda> correspondencias = criptoRepo.getAllCriptomoedas().stream()
                     .filter(c -> c.getNome().toLowerCase().contains(newText.toLowerCase()) ||
                             c.getSimbolo().toLowerCase().contains(newText.toLowerCase()))
                     .collect(Collectors.toList());
 
-            if (correspondencias.isEmpty()) { // Esconde se não houver correspondências
+            if (correspondencias.isEmpty()) {
                 sugestoesPopup.hide();
                 return;
             }
 
-            // Cria itens de menu para as sugestões
             List<MenuItem> items = correspondencias.stream().map(c -> {
                 MenuItem item = new MenuItem(c.getNome() + " (" + c.getSimbolo() + ")");
-                item.setOnAction(e -> { // Ao selecionar uma sugestão
-                    campoPesquisaMoeda.setText(c.getSimbolo()); // Preenche o campo de pesquisa
-                    sugestoesPopup.hide(); // Esconde o popup
-                    setCriptomoeda(c); // Define a criptomoeda selecionada e atualiza a UI
+                item.setOnAction(e -> {
+                    campoPesquisaMoeda.setText(c.getSimbolo());
+                    sugestoesPopup.hide();
+                    setCriptomoeda(c);
                 });
                 return item;
             }).collect(Collectors.toList());
 
-            sugestoesPopup.getItems().setAll(items); // Adiciona os itens ao ContextMenu
+            sugestoesPopup.getItems().setAll(items);
             if (!sugestoesPopup.isShowing()) {
-                sugestoesPopup.show(campoPesquisaMoeda, Side.BOTTOM, 0, 0); // Mostra o popup
+                sugestoesPopup.show(campoPesquisaMoeda, Side.BOTTOM, 0, 0);
             }
         });
-
-        // Atualiza o saldo inicial
-        atualizarSaldoLabel();
     }
 
     /**
-     * Método público para definir a criptomoeda a ser exibida e iniciar a simulação/gráfico.
-     * Este método será chamado pelo CoinComponent quando uma moeda for clicada.
+     * Define a criptomoeda a ser exibida e inicia a simulação/gráfico.
      * @param moeda A criptomoeda selecionada.
      */
     public void setCriptomoeda(Criptomoeda moeda) {
-        this.criptoSelecionada = moeda; // Armazena a moeda atual
+        this.criptoSelecionada = moeda;
+        disposeSimulationAndChart(); // Limpa e para tudo para uma nova moeda
 
-        // 1. Parar simulação e atualização de gráfico anteriores, se existirem
-        if (criptoAlgoritmoAtivo != null) {
-            criptoAlgoritmoAtivo.stopSimulation();
-            criptoAlgoritmoAtivo = null;
-            System.out.println("Simulação anterior parada.");
-        }
-        if (graficoRealtimeUpdater != null) {
-            graficoRealtimeUpdater.stop();
-            graficoRealtimeUpdater = null;
-            System.out.println("Atualizador de gráfico em tempo real parado.");
-        }
-
-        // 2. Atualizar UI com os dados da nova moeda
         if (moeda != null) {
             nomeLabel.setText(moeda.getNome());
             simboloLabel.setText(moeda.getSimbolo());
             descricaoLabel.setText(moeda.getDescricao());
 
-            // Carrega a imagem da logo da moeda
             if (moeda.getImagemUrl() != null && !moeda.getImagemUrl().isEmpty()) {
                 try {
                     coinLogo.setImage(new Image(moeda.getImagemUrl(), true));
                 } catch (IllegalArgumentException e) {
-                    coinLogo.setImage(null); // Define como nulo em caso de URL inválida
+                    coinLogo.setImage(null);
                     System.err.println("Erro ao carregar imagem para " + moeda.getNome() + ": " + e.getMessage());
                 }
             } else {
-                coinLogo.setImage(null); // Define como nulo se a URL for vazia
+                coinLogo.setImage(null);
             }
 
-            infoLabel.setText("Carregando histórico..."); // Mensagem de status
+            infoLabel.setText("Carregando dados...");
 
-            // 3. Iniciar uma nova simulação para a criptomoeda selecionada
-            criptoAlgoritmoAtivo = new CriptoAlgoritmo(moeda.getId());
-            criptoAlgoritmoAtivo.startSimulation();
-            System.out.println("Simulação de gravação iniciada para: " + moeda.getNome() + " (ID: " + moeda.getId() + ")");
+            // 1. Carregar histórico e iniciar simulação
+            carregarHistoricoDoDBEIniciarSimulacao(moeda);
 
-            // 4. Inicializar e iniciar o atualizador do gráfico em tempo real
-            lineChart.getData().clear(); // Limpa dados antigos do gráfico
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName(moeda.getSimbolo()); // Nome da série de dados
-            lineChart.getData().add(series); // Adiciona a série ao gráfico
-
+            // 2. Iniciar o atualizador do gráfico em tempo real
             graficoRealtimeUpdater = new Timeline(new KeyFrame(Duration.millis(REALTIME_UPDATE_INTERVAL_MS), e -> {
-                updateRealtimeChart(); // Chama o método para atualizar o gráfico
+                updateRealtimeChart();
             }));
-            graficoRealtimeUpdater.setCycleCount(Timeline.INDEFINITE); // Atualiza indefinidamente
-            graficoRealtimeUpdater.play(); // Inicia o atualizador
+            graficoRealtimeUpdater.setCycleCount(Timeline.INDEFINITE);
+            graficoRealtimeUpdater.play();
 
-            System.out.println("Atualizador de gráfico em tempo real iniciado.");
-
-            // Carrega o histórico inicial do DB (se aplicável)
-            carregarHistoricoDoDBEExibir(moeda);
+            System.out.println("CoinController: Atualizador de gráfico em tempo real iniciado para " + moeda.getNome());
 
         } else {
-            // Limpa a UI se nenhuma moeda for selecionada (caso de erro ou inicialização)
             nomeLabel.setText("");
             simboloLabel.setText("");
             descricaoLabel.setText("");
             coinLogo.setImage(null);
             infoLabel.setText("Nenhuma criptomoeda selecionada.");
-            lineChart.getData().clear();
         }
     }
 
     /**
-     * Atualiza o gráfico em tempo real com os dados da simulação.
-     */
-    private void updateRealtimeChart() {
-        if (criptoAlgoritmoAtivo == null || criptoSelecionada == null) {
-            return; // Não faz nada se a simulação não estiver ativa
-        }
-
-        // Obtém o histórico recente da simulação em memória
-        List<HistoricoValor> historicoMemoria = criptoAlgoritmoAtivo.getHistoricoEmMemoria();
-
-        // Pega a série de dados do gráfico
-        XYChart.Series<String, Number> series = (XYChart.Series<String, Number>) lineChart.getData().get(0);
-        series.getData().clear(); // Limpa os dados antigos da série
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // Formato para o eixo X
-
-        // Adiciona os novos dados ao gráfico
-        for (HistoricoValor hv : historicoMemoria) {
-            series.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
-        }
-
-        // Atualiza o label de informação com o último valor
-        if (!historicoMemoria.isEmpty()) {
-            HistoricoValor ultimo = historicoMemoria.get(historicoMemoria.size() - 1);
-            infoLabel.setText(String.format("Último valor (em tempo real): %.2f €", ultimo.getValor()));
-        }
-    }
-
-    /**
-     * Carrega o histórico de valores da base de dados (se implementado) e exibe no gráfico.
-     * Esta é a parte para carregar dados persistentes, não em tempo real.
+     * Carrega o histórico de valores da base de dados, popula a lista allChartData
+     * e inicia a simulação do CriptoAlgoritmo.
      * @param cripto A criptomoeda para a qual carregar o histórico.
      */
-    private void carregarHistoricoDoDBEExibir(Criptomoeda cripto) {
-        // Esta parte assume que você tem um HistoricoValorRepository e uma DB.
-        // Se não tiver, esta função pode ser simples ou fazer nada por enquanto.
-        List<HistoricoValor> historico = historicoRepo.listarPorCripto(cripto.getId()); // Exemplo de chamada ao repositório
+    private void carregarHistoricoDoDBEIniciarSimulacao(Criptomoeda cripto) {
+        System.out.println("CoinController: carregarHistoricoDoDBEIniciarSimulacao para " + cripto.getNome());
+        allChartData.clear(); // Limpa a lista de dados internos antes de carregar novo histórico
 
-        String intervalo = intervaloSelecionadoBox.getValue();
+        List<HistoricoValor> historicoDB = historicoRepo.listarPorCripto(cripto.getId());
+        System.out.println("CoinController: " + historicoDB.size() + " registros históricos encontrados para Cripto ID " + cripto.getId());
+
         String periodo = periodoSelecionadoBox.getValue();
-
         LocalDateTime agora = LocalDateTime.now();
         LocalDateTime limite;
 
-        // Calcula o limite de tempo com base no período selecionado
         switch (periodo) {
             case "Último dia" -> limite = agora.minusDays(1);
             case "Última semana" -> limite = agora.minusWeeks(1);
             case "Último mês" -> limite = agora.minusMonths(1);
             case "Último ano" -> limite = agora.minusYears(1);
-            default -> limite = agora.minusWeeks(1); // Padrão
+            default -> limite = agora.minusWeeks(1);
         }
 
-        // Filtra os dados históricos que estão dentro do período selecionado
-        List<HistoricoValor> filtrados = historico.stream()
+        List<HistoricoValor> filtrados = historicoDB.stream()
                 .filter(hv -> hv.getData().isAfter(limite))
                 .collect(Collectors.toList());
 
-        // Define o formato da data para o eixo X com base no intervalo
-        DateTimeFormatter formatter;
-        switch (intervalo) {
-            case "Minutos" -> formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
-            case "Horas" -> formatter = DateTimeFormatter.ofPattern("dd/MM HH:00");
-            case "Dias" -> formatter = DateTimeFormatter.ofPattern("dd/MM");
-            case "Meses" -> formatter = DateTimeFormatter.ofPattern("MM/yyyy");
-            case "Anos" -> formatter = DateTimeFormatter.ofPattern("yyyy");
-            default -> formatter = DateTimeFormatter.ofPattern("dd/MM");
+        System.out.println("CoinController: " + filtrados.size() + " registros históricos filtrados para o período '" + periodo + "'.");
+
+        allChartData.addAll(filtrados); // Adiciona os dados filtrados à lista interna
+
+        Double initialPriceForSimulation = null;
+        if (!allChartData.isEmpty()) {
+            initialPriceForSimulation = allChartData.get(allChartData.size() - 1).getValor();
+            System.out.println("CoinController: Último valor do histórico DB para iniciar simulação: " + String.format("%.2f", initialPriceForSimulation));
+        } else {
+            System.out.println("CoinController: Histórico DB vazio. CriptoAlgoritmo usará valor padrão.");
         }
 
-        // Agrupa os dados para exibição (ex: um ponto por hora, um por dia)
-        // Este LinkedHashMap mantém a ordem dos dados no gráfico.
-        Map<String, Double> dadosAgrupados = new LinkedHashMap<>();
-        for (HistoricoValor hv : filtrados) {
-            String chave = hv.getData().format(formatter);
-            // Para simplificar, pega o primeiro valor para cada chave agrupada
-            // Ou pode fazer uma média, etc.
-            dadosAgrupados.putIfAbsent(chave, hv.getValor());
+        // Inicia ou reinicia a simulação
+        if (criptoAlgoritmoAtivo != null) {
+            criptoAlgoritmoAtivo.stopSimulation();
+        }
+        criptoAlgoritmoAtivo = new CriptoAlgoritmo(cripto.getId(), initialPriceForSimulation);
+        criptoAlgoritmoAtivo.startSimulation();
+        System.out.println("CoinController: Simulação iniciada para: " + cripto.getNome() + " (ID: " + cripto.getId() + ")");
+
+        // Garante que o gráfico é atualizado imediatamente após carregar o histórico
+        updateChartDataSeries();
+    }
+
+
+    /**
+     * Atualiza o gráfico em tempo real com os dados da simulação.
+     * Adiciona novos pontos à única série de dados.
+     */
+    private void updateRealtimeChart() {
+        if (criptoAlgoritmoAtivo == null || criptoSelecionada == null || dataSeries == null) {
+            System.out.println("CoinController: updateRealtimeChart: Condições de execução não atendidas.");
+            return;
         }
 
-        // Limpa o gráfico atual e adiciona os dados históricos
-        lineChart.getData().clear();
-        XYChart.Series<String, Number> historicoSeries = new XYChart.Series<>();
-        historicoSeries.setName("Histórico " + cripto.getSimbolo());
-
-        for (Map.Entry<String, Double> entry : dadosAgrupados.entrySet()) {
-            historicoSeries.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        List<HistoricoValor> historicoMemoriaSimulacao = criptoAlgoritmoAtivo.getHistoricoEmMemoria();
+        if (historicoMemoriaSimulacao.isEmpty()) {
+            // System.out.println("CoinController: updateRealtimeChart: Histórico de simulação em memória vazio.");
+            return;
         }
-        lineChart.getData().add(historicoSeries);
 
-        // Nota: O infoLabel será atualizado pelo updateRealtimeChart, que tem prioridade.
-        // if (!filtrados.isEmpty()) {
-        //     double ultimo = filtrados.get(filtrados.size() - 1).getValor();
-        //     double penultimo = filtrados.size() > 1 ? filtrados.get(filtrados.size() - 2).getValor() : ultimo;
-        //     double variacao = ((ultimo - penultimo) / penultimo) * 100;
-        //     // Pode exibir a variação aqui se quiser
-        // }
+        // Adiciona apenas os NOVOS pontos da simulação à lista `allChartData`
+        // Para isso, precisamos saber quantos pontos já tínhamos e adicionar apenas os que vieram depois.
+        // O `CriptoAlgoritmo` sempre retorna o histórico COMPLETO em memória.
+        // Comparar o tamanho é a forma mais simples de adicionar apenas os novos.
+        int currentSizeOfAllChartData = allChartData.size();
+        int newPointsCount = historicoMemoriaSimulacao.size() - (currentSizeOfAllChartData - historicoRepo.listarPorCripto(criptoSelecionada.getId()).stream().filter(hv -> hv.getData().isAfter(LocalDateTime.now().minusWeeks(1))).collect(Collectors.toList()).size());
+
+        // A maneira mais robusta é adicionar o último ponto que a simulação gerou
+        // e que ainda não está na allChartData.
+        HistoricoValor ultimoSimulado = historicoMemoriaSimulacao.get(historicoMemoriaSimulacao.size() - 1);
+        if (allChartData.isEmpty() || !allChartData.get(allChartData.size() - 1).getData().equals(ultimoSimulado.getData())) {
+            allChartData.add(ultimoSimulado);
+            // System.out.println("CoinController: Adicionado novo ponto simulado: " + ultimoSimulado.getValor() + " em " + ultimoSimulado.getData());
+        }
+
+        // Mantém o número de pontos do gráfico gerenciável
+        int MAX_TOTAL_POINTS = 500; // Por exemplo, 500 pontos no total (histórico + tempo real)
+        while (allChartData.size() > MAX_TOTAL_POINTS) {
+            allChartData.remove(0); // Remove o ponto mais antigo
+        }
+
+        updateChartDataSeries(); // Atualiza a série do gráfico com a nova lista de dados
+
+        HistoricoValor ultimoPonto = allChartData.get(allChartData.size() - 1);
+        infoLabel.setText(String.format("Último valor (em tempo real): %.2f €", ultimoPonto.getValor()));
     }
 
     /**
-     * Método FXML para atualizar o gráfico com base nas seleções de intervalo/período.
+     * Popula a `dataSeries` do gráfico com os dados da lista `allChartData`.
+     * Este método é chamado tanto para carregar o histórico quanto para atualizar em tempo real.
      */
+    private void updateChartDataSeries() {
+        if (dataSeries == null) {
+            System.err.println("CoinController: dataSeries é nula. Gráfico não pode ser atualizado.");
+            return;
+        }
+        dataSeries.getData().clear(); // Limpa os dados atuais da série
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm:ss"); // Formato consistente
+
+        if (allChartData.isEmpty()) {
+            System.out.println("CoinController: allChartData está vazia, nenhum ponto para o gráfico.");
+            return;
+        }
+
+        for (HistoricoValor hv : allChartData) {
+            dataSeries.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
+        }
+        System.out.println("CoinController: Gráfico atualizado com " + dataSeries.getData().size() + " pontos.");
+    }
+
+
     @FXML
     private void atualizarGrafico() {
+        System.out.println("CoinController: atualizarGrafico chamado.");
         if (criptoSelecionada == null) {
             infoLabel.setText("Selecione ou pesquise uma criptomoeda para atualizar o gráfico.");
             return;
         }
-        // Recarrega o histórico do DB com base nas novas seleções
-        carregarHistoricoDoDBEExibir(criptoSelecionada);
+        // Ao atualizar as caixas de seleção, reinicializamos o gráfico e a simulação
+        setCriptomoeda(criptoSelecionada);
     }
 
-    /**
-     * Lida com o logout do utilizador.
-     */
+
     @FXML
     private void handleLogout() {
-        dispose(); // Para a simulação e atualizadores
-        SessionManager.setCurrentUser(null); // Limpa a sessão
-        // Troca para a tela de login
+        dispose();
+        SessionManager.setCurrentUser(null);
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", navBarAnyControl);
     }
 
-    /**
-     * Lida com a adição de saldo à carteira do utilizador.
-     */
     @FXML
     private void handleAdicionarSaldo() {
         TextInputDialog dialog = new TextInputDialog();
@@ -344,13 +334,13 @@ public class CoinController implements Initializable {
                 }
 
                 int userId = SessionManager.getCurrentUser().getId();
-                CarteiraRepository carteiraRepo = new CarteiraRepository(); // Cria uma nova instância do repositório
+                CarteiraRepository carteiraRepo = new CarteiraRepository();
                 Carteira carteira = carteiraRepo.procurarPorUserId(userId);
 
                 if (carteira != null) {
                     double novoSaldo = carteira.getSaldo() + valor;
-                    carteiraRepo.atualizarSaldo(userId, novoSaldo); // Atualiza o saldo na DB
-                    atualizarSaldoLabel(); // Atualiza o label na UI
+                    carteiraRepo.atualizarSaldo(userId, novoSaldo);
+                    atualizarSaldoLabel();
                 } else {
                     mostrarErro("Carteira não encontrada para o utilizador.");
                 }
@@ -361,13 +351,10 @@ public class CoinController implements Initializable {
         });
     }
 
-    /**
-     * Atualiza o label do saldo na UI buscando o saldo da carteira do utilizador logado.
-     */
     private void atualizarSaldoLabel() {
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
-            Carteira carteira = CarteiraRepository.procurarPorUserId(currentUser.getId()); // Busca a carteira
+            Carteira carteira = CarteiraRepository.procurarPorUserId(currentUser.getId());
 
             if (carteira != null) {
                 saldoLabel.setText(String.format("%.2f €", carteira.getSaldo()));
@@ -377,10 +364,6 @@ public class CoinController implements Initializable {
         }
     }
 
-    /**
-     * Exibe uma mensagem de erro em um Alert.
-     * @param mensagem A mensagem de erro.
-     */
     private void mostrarErro(String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");
@@ -389,19 +372,15 @@ public class CoinController implements Initializable {
         alert.showAndWait();
     }
 
-    /**
-     * Lida com a pesquisa de uma criptomoeda pelo campo de texto.
-     */
     @FXML
     private void handlePesquisarMoeda() {
         String termo = campoPesquisaMoeda.getText().trim().toLowerCase();
         if (termo.isEmpty()) {
             infoLabel.setText("Insira o nome ou símbolo da moeda.");
-            disposeSimulationAndChart(); // Para a simulação e limpa o gráfico
+            disposeSimulationAndChart();
             return;
         }
 
-        // Procura a moeda pelo termo
         criptoSelecionada = criptoRepo.getAllCriptomoedas()
                 .stream()
                 .filter(c -> c.getNome().toLowerCase().contains(termo) || c.getSimbolo().equalsIgnoreCase(termo))
@@ -410,19 +389,15 @@ public class CoinController implements Initializable {
 
         if (criptoSelecionada == null) {
             infoLabel.setText("Moeda não encontrada.");
-            disposeSimulationAndChart(); // Para a simulação e limpa o gráfico
+            disposeSimulationAndChart();
             return;
         }
 
-        // Se encontrada, define a criptomoeda para exibir
         setCriptomoeda(criptoSelecionada);
     }
 
-    /**
-     * Para a simulação e o atualizador de gráfico em tempo real, e limpa o gráfico.
-     * Usado ao trocar de moeda ou sair da tela.
-     */
     private void disposeSimulationAndChart() {
+        System.out.println("CoinController: disposeSimulationAndChart chamado. Parando simulação e limpando gráfico.");
         if (criptoAlgoritmoAtivo != null) {
             criptoAlgoritmoAtivo.stopSimulation();
             criptoAlgoritmoAtivo = null;
@@ -431,21 +406,21 @@ public class CoinController implements Initializable {
             graficoRealtimeUpdater.stop();
             graficoRealtimeUpdater = null;
         }
-        lineChart.getData().clear();
+        // É importante limpar os dados da série, não a série do gráfico.
+        if (dataSeries != null) {
+            dataSeries.getData().clear();
+        }
+        allChartData.clear(); // Limpa os dados internos
+        // realtimeStartIndex = -1; // Reset o índice de início do tempo real, se usado
+
         nomeLabel.setText("");
         simboloLabel.setText("");
         descricaoLabel.setText("");
         coinLogo.setImage(null);
     }
 
-
-    /**
-     * Método para limpar recursos quando o controlador não for mais necessário.
-     * É importante chamar este método quando a cena do CoinController for fechada ou substituída.
-     */
     public void dispose() {
-        disposeSimulationAndChart(); // Chama o método auxiliar
+        disposeSimulationAndChart();
         System.out.println("CoinController: Timelines de simulação e atualização de gráfico parados.");
-        // Pode adicionar outras limpezas aqui, se necessário.
     }
 }
