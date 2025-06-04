@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/WalletController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/styles/login.css" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/styles/login.css" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/wallet-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/wallet-view.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -55,7 +57,7 @@
   <component name="GithubPullRequestsUISettings">{
   &quot;selectedUrlAndAccountId&quot;: {
     &quot;url&quot;: &quot;https://github.com/NelsonMonteiroIsep/Trab2-tb-g2.git&quot;,
-    &quot;accountId&quot;: &quot;be3f9d77-89f9-4563-b8c2-f56622f44065&quot;
+    &quot;accountId&quot;: &quot;9dfa27a3-2c53-45c7-9ecf-c6d4f3ed26ea&quot;
   }
 }</component>
   <component name="HighlightingSettingsPerFile">
@@ -122,8 +124,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
-        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+        <option value="bundled-jdk-9823dce3aa75-a94e463ab2e7-intellij.indexing.shared.core-IU-243.26574.91" />
+        <option value="bundled-js-predefined-d6986cc7102b-1632447f56bf-JavaScript-IU-243.26574.91" />
       </set>
     </attachedChunks>
   </component>
@@ -148,6 +150,8 @@
       <workItem from="1748993656950" duration="941000" />
       <workItem from="1748994615819" duration="1602000" />
       <workItem from="1749040825226" duration="2804000" />
+      <workItem from="1749058482251" duration="128000" />
+      <workItem from="1749058729917" duration="7101000" />
     </task>
     <servers />
   </component>
