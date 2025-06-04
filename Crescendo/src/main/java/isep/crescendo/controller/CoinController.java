@@ -324,7 +324,24 @@ public class CoinController implements Initializable {
             double quantidade = Double.parseDouble(quantidadeCompraField.getText());
             double preco = Double.parseDouble(precoCompraField.getText());
 
+            if (quantidade <= 0 || preco <= 0) {
+                System.out.println("Quantidade e preço devem ser maiores que zero.");
+                return;
+            }
+
+            int userId = SessionManager.getCurrentUser().getId();
+            isep.crescendo.model.Carteira carteira = isep.crescendo.Repository.Carteira.procurarPorUserId(userId);
+
+            if (carteira == null) {
+                System.out.println("Carteira não encontrada.");
+                return;
+            }
+
+            int carteiraId = carteira.getId(); // ⚠️ este é o ID da tabela 'carteiras'
+            int idMoedaAtual = criptoSelecionada.getId();
+
             Ordem ordemCompra = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "compra");
+
             ordemService.processarOrdemCompra(ordemCompra);
 
             atualizarSaldoLabel();

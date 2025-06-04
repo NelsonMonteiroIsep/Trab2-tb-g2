@@ -22,46 +22,59 @@ public class OrdemService {
     }
 
     public void processarOrdemCompra(Ordem ordemCompra) {
-        double totalReserva = ordemCompra.getQuantidade() * ordemCompra.getValor();
-
+        double precoMaximo = ordemCompra.getValor();
+        double totalReserva = ordemCompra.getQuantidade() * precoMaximo;
+        System.out.println("Saldo reservado: " + totalReserva);
         // 1. Verificar saldo e reservar
         if (!carteiraRepo.temSaldo(ordemCompra.getCarteiraId(), totalReserva)) return;
-        carteiraRepo.removerSaldo(ordemCompra.getCarteiraId(), totalReserva);  // ✅ reservar
+        carteiraRepo.removerSaldo(ordemCompra.getCarteiraId(), totalReserva);  // ✅ reserva saldo máximo
 
         int ordemId = ordemRepo.adicionar(ordemCompra);
         double restante = ordemCompra.getQuantidade();
         double valorExecutadoTotal = 0;
 
-        List<Ordem> vendas = ordemRepo.buscarOrdensVendaCompativeis(ordemCompra.getIdMoeda(), ordemCompra.getValor());
+        List<Ordem> vendas = ordemRepo.buscarOrdensVendaCompativeis(ordemCompra.getIdMoeda(), precoMaximo);
 
         for (Ordem venda : vendas) {
             if (restante <= 0) break;
 
             double qtdVenda = venda.getQuantidade();
             double executada = Math.min(restante, qtdVenda);
-            double custo = executada * venda.getValor();
 
-            // 💰 Envia € para o vendedor
-            carteiraRepo.adicionarSaldo(venda.getCarteiraId(), custo);
+            double precoLimite = ordemCompra.getValor();
+            double precoVenda = venda.getValor();
+            double custoReal = executada * precoVenda;
+            double custoReservado = executada * precoLimite;
+            double diferenca = custoReservado - custoReal;
 
-            // Registar transação
-            transacaoRepo.adicionar(new Transacao(ordemId, venda.getId(), ordemCompra.getIdMoeda(), executada, venda.getValor()));
+            // 💰 Transferência para o vendedor
+            carteiraRepo.adicionarSaldo(venda.getCarteiraId(), custoReal);
+
+            // 📄 Registar transação
+            transacaoRepo.adicionar(new Transacao(
+                    ordemId, venda.getId(), ordemCompra.getIdMoeda(),
+                    executada, precoVenda
+            ));
+
+            // ✅ Devolver diferença ao comprador
+            if (diferenca > 0) {
+                carteiraRepo.adicionarSaldo(ordemCompra.getCarteiraId(), diferenca);
+            }
 
             restante -= executada;
-            valorExecutadoTotal += custo;
+            valorExecutadoTotal += custoReal;
 
             if (executada == qtdVenda) ordemRepo.marcarComoExecutada(venda.getId());
             else ordemRepo.atualizarQuantidade(venda.getId(), qtdVenda - executada);
         }
 
-        if (restante > 0) ordemRepo.atualizarQuantidade(ordemId, restante);
-        else ordemRepo.marcarComoExecutada(ordemId);
-
-        // ✅ Devolver o que sobrou
-        double valorNaoUsado = totalReserva - valorExecutadoTotal;
-        if (valorNaoUsado > 0) {
-            carteiraRepo.adicionarSaldo(ordemCompra.getCarteiraId(), valorNaoUsado);
+        // 3. Atualizar a ordem
+        if (restante > 0) {
+            ordemRepo.atualizarQuantidade(ordemId, restante);
+        } else {
+            ordemRepo.marcarComoExecutada(ordemId);
         }
+
     }
 
     public void processarOrdemVenda(Ordem ordemVenda) {
@@ -69,43 +82,64 @@ public class OrdemService {
         int idMoeda = ordemVenda.getIdMoeda();
         double quantidade = ordemVenda.getQuantidade();
 
-        // 1. Obter saldo cripto disponível
+        // 1. Verificar saldo da cripto (já reservado indiretamente)
         double saldoCripto = carteiraRepo.obterSaldoCripto(carteiraId, idMoeda);
-
-        // 2. Somar ordens de venda pendentes
         double quantidadeEmOrdem = ordemRepo.somarOrdensPendentes(carteiraId, idMoeda, "venda");
 
-        // 3. Validar se pode vender
         if (quantidade > (saldoCripto - quantidadeEmOrdem)) {
-            System.out.println("Venda negada: quantidade excede saldo disponível após ordens pendentes.");
+            System.out.println("Venda negada: saldo cripto insuficiente após ordens pendentes.");
             return;
         }
 
-        // 4. Adicionar ordem
-        int ordemId = ordemRepo.adicionar(ordemVenda);
-        double restante = quantidade;
+        // 2. Inserir nova ordem
+        int ordemVendaId = ordemRepo.adicionar(ordemVenda);
+        double restanteVenda = quantidade;
 
+        // 3. Buscar ordens de compra com preço >= pedido
         List<Ordem> compras = ordemRepo.buscarOrdensCompraCompativeis(idMoeda, ordemVenda.getValor());
 
         for (Ordem compra : compras) {
-            if (restante <= 0) break;
+            if (restanteVenda <= 0) break;
 
             double qtdCompra = compra.getQuantidade();
-            double executada = Math.min(restante, qtdCompra);
-            double valor = executada * ordemVenda.getValor();
+            double executada = Math.min(restanteVenda, qtdCompra);
 
-            carteiraRepo.adicionarSaldo(carteiraId, valor);
+            double precoCompra = compra.getValor();
+            double precoVenda = ordemVenda.getValor();
 
-            transacaoRepo.adicionar(new Transacao(compra.getId(), ordemId, idMoeda, executada, ordemVenda.getValor()));
+            double custoReal = executada * precoVenda;
+            double reservadoCompra = executada * precoCompra;
+            double diferenca = reservadoCompra - custoReal;
 
-            restante -= executada;
+            // ✅ Transferir para vendedor
+            carteiraRepo.adicionarSaldo(carteiraId, custoReal);
 
-            if (executada == qtdCompra) ordemRepo.marcarComoExecutada(compra.getId());
-            else ordemRepo.atualizarQuantidade(compra.getId(), qtdCompra - executada);
+            // ✅ Devolver excesso ao comprador
+            if (diferenca > 0) {
+                carteiraRepo.adicionarSaldo(compra.getCarteiraId(), diferenca);
+            }
+
+            // 📄 Registar transação
+            transacaoRepo.adicionar(new Transacao(
+                    compra.getId(), ordemVendaId, idMoeda, executada, precoVenda
+            ));
+
+            // ✅ Atualizar ordens
+            if (executada == qtdCompra) {
+                ordemRepo.marcarComoExecutada(compra.getId());
+            } else {
+                ordemRepo.atualizarQuantidade(compra.getId(), qtdCompra - executada);
+            }
+
+            restanteVenda -= executada;
         }
 
-        if (restante > 0) ordemRepo.atualizarQuantidade(ordemId, restante);
-        else ordemRepo.marcarComoExecutada(ordemId);
+        // ✅ Atualizar ou concluir ordem de venda
+        if (restanteVenda <= 0) {
+            ordemRepo.marcarComoExecutada(ordemVendaId);
+        } else {
+            ordemRepo.atualizarQuantidade(ordemVendaId, restanteVenda);
+        }
     }
 
 

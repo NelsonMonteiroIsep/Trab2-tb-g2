@@ -181,9 +181,17 @@ public class Carteira {
         String sql = "UPDATE carteiras SET saldo = saldo - ? WHERE id = ?";
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
+
             stmt.setDouble(1, valor);
             stmt.setInt(2, carteiraId);
-            stmt.executeUpdate();
+            int linhas = stmt.executeUpdate();
+            System.out.println("RemoverSaldo - linhas afetadas: " + linhas);
+
+            ResultSet rs = conn.createStatement().executeQuery("SELECT saldo FROM carteiras WHERE id = " + carteiraId);
+            if (rs.next()) {
+                System.out.println("Saldo atual (após remover): " + rs.getDouble("saldo"));
+            }
+
         } catch (SQLException e) {
             throw new RuntimeException("Erro ao remover saldo: " + e.getMessage());
         }
