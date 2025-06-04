@@ -1,6 +1,6 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.Repository.User;
+import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.EmailService;
 import isep.crescendo.util.SceneSwitcher;
 import javafx.animation.PauseTransition;
@@ -37,7 +37,7 @@ public class ResetPasswordController {
     @FXML
     private TextField nameField;
 
-    private final User userRepo = new User();
+    private final UserRepository userRepo = new UserRepository();
 
 
     @FXML

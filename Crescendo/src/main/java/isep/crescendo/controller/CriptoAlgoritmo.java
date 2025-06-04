@@ -1,7 +1,7 @@
 // src/main/java/isep/crescendo/controller/CriptoAlgoritmo.java
 package isep.crescendo.controller;
 
-import isep.crescendo.model.HistoricoValorRepository;
+import isep.crescendo.Repository.HistoricoValorRepository;
 import isep.crescendo.controller.CyclePhase;
 import isep.crescendo.model.HistoricoValor;
 

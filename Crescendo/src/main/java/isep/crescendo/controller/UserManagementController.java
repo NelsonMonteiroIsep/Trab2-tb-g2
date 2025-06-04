@@ -1,6 +1,6 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.Repository.User;
+import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
 import javafx.beans.binding.Bindings;
@@ -21,7 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class UserManagementController {
-    private final User userRepo = new User();
+    private final UserRepository userRepositoryRepo = new UserRepository();
     private static final Map<String, String> tokenToEmailMap = new HashMap<>();
     @FXML
     private TextField nameField;
@@ -56,7 +56,7 @@ public class UserManagementController {
 
         try {
             isep.crescendo.model.User novoUser = new isep.crescendo.model.User(email, nome, password);
-            userRepo.adicionar(novoUser);
+            userRepositoryRepo.adicionar(novoUser);
 
             URL fxmlLocation = getClass().getResource("/isep/crescendo/login-view.fxml");
             System.out.println(fxmlLocation);
@@ -102,7 +102,7 @@ public class UserManagementController {
         String password = passwordField.getText();
 
         try {
-            isep.crescendo.model.User user = userRepo.procurarPorEmail(email);
+            isep.crescendo.model.User user = userRepositoryRepo.procurarPorEmail(email);
 
             if (user != null && user.verificarPassword(password)) {
                 setMessage("Login bem-sucedido! Bem-vindo, " + user.getNome(), true);

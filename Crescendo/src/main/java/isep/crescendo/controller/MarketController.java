@@ -1,9 +1,8 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.Repository.Carteira;
-import isep.crescendo.Repository.Criptomoeda;
-import isep.crescendo.Repository.HistoricoValor;
-import isep.crescendo.controller.CoinComponent;
+import isep.crescendo.Repository.CarteiraRepository;
+import isep.crescendo.Repository.CriptomoedaRepository;
+import isep.crescendo.Repository.HistoricoValorRepository;
 import isep.crescendo.model.*;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
@@ -21,9 +20,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.Node;
 import javafx.scene.control.Label;
-import javafx.scene.layout.Priority;
 
 
 import java.io.IOException;
@@ -65,8 +62,8 @@ public class MarketController implements Initializable {
     @FXML private Label infoLabel;
     @FXML private TextField campoPesquisaMoeda;
     private ContextMenu sugestoesPopup = new ContextMenu();
-    private final Criptomoeda criptoRepo = new Criptomoeda();
-    private final HistoricoValor historicoRepo = new HistoricoValor();
+    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
 
     private isep.crescendo.model.Criptomoeda criptoSelecionada;
     @FXML private ComboBox<String> periodoSelecionadoBox;
@@ -161,12 +158,12 @@ public class MarketController implements Initializable {
                 }
 
                 int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
-                Carteira carteiraRepo = new Carteira();
-                isep.crescendo.model.Carteira carteira = carteiraRepo.procurarPorUserId(userId);
+                CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
+                isep.crescendo.model.Carteira carteira = carteiraRepositoryRepo.procurarPorUserId(userId);
 
                 if (carteira != null) {
                     double novoSaldo = carteira.getSaldo() + valor;
-                    carteiraRepo.atualizarSaldo(userId, novoSaldo);
+                    carteiraRepositoryRepo.atualizarSaldo(userId, novoSaldo);
                     atualizarSaldoLabel();
                 } else {
                     mostrarErro("Carteira não encontrada para o utilizador.");
@@ -194,7 +191,7 @@ public class MarketController implements Initializable {
     private void atualizarSaldoLabel() {
         User currentUser = SessionManager.getCurrentUser();
         if (currentUser != null) {
-            isep.crescendo.model.Carteira carteira = Carteira.procurarPorUserId(currentUser.getId());
+            isep.crescendo.model.Carteira carteira = CarteiraRepository.procurarPorUserId(currentUser.getId());
 
             if (carteira != null) {
                 saldoLabel.setText(String.format("%.2f €", carteira.getSaldo()));

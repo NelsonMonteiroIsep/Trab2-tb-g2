@@ -4,12 +4,12 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Transacao {
+public class TransacaoRepository {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
     private static final String DB_USER = "sql7779870";
     private static final String DB_PASSWORD = "vUwAKDaynR";
 
-    public Transacao() {
+    public TransacaoRepository() {
         criarTabelaSeNaoExistir();
     }
 

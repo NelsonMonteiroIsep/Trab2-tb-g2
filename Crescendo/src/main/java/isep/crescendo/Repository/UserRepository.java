@@ -4,13 +4,13 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class UserRepository {
 
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
     private static final String DB_USER = "sql7779870";
     private static final String DB_PASSWORD = "vUwAKDaynR";
 
-    public User() {
+    public UserRepository() {
         criarTabelaSeNaoExistir();
     }
 
@@ -56,8 +56,8 @@ public class User {
                 int userId = rs.getInt("id");
 
                 // Criar a carteira com saldo inicial 0
-                Carteira carteiraRepo = new Carteira();
-                carteiraRepo.adicionarCarteiraParaUser(userId);
+                CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
+                carteiraRepositoryRepo.adicionarCarteiraParaUser(userId);
             }
 
         } catch (SQLException e) {

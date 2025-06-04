@@ -1,7 +1,7 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.Repository.Carteira;
-import isep.crescendo.Repository.User;
+import isep.crescendo.Repository.CarteiraRepository;
+import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
 import javafx.collections.FXCollections;
@@ -19,14 +19,14 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import isep.crescendo.Repository.Criptomoeda;
+import isep.crescendo.Repository.CriptomoedaRepository;
 
 import java.io.IOException;
 import java.util.Optional;
 
 public class AdminController {
 
-    private final Criptomoeda criptoRepo = new Criptomoeda();
+    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
     private final ObservableList<isep.crescendo.model.Criptomoeda> criptomoedas = FXCollections.observableArrayList();
     @FXML private TableView<isep.crescendo.model.User> userTable;
     @FXML private TableColumn<isep.crescendo.model.User, Integer> idColumn;
@@ -44,7 +44,7 @@ public class AdminController {
     private Label labelTotalMoedas;
 
 
-    private final User userRepo = new User();
+    private final UserRepository userRepositoryRepo = new UserRepository();
     private final ObservableList<isep.crescendo.model.User> users = FXCollections.observableArrayList();
     @FXML
     private TextField searchField;
@@ -63,7 +63,7 @@ public class AdminController {
     @FXML
     public void initialize() {
         if (labelTotalUsers != null){
-        int totalUsers = userRepo.countUsers();
+        int totalUsers = userRepositoryRepo.countUsers();
         labelTotalUsers.setText(String.valueOf(totalUsers));}
 
         if (idColumn != null && nomeColumn != null && emailColumn != null && isAdminColumn != null) {
@@ -101,7 +101,7 @@ public class AdminController {
     }
 
     private void carregarUtilizadores() {
-        users.setAll(userRepo.listarTodos());
+        users.setAll(userRepositoryRepo.listarTodos());
         userTable.setItems(users);
     }
 
@@ -123,7 +123,7 @@ public class AdminController {
             Optional<String> result = dialog.showAndWait();
             result.ifPresent(novoNome -> {
                 selecionado.setNome(novoNome);
-                userRepo.atualizar(selecionado);
+                userRepositoryRepo.atualizar(selecionado);
                 carregarUtilizadores();      // <--- repõe dados da DB
                 userTable.refresh();
             });
@@ -137,7 +137,7 @@ public class AdminController {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
         if (selecionado != null && !selecionado.isAdmin()) {
 
-            isep.crescendo.model.Carteira carteira = isep.crescendo.Repository.Carteira.procurarPorUserId(selecionado.getId());
+            isep.crescendo.model.Carteira carteira = CarteiraRepository.procurarPorUserId(selecionado.getId());
 
             if (carteira != null && carteira.getSaldo() > 0) {
                 mostrarAlerta("Não é possível tornar admin. O utilizador tem saldo na carteira.");
@@ -146,11 +146,11 @@ public class AdminController {
 
             // Apagar carteira se existir
             if (carteira != null && carteira.getSaldo() == 0) {
-                Carteira.apagarPorUserId(selecionado.getId());
+                CarteiraRepository.apagarPorUserId(selecionado.getId());
             }
 
             selecionado.setAdmin(true);
-            userRepo.atualizarAdmin(selecionado);
+            userRepositoryRepo.atualizarAdmin(selecionado);
             carregarUtilizadores();
             mostrarAlerta("Utilizador promovido a admin com sucesso.");
         } else {
@@ -168,7 +168,7 @@ public class AdminController {
             confirm.setTitle("Confirmar remoção");
             Optional<ButtonType> result = confirm.showAndWait();
             if (result.isPresent() && result.get() == ButtonType.YES) {
-                userRepo.apagar(selecionado.getId());
+                userRepositoryRepo.apagar(selecionado.getId());
                 carregarUtilizadores();
             }
         } else {
@@ -193,7 +193,7 @@ public class AdminController {
                 }
 
                 selecionado.setEmail(novoEmail);
-                userRepo.atualizar(selecionado);
+                userRepositoryRepo.atualizar(selecionado);
                 carregarUtilizadores();      // <--- repõe dados da DB
                 userTable.refresh();
             });

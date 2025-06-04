@@ -25,7 +25,6 @@ import javafx.util.Duration;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -64,7 +63,7 @@ public class CoinController implements Initializable {
     private Timeline graficoRealtimeUpdater;
     private static final int REALTIME_UPDATE_INTERVAL_MS = 1000;
 
-    private List<HistoricoValor> allChartData = new ArrayList<>();
+    private List<isep.crescendo.model.HistoricoValor> allChartData = new ArrayList<>();
     // private int realtimeStartIndex = -1; // Não é estritamente necessário para uma única série
 
     @Override
@@ -187,7 +186,7 @@ public class CoinController implements Initializable {
         System.out.println("CoinController: carregarHistoricoDoDBEIniciarSimulacao para " + cripto.getNome());
         allChartData.clear(); // Limpa a lista de dados internos antes de carregar novo histórico
 
-        List<HistoricoValor> historicoDB = historicoRepo.listarPorCripto(cripto.getId());
+        List<isep.crescendo.model.HistoricoValor> historicoDB = historicoRepo.listarPorCripto(cripto.getId());
         System.out.println("CoinController: " + historicoDB.size() + " registros históricos encontrados para Cripto ID " + cripto.getId());
 
         String periodo = periodoSelecionadoBox.getValue();
@@ -202,7 +201,7 @@ public class CoinController implements Initializable {
             default -> limite = agora.minusWeeks(1);
         }
 
-        List<HistoricoValor> filtrados = historicoDB.stream()
+        List<isep.crescendo.model.HistoricoValor> filtrados = historicoDB.stream()
                 .filter(hv -> hv.getData().isAfter(limite))
                 .collect(Collectors.toList());
 
@@ -241,7 +240,7 @@ public class CoinController implements Initializable {
             return;
         }
 
-        List<HistoricoValor> historicoMemoriaSimulacao = criptoAlgoritmoAtivo.getHistoricoEmMemoria();
+        List<isep.crescendo.model.HistoricoValor> historicoMemoriaSimulacao = criptoAlgoritmoAtivo.getHistoricoEmMemoria();
         if (historicoMemoriaSimulacao.isEmpty()) {
             // System.out.println("CoinController: updateRealtimeChart: Histórico de simulação em memória vazio.");
             return;
@@ -256,7 +255,7 @@ public class CoinController implements Initializable {
 
         // A maneira mais robusta é adicionar o último ponto que a simulação gerou
         // e que ainda não está na allChartData.
-        HistoricoValor ultimoSimulado = historicoMemoriaSimulacao.get(historicoMemoriaSimulacao.size() - 1);
+        isep.crescendo.model.HistoricoValor ultimoSimulado = historicoMemoriaSimulacao.get(historicoMemoriaSimulacao.size() - 1);
         if (allChartData.isEmpty() || !allChartData.get(allChartData.size() - 1).getData().equals(ultimoSimulado.getData())) {
             allChartData.add(ultimoSimulado);
             // System.out.println("CoinController: Adicionado novo ponto simulado: " + ultimoSimulado.getValor() + " em " + ultimoSimulado.getData());
@@ -270,7 +269,7 @@ public class CoinController implements Initializable {
 
         updateChartDataSeries(); // Atualiza a série do gráfico com a nova lista de dados
 
-        HistoricoValor ultimoPonto = allChartData.get(allChartData.size() - 1);
+        isep.crescendo.model.HistoricoValor ultimoPonto = allChartData.get(allChartData.size() - 1);
         infoLabel.setText(String.format("Último valor (em tempo real): %.2f €", ultimoPonto.getValor()));
     }
 
@@ -291,7 +290,7 @@ public class CoinController implements Initializable {
             return;
         }
 
-        for (HistoricoValor hv : allChartData) {
+        for (isep.crescendo.model.HistoricoValor hv : allChartData) {
             dataSeries.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
         }
         System.out.println("CoinController: Gráfico atualizado com " + dataSeries.getData().size() + " pontos.");

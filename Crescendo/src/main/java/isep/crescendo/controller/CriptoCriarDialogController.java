@@ -1,7 +1,7 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.Repository.Criptomoeda;
-import isep.crescendo.Repository.HistoricoValor;
+import isep.crescendo.Repository.CriptomoedaRepository;
+import isep.crescendo.Repository.HistoricoValorRepository;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -69,11 +69,11 @@ public class CriptoCriarDialogController {
         novaCripto.setDataCriacao(new java.sql.Timestamp(System.currentTimeMillis()));
 
         // Salvar criptomoeda
-        Criptomoeda repo = new Criptomoeda();
+        CriptomoedaRepository repo = new CriptomoedaRepository();
         repo.adicionar(novaCripto);
         Timestamp dataHoraAtual = Timestamp.valueOf(LocalDateTime.now());
         // Guardar valor inicial no histórico
-        HistoricoValor historicoRepo = new HistoricoValor();
+        HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
         historicoRepo.adicionarValor(novaCripto.getId(), dataHoraAtual.toLocalDateTime(), valorInicial);
 
         confirmado = true;

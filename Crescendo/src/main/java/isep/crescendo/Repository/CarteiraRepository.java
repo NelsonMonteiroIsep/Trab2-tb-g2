@@ -2,13 +2,13 @@ package isep.crescendo.Repository;
 
 import java.sql.*;
 
-public class Carteira {
+public class CarteiraRepository {
 
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
     private static final String DB_USER = "sql7779870";
     private static final String DB_PASSWORD = "vUwAKDaynR";
 
-    public Carteira() {
+    public CarteiraRepository() {
         criarTabelaSeNaoExistir();
     }
 
