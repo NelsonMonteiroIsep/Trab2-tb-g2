@@ -161,6 +161,19 @@ public class OrdemRepo {
         }
     }
 
+    public void atualizarValor(int id, double novoValor) {
+        String sql = "UPDATE ordens SET valor = ? WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDouble(1, novoValor);
+            stmt.setInt(2, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao atualizar quantidade da ordem: " + e.getMessage());
+        }
+    }
+
     public List<Ordem> buscarOrdensPendentes() {
         List<Ordem> ordens = new ArrayList<>();
         String sql = "SELECT * FROM ordens WHERE status = 'pendente'";
