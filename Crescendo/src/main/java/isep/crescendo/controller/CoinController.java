@@ -1,9 +1,8 @@
 package isep.crescendo.controller;
 
-import isep.crescendo.model.Carteira;
-import isep.crescendo.model.Criptomoeda;
-import isep.crescendo.model.HistoricoValor;
-import isep.crescendo.model.User;
+import isep.crescendo.Repository.TransacaoRepo;
+import isep.crescendo.model.*;
+import isep.crescendo.util.OrdemService;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
 import javafx.collections.ObservableList;
@@ -30,6 +29,8 @@ public class CoinController implements Initializable {
     @FXML private Label userNameLabel;
     private User loggedInUser;
     private Criptomoeda moeda;
+    private int idMoedaAtual;
+    private int carteiraId;
     @FXML private Label saldoLabel;
     @FXML private TextField saldoField;
     private double saldo = 0.0;
@@ -55,7 +56,9 @@ public class CoinController implements Initializable {
     @FXML private VBox rightContainer;
     @FXML private TextField quantidadeCompraField;
     @FXML private TextField precoCompraField;
-
+    @FXML private TextField quantidadeVendaField;
+    @FXML private TextField precoVendaField;
+    private final OrdemService ordemService = new OrdemService();
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -67,6 +70,11 @@ public class CoinController implements Initializable {
         loggedInUser = SessionManager.getCurrentUser();
         if (loggedInUser != null) {
             userNameLabel.setText("Bem-vindo, " + loggedInUser.getNome());
+            isep.crescendo.Repository.Carteira carteiraRepo = new isep.crescendo.Repository.Carteira();
+            isep.crescendo.model.Carteira carteira = carteiraRepo.procurarPorUserId(loggedInUser.getId());
+            if (carteira != null) {
+                carteiraId = carteira.getId();
+            }
         } else {
             userNameLabel.setText("Bem-vindo, visitante!");
         }
@@ -75,9 +83,7 @@ public class CoinController implements Initializable {
 
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> atualizarSugestoes(newText));
 
-        if (saldoLabel != null) {
-            saldoLabel.setText(String.format("%.2f €", Carteira.getSaldo()));
-        }
+        saldoLabel.setText(String.format("%.2f €", isep.crescendo.model.Carteira.getSaldo()));
 
         campoPesquisaMoeda.textProperty().addListener((obs, oldText, newText) -> {
             if (newText.length() < 1) {
@@ -101,7 +107,7 @@ public class CoinController implements Initializable {
                     campoPesquisaMoeda.setText(c.getSimbolo());
                     sugestoesPopup.hide();
                     criptoSelecionada = c;
-                    atualizarGraficoComCripto(criptoSelecionada);
+                    setCriptomoeda(c);
                 });
                 return item;
             }).toList();
@@ -295,6 +301,7 @@ public class CoinController implements Initializable {
         this.moeda = moeda;
         this.criptoSelecionada = moeda;
         if (moeda != null) {
+            idMoedaAtual = moeda.getId();
             saldoLabel.setText("Saldo: 0.00 " + moeda.getSimbolo());
             infoLabel.setText(moeda.getNome());
 
@@ -312,54 +319,61 @@ public class CoinController implements Initializable {
     }
 
     @FXML
-    private void handleComprar() {
-        if (criptoSelecionada == null) {
-            mostrarErro("Selecione uma moeda primeiro.");
-            return;
-        }
-
+    public void handleComprar() {
         try {
             double quantidade = Double.parseDouble(quantidadeCompraField.getText());
             double preco = Double.parseDouble(precoCompraField.getText());
 
+            Ordem ordemCompra = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "compra");
+            ordemService.processarOrdemCompra(ordemCompra);
+
+            atualizarSaldoLabel();
+            System.out.println("Ordem de compra enviada com sucesso!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: campos inválidos para compra.");
+        }
+    }
+
+    @FXML
+    public void handleVender() {
+        try {
+            double quantidade = Double.parseDouble(quantidadeVendaField.getText());
+            double preco = Double.parseDouble(precoVendaField.getText());
+
             if (quantidade <= 0 || preco <= 0) {
-                mostrarErro("Quantidade e preço devem ser maiores que 0.");
+                System.out.println("Quantidade e preço devem ser maiores que zero.");
                 return;
             }
 
             int userId = SessionManager.getCurrentUser().getId();
-            isep.crescendo.Repository.Carteira carteiraRepo = new isep.crescendo.Repository.Carteira();
-            Carteira carteira = carteiraRepo.procurarPorUserId(userId);
-
-            double saldoDisponivel = carteira != null ? carteira.getSaldo() : 0;
-            double custoTotal = quantidade * preco;
-
-            if (saldoDisponivel < custoTotal) {
-                mostrarErro("Saldo insuficiente.");
+            Carteira carteira = isep.crescendo.Repository.Carteira.procurarPorUserId(userId);
+            if (carteira == null) {
+                System.out.println("Carteira não encontrada.");
                 return;
             }
 
-            // Criar ordem de compra
-            isep.crescendo.model.Transacao ordemCompra = new isep.crescendo.model.Transacao(
-                    userId,
-                    String.valueOf(criptoSelecionada.getId()),
-                    quantidade,
-                    preco,
-                    "compra",
-                    LocalDateTime.now()
-            );
+            int carteiraId = carteira.getId();
+            int idMoedaAtual = criptoSelecionada.getId();
 
-            // Processar ordem
-            isep.crescendo.Repository.Transacao transacaoRepo = new isep.crescendo.Repository.Transacao();
-            transacaoRepo.processarCompraParcial(ordemCompra, criptoSelecionada.getId());
+            isep.crescendo.Repository.Carteira carteiraRepo = new isep.crescendo.Repository.Carteira();
+            boolean podeVender = carteiraRepo.podeVender(carteiraId, idMoedaAtual, quantidade);
 
-            // Deduzir saldo da carteira
-            carteiraRepo.atualizarSaldo(userId, saldoDisponivel - custoTotal);
+            if (!podeVender) {
+                System.out.println("Saldo insuficiente ou já comprometido em ordens abertas.");
+                return;
+            }
+
+            Ordem ordemVenda = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "venda");
+            ordemService.processarOrdemVenda(ordemVenda);
+
             atualizarSaldoLabel();
-            infoLabel.setText("Ordem de compra enviada com sucesso!");
+            System.out.println("Ordem de venda enviada com sucesso!");
 
         } catch (NumberFormatException e) {
-            mostrarErro("Valores inválidos. Use apenas números.");
+            System.out.println("Erro: campos inválidos para venda.");
         }
     }
+
+
 }

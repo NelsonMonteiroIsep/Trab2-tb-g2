@@ -4,45 +4,34 @@ import java.time.LocalDateTime;
 
 public class Transacao {
     private int id;
-    private int carteiraId;
-    private String moeda; // pode ser ID da moeda como String
+    private int ordemCompraId;
+    private int ordemVendaId;
+    private int idMoeda;
     private double quantidade;
-    private double valor; // preço unitário
-    private String tipo; // "compra" ou "venda"
+    private double valorUnitario;
     private LocalDateTime dataHora;
-    private boolean executada;
-    private boolean expirada;
 
-    // Construtor para ordens novas
-    public Transacao(int carteiraId, String moeda, double quantidade, double valor, String tipo, LocalDateTime dataHora) {
-        this.carteiraId = carteiraId;
-        this.moeda = moeda;
-        this.quantidade = quantidade;
-        this.valor = valor;
-        this.tipo = tipo;
-        this.dataHora = dataHora;
-        this.executada = false;
-        this.expirada = false;
-    }
-
-    // Construtor completo
-    public Transacao(int id, int carteiraId, String moeda, double quantidade, double valor, String tipo, LocalDateTime dataHora) {
-        this(carteiraId, moeda, quantidade, valor, tipo, dataHora);
+    public Transacao(int id, int ordemCompraId, int ordemVendaId, int idMoeda, double quantidade, double valorUnitario, LocalDateTime dataHora) {
         this.id = id;
+        this.ordemCompraId = ordemCompraId;
+        this.ordemVendaId = ordemVendaId;
+        this.idMoeda = idMoeda;
+        this.quantidade = quantidade;
+        this.valorUnitario = valorUnitario;
+        this.dataHora = dataHora;
     }
 
-    // Getters e setters
-    public int getId() { return id; }
-    public int getCarteiraId() { return carteiraId; }
-    public String getMoeda() { return moeda; }
-    public double getQuantidade() { return quantidade; }
-    public double getValor() { return valor; }
-    public String getTipo() { return tipo; }
-    public LocalDateTime getDataHora() { return dataHora; }
-    public boolean isExecutada() { return executada; }
-    public boolean isExpirada() { return expirada; }
+    public Transacao(int ordemCompraId, int ordemVendaId, int idMoeda, double quantidade, double valorUnitario) {
+        this(0, ordemCompraId, ordemVendaId, idMoeda, quantidade, valorUnitario, LocalDateTime.now());
+    }
 
-    public void setQuantidade(double quantidade) { this.quantidade = quantidade; }
-    public void setExecutada(boolean executada) { this.executada = executada; }
-    public void setExpirada(boolean expirada) { this.expirada = expirada; }
+    // Getters e Setters
+    public int getId() { return id; }
+    public int getOrdemCompraId() { return ordemCompraId; }
+    public int getOrdemVendaId() { return ordemVendaId; }
+    public int getIdMoeda() { return idMoeda; }
+    public double getQuantidade() { return quantidade; }
+    public double getValorUnitario() { return valorUnitario; }
+    public LocalDateTime getDataHora() { return dataHora; }
 }
+
