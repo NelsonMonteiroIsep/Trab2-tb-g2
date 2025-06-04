@@ -12,6 +12,7 @@
     <Button text="📥 Receber" onAction="#handleRedirectReceber" styleClass="menu-button-dark"/>
     <Button text="🔁 Swap" onAction="#handleRedirectSwap" styleClass="menu-button-dark"/>
     <Button text="💼 Gestão" onAction="#handleRedirectGestao" styleClass="menu-button-dark"/>
+    <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark"/>
     <Button text="🚪 Sair" onAction="#handleLogout" styleClass="menu-button-dark"/>
 
 </VBox>
