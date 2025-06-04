@@ -6,6 +6,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
+<?import javafx.geometry.Insets?>
 <BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
             fx:controller="isep.crescendo.controller.WalletController"
@@ -20,9 +21,13 @@
     </left>
 
     <center>
-        
-    </center>
+        <VBox style="-fx-background-color: #28282b ;-fx-background-radius: 5;-fx-background-insets:  0 30 30 30;-fx-padding: 0 30 30 30"  >
 
+            <HBox style="-fx-padding: 10">
+                <Label text="Wallet" style="-fx-text-fill: white; "/>
+            </HBox>
+        </VBox>
+    </center>
 
 
 </BorderPane>
