@@ -29,6 +29,7 @@ public class OrdemService {
         if (!carteiraRepo.temSaldo(ordemCompra.getCarteiraId(), totalReserva)) return;
         carteiraRepo.removerSaldo(ordemCompra.getCarteiraId(), totalReserva);  // ✅ reserva saldo máximo
 
+        ordemCompra.setValorTotalReservado(totalReserva);
         int ordemId = ordemRepo.adicionar(ordemCompra);
         double restante = ordemCompra.getQuantidade();
         double valorExecutadoTotal = 0;
@@ -64,15 +65,33 @@ public class OrdemService {
             restante -= executada;
             valorExecutadoTotal += custoReal;
 
+
             if (executada == qtdVenda) ordemRepo.marcarComoExecutada(venda.getId());
             else ordemRepo.atualizarQuantidade(venda.getId(), qtdVenda - executada);
         }
 
-        // 3. Atualizar a ordem
         if (restante > 0) {
-            ordemRepo.atualizarQuantidade(ordemId, restante);
+                // 🔁 Atualizar quantidade e valor da ordem dinamicamente
+                double totalExecutado = transacaoRepo.somarValorExecutadoPorOrdemCompra(ordemId);
+                double totalReservado = ordemCompra.getValorTotalReservado();
+                double novoValorUnitario = (totalReservado - totalExecutado) / restante;
+
+                ordemRepo.atualizarQuantidade(ordemId, restante);
+                ordemRepo.atualizarValor(ordemId, novoValorUnitario);
+
+                System.out.printf("Ordem #%d atualizada: nova quantidade = %.6f, novo valor unitário = %.2f€\\n", ordemId, restante, novoValorUnitario);
         } else {
             ordemRepo.marcarComoExecutada(ordemId);
+
+            // ✅ Calcular economia final e devolver ao utilizador
+            double totalExecutado = transacaoRepo.somarValorExecutadoPorOrdemCompra(ordemId);
+            double totalReservado = ordemCompra.getValorTotalReservado();
+            double diferencaFinal = totalReservado - totalExecutado;
+
+            if (diferencaFinal > 0) {
+                carteiraRepo.adicionarSaldo(ordemCompra.getCarteiraId(), diferencaFinal);
+                System.out.printf("Ordem #%d totalmente executada. Diferença devolvida: %.2f€\\n\"", ordemId, diferencaFinal);
+            }
         }
 
     }
@@ -114,11 +133,6 @@ public class OrdemService {
             // ✅ Transferir para vendedor
             carteiraRepo.adicionarSaldo(carteiraId, custoReal);
 
-            // ✅ Devolver excesso ao comprador
-            if (diferenca > 0) {
-                carteiraRepo.adicionarSaldo(compra.getCarteiraId(), diferenca);
-            }
-
             // 📄 Registar transação
             transacaoRepo.adicionar(new Transacao(
                     compra.getId(), ordemVendaId, idMoeda, executada, precoVenda
@@ -126,9 +140,31 @@ public class OrdemService {
 
             // ✅ Atualizar ordens
             if (executada == qtdCompra) {
+                // Finaliza a ordem de compra
                 ordemRepo.marcarComoExecutada(compra.getId());
+
+                double totalExecutado = transacaoRepo.somarValorExecutadoPorOrdemCompra(compra.getId());
+                double totalReservado = compra.getValorTotalReservado();
+                double diferencaFinal = totalReservado - totalExecutado;
+
+                if (diferencaFinal > 0) {
+                    carteiraRepo.adicionarSaldo(compra.getCarteiraId(), diferencaFinal);
+                    System.out.printf("Compra #%d finalizada. Diferença devolvida: %.2f€\n", compra.getId(), diferencaFinal);
+                }
+
             } else {
-                ordemRepo.atualizarQuantidade(compra.getId(), qtdCompra - executada);
+                // Ordem de compra ainda pendente: atualizar quantidade e valor máximo por unidade
+                double novaQuantidade = qtdCompra - executada;
+                ordemRepo.atualizarQuantidade(compra.getId(), novaQuantidade);
+
+                double totalExecutado = transacaoRepo.somarValorExecutadoPorOrdemCompra(compra.getId());
+                double totalReservado = compra.getValorTotalReservado();
+                double novoValorUnitario = (totalReservado - totalExecutado) / novaQuantidade;
+
+                ordemRepo.atualizarValor(compra.getId(), novoValorUnitario);
+
+                System.out.printf("Compra #%d atualizada: nova quantidade = %.6f, novo valor unitário = %.2f€\n",
+                        compra.getId(), novaQuantidade, novoValorUnitario);
             }
 
             restanteVenda -= executada;
@@ -146,18 +182,23 @@ public class OrdemService {
 
 
 
+
     public void verificarOrdensExpiradas() {
-        List<Ordem> ordensPendentes = ordemRepo.buscarOrdensPendentes(); // deve buscar com status = 'pendente'
+        List<Ordem> ordensPendentes = ordemRepo.buscarOrdensPendentes();
 
         for (Ordem ordem : ordensPendentes) {
             if (!"compra".equalsIgnoreCase(ordem.getTipo())) continue;
 
             LocalDateTime agora = LocalDateTime.now();
             if (ordem.getDataHora().plusHours(24).isBefore(agora)) {
-                double quantidadeRestante = ordem.getQuantidade();
-                double valorADevolver = quantidadeRestante * ordem.getValor();
+                double quantidadeExecutada = transacaoRepo.somarQuantidadeExecutadaPorOrdemCompra(ordem.getId());
+                double quantidadeRestante = ordem.getQuantidade() - quantidadeExecutada;
 
-                carteiraRepo.adicionarSaldo(ordem.getCarteiraId(), valorADevolver);
+                if (quantidadeRestante > 0) {
+                    double valorADevolver = quantidadeRestante * ordem.getValor();
+                    carteiraRepo.adicionarSaldo(ordem.getCarteiraId(), valorADevolver);
+                }
+
                 ordemRepo.marcarComoExpirada(ordem.getId());
             }
         }

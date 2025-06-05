@@ -27,6 +27,7 @@ public class OrdemRepo {
                 tipo VARCHAR(10) NOT NULL,
                 status VARCHAR(15) NOT NULL DEFAULT 'pendente',
                 data_hora DATETIME NOT NULL,
+                valor_total_reservado DOUBLE NOT NULL,
                 FOREIGN KEY (carteira_id) REFERENCES carteiras(id)
             );
         """;
@@ -41,12 +42,13 @@ public class OrdemRepo {
 
     public int adicionar(Ordem ordem) {
         String sql = """
-            INSERT INTO ordens (carteira_id, id_moeda, quantidade, valor, tipo, status, data_hora)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO ordens (carteira_id, id_moeda, quantidade, valor, tipo, status, data_hora, valor_total_reservado)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+
             stmt.setInt(1, ordem.getCarteiraId());
             stmt.setInt(2, ordem.getIdMoeda());
             stmt.setDouble(3, ordem.getQuantidade());
@@ -54,6 +56,8 @@ public class OrdemRepo {
             stmt.setString(5, ordem.getTipo());
             stmt.setString(6, ordem.getStatus());
             stmt.setTimestamp(7, Timestamp.valueOf(ordem.getDataHora()));
+            stmt.setDouble(8, ordem.getValorTotalReservado());
+
             stmt.executeUpdate();
 
             ResultSet rs = stmt.getGeneratedKeys();
@@ -90,7 +94,8 @@ public class OrdemRepo {
                         rs.getDouble("valor"),
                         rs.getString("tipo"),
                         rs.getString("status"),
-                        rs.getTimestamp("data_hora").toLocalDateTime()
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getDouble("valor_total_reservado")
                 ));
             }
         } catch (SQLException e) {
@@ -108,7 +113,7 @@ public class OrdemRepo {
               AND id_moeda = ?
               AND valor >= ?
               AND status = 'pendente'
-            ORDER BY valor DESC, data_hora ASC
+            ORDER BY data_hora ASC
         """;
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
@@ -126,7 +131,8 @@ public class OrdemRepo {
                         rs.getDouble("valor"),
                         rs.getString("tipo"),
                         rs.getString("status"),
-                        rs.getTimestamp("data_hora").toLocalDateTime()
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getDouble("valor_total_reservado")
                 ));
             }
         } catch (SQLException e) {
@@ -134,6 +140,35 @@ public class OrdemRepo {
         }
 
         return lista;
+    }
+
+    public List<Ordem> buscarOrdensPendentes() {
+        List<Ordem> ordens = new ArrayList<>();
+        String sql = "SELECT * FROM ordens WHERE status = 'pendente'";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                ordens.add(new Ordem(
+                        rs.getInt("id"),
+                        rs.getInt("carteira_id"),
+                        rs.getInt("id_moeda"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("valor"),
+                        rs.getString("tipo"),
+                        rs.getString("status"),
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getDouble("valor_total_reservado")
+                ));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return ordens;
     }
 
     public void marcarComoExecutada(int id) {
@@ -170,37 +205,8 @@ public class OrdemRepo {
             stmt.setInt(2, id);
             stmt.executeUpdate();
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao atualizar quantidade da ordem: " + e.getMessage());
+            throw new RuntimeException("Erro ao atualizar valor da ordem: " + e.getMessage());
         }
-    }
-
-    public List<Ordem> buscarOrdensPendentes() {
-        List<Ordem> ordens = new ArrayList<>();
-        String sql = "SELECT * FROM ordens WHERE status = 'pendente'";
-
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
-             PreparedStatement stmt = conn.prepareStatement(sql);
-             ResultSet rs = stmt.executeQuery()) {
-
-            while (rs.next()) {
-                Ordem ordem = new Ordem(
-                        rs.getInt("id"),
-                        rs.getInt("carteira_id"),
-                        rs.getInt("id_moeda"),
-                        rs.getDouble("quantidade"),
-                        rs.getDouble("valor"),
-                        rs.getString("tipo"),
-                        rs.getString("status"),
-                        rs.getTimestamp("data_hora").toLocalDateTime()
-                );
-                ordens.add(ordem);
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-        return ordens;
     }
 
     public void marcarComoExpirada(int ordemId) {
@@ -221,7 +227,7 @@ public class OrdemRepo {
         String sql = """
         SELECT SUM(quantidade) FROM ordens
         WHERE carteira_id = ? AND id_moeda = ? AND tipo = ? AND status = 'pendente'
-    """;
+        """;
 
         try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -238,4 +244,3 @@ public class OrdemRepo {
         return 0;
     }
 }
-

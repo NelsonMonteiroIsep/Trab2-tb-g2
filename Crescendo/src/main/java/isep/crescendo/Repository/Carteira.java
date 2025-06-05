@@ -1,6 +1,9 @@
 package isep.crescendo.Repository;
 
 import java.sql.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import isep.crescendo.model.MoedaSaldo;
 
 public class Carteira {
 
@@ -293,6 +296,42 @@ public class Carteira {
         }
 
         return saldo;
+    }
+
+    public ObservableList<MoedaSaldo> listarMoedasCarteira(int carteiraId) {
+        ObservableList<MoedaSaldo> lista = FXCollections.observableArrayList();
+
+        String sql = """
+        SELECT m.nome,
+               SUM(CASE 
+                   WHEN o.tipo = 'compra' THEN t.quantidade 
+                   ELSE -t.quantidade 
+               END) AS quantidade
+        FROM transacoes t
+        JOIN ordens o 
+            ON (t.ordem_compra_id = o.id AND o.tipo = 'compra' AND o.carteira_id = ?) 
+            OR (t.ordem_venda_id = o.id AND o.tipo = 'venda' AND o.carteira_id = ?)
+        JOIN criptomoedas m ON m.id = t.id_moeda
+        GROUP BY m.nome
+        HAVING quantidade > 0
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                lista.add(new MoedaSaldo(rs.getString("nome"), rs.getDouble("quantidade")));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar moedas da carteira: " + e.getMessage());
+        }
+
+        return lista;
     }
 
 }

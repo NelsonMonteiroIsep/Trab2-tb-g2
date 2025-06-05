@@ -59,5 +59,35 @@ public class TransacaoRepo {
         }
     }
 
+    public double somarQuantidadeExecutadaPorOrdemCompra(int ordemCompraId) {
+        String sql = "SELECT SUM(quantidade) FROM transacoes WHERE ordem_compra_id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ordemCompraId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
+    public double somarValorExecutadoPorOrdemCompra(int ordemCompraId) {
+        String sql = "SELECT SUM(quantidade * valor_unitario) FROM transacoes WHERE ordem_compra_id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, ordemCompraId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0.0;
+    }
+
     // Outros métodos futuros: listar por moeda, calcular médias, etc.
 }
