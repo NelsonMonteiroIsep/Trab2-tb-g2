@@ -30,10 +30,12 @@ public class Main extends Application {
         stage.setTitle("Login");
         stage.setScene(scene);
         stage.show();
-
+        new OrdemRepo();
+        new TransacaoRepo();
     }
 
     public static void main(String[] args) {
+
         launch(args);
     }
 }

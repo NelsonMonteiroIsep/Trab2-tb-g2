@@ -2,12 +2,12 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.layout.Region?>
 
+
+<?import javafx.geometry.Insets?>
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
-      fx:controller="isep.crescendo.controller.LeftBarController"
+      fx:controller="isep.crescendo.controller.MenuLateralController"
       spacing="30"
       alignment="CENTER_LEFT"
       prefWidth="200"
@@ -19,13 +19,17 @@
                          -fx-padding: 30px;
                          -fx-background-radius: 0 5 0 0;
                          -fx-border-radius: 0 5 0 0;">
+    <VBox.margin>
+        <Insets top="200"/>
+    </VBox.margin>
+
     <Label text="Crescendo."
            style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;"/>
 
     <Region VBox.vgrow="ALWAYS"/>
 
     <Button text="🏠 Portfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="💳 Carteira" styleClass="menu-button-dark" onAction="#handleRedirectWallet" style="-fx-text-fill: #CC9900;"/>
+    <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="📤 Enviar" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="📥 Receber" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="🔁 Swap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
@@ -33,7 +37,7 @@
 
     <Region VBox.vgrow="ALWAYS"/>
 
-    <Label fx:id="userNameLabel" visible="false">.</Label>
+    <Label fx:id="menu_label" visible="false">.</Label>
     <VBox alignment="CENTER_LEFT">
         <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900;"/>
     </VBox>

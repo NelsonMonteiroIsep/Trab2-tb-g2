@@ -1,6 +1,9 @@
 package isep.crescendo.Repository;
 
 import java.sql.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import isep.crescendo.model.MoedaSaldo;
 
 public class CarteiraRepository {
 
@@ -112,5 +115,223 @@ public class CarteiraRepository {
         }
     }
 
+    public void adicionarSaldo(int carteiraId, double valor) {
+        String sql = "UPDATE carteiras SET saldo = saldo + ? WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setDouble(1, valor);
+            pstmt.setInt(2, carteiraId);
+            pstmt.executeUpdate();
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao adicionar saldo à carteira: " + e.getMessage());
+        }
+    }
+
+    public boolean temSaldoCripto(int carteiraId, int idMoeda, double quantidade) {
+        double saldo = calcularSaldoMoeda(carteiraId, idMoeda);
+        return saldo >= quantidade;
+    }
+
+    public double calcularSaldoMoeda(int carteiraId, int idMoeda) {
+        String sql = """
+        SELECT o.tipo, t.quantidade
+        FROM transacoes t
+        JOIN ordens o ON t.ordem_compra_id = o.id OR t.ordem_venda_id = o.id
+        WHERE o.carteira_id = ? AND t.id_moeda = ?
+    """;
+
+        double saldo = 0.0;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, idMoeda);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String tipo = rs.getString("tipo");
+                double qtd = rs.getDouble("quantidade");
+                saldo += tipo.equalsIgnoreCase("compra") ? qtd : -qtd;
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular saldo da moeda: " + e.getMessage());
+        }
+
+        return saldo;
+    }
+
+    public boolean temSaldo(int carteiraId, double valor) {
+        String sql = "SELECT saldo FROM carteiras WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("saldo") >= valor;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao verificar saldo: " + e.getMessage());
+        }
+        return false;
+    }
+
+    public void removerSaldo(int carteiraId, double valor) {
+        String sql = "UPDATE carteiras SET saldo = saldo - ? WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setDouble(1, valor);
+            stmt.setInt(2, carteiraId);
+            int linhas = stmt.executeUpdate();
+            System.out.println("RemoverSaldo - linhas afetadas: " + linhas);
+
+            ResultSet rs = conn.createStatement().executeQuery("SELECT saldo FROM carteiras WHERE id = " + carteiraId);
+            if (rs.next()) {
+                System.out.println("Saldo atual (após remover): " + rs.getDouble("saldo"));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao remover saldo: " + e.getMessage());
+        }
+    }
+
+    public boolean podeVender(int carteiraId, int idMoeda, double novaQuantidade) {
+        double saldoExecutado = getSaldoExecutadoCripto(carteiraId, idMoeda);
+        double pendenteVenda = getQuantidadePendenteVenda(carteiraId, idMoeda);
+
+        return (saldoExecutado - pendenteVenda) >= novaQuantidade;
+    }
+
+    private double getSaldoExecutadoCripto(int carteiraId, int idMoeda) {
+        String sql = """
+        SELECT SUM(
+            CASE 
+                WHEN o.tipo = 'compra' THEN t.quantidade 
+                ELSE -t.quantidade 
+            END
+        ) AS saldo
+        FROM transacoes t
+        JOIN ordens o 
+          ON (o.id = t.ordem_compra_id AND o.tipo = 'compra' AND o.carteira_id = ?)
+          OR (o.id = t.ordem_venda_id AND o.tipo = 'venda' AND o.carteira_id = ?)
+        WHERE t.id_moeda = ?
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, carteiraId);
+            stmt.setInt(3, idMoeda);
+
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() ? rs.getDouble("saldo") : 0.0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular saldo executado: " + e.getMessage());
+        }
+    }
+
+
+    private double getQuantidadePendenteVenda(int carteiraId, int idMoeda) {
+        String sql = """
+        SELECT SUM(quantidade) AS total
+        FROM ordens
+        WHERE carteira_id = ? AND id_moeda = ? AND tipo = 'venda' AND status = 'pendente'
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, idMoeda);
+
+            ResultSet rs = stmt.executeQuery();
+            return rs.next() ? rs.getDouble("total") : 0.0;
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular vendas pendentes: " + e.getMessage());
+        }
+    }
+
+
+    public double obterSaldoCripto(int carteiraId, int idMoeda) {
+        double saldo = 0.0;
+
+        String sql = """
+        SELECT o.tipo, t.quantidade
+        FROM transacoes t
+        JOIN ordens o ON
+            (o.id = t.ordem_compra_id AND o.tipo = 'compra' AND o.carteira_id = ?)
+            OR (o.id = t.ordem_venda_id AND o.tipo = 'venda' AND o.carteira_id = ?)
+        WHERE t.id_moeda = ?
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId); // para compra
+            stmt.setInt(2, carteiraId); // para venda
+            stmt.setInt(3, idMoeda);
+
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                String tipo = rs.getString("tipo");
+                double qtd = rs.getDouble("quantidade");
+
+                if ("compra".equalsIgnoreCase(tipo)) {
+                    saldo += qtd;
+                } else if ("venda".equalsIgnoreCase(tipo)) {
+                    saldo -= qtd;
+                }
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular saldo executado: " + e.getMessage());
+        }
+
+        return saldo;
+    }
+
+    public ObservableList<MoedaSaldo> listarMoedasCarteira(int carteiraId) {
+        ObservableList<MoedaSaldo> lista = FXCollections.observableArrayList();
+
+        String sql = """
+        SELECT m.nome,
+               SUM(CASE 
+                   WHEN o.tipo = 'compra' THEN t.quantidade 
+                   ELSE -t.quantidade 
+               END) AS quantidade
+        FROM transacoes t
+        JOIN ordens o 
+            ON (t.ordem_compra_id = o.id AND o.tipo = 'compra' AND o.carteira_id = ?) 
+            OR (t.ordem_venda_id = o.id AND o.tipo = 'venda' AND o.carteira_id = ?)
+        JOIN criptomoedas m ON m.id = t.id_moeda
+        GROUP BY m.nome
+        HAVING quantidade > 0
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                lista.add(new MoedaSaldo(rs.getString("nome"), rs.getDouble("quantidade")));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar moedas da carteira: " + e.getMessage());
+        }
+
+        return lista;
+    }
 
 }

@@ -74,6 +74,7 @@ public class MarketController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         loggedInUser = SessionManager.getCurrentUser();
+
         if (intervaloSelecionadoBox != null && periodoSelecionadoBox != null) {
             intervaloSelecionadoBox.getItems().addAll("Minutos", "Horas", "Dias", "Meses", "Anos");
             intervaloSelecionadoBox.setValue("Horas");
@@ -102,7 +103,7 @@ public class MarketController implements Initializable {
 
 
         if (saldoLabel != null) {
-            saldoLabel.setText(String.format("%.2f €", isep.crescendo.model.Carteira.getSaldo()));
+            atualizarSaldoLabel();
         }
 
         if (campoPesquisaMoeda != null){
