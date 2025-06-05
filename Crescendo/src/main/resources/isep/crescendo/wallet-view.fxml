@@ -54,7 +54,7 @@
                         <VBox>
                             <Label text="Saldo Investido" style="-fx-text-fill: white;-fx-font-size: 24px;"/>
                             <Region prefHeight="50"/>
-                            <Label text="150k" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
+                            <Label fx:id="saldoInvestidoLabel" text="150k" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
                         </VBox>
 
                     </HBox>

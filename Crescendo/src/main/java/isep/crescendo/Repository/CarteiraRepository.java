@@ -298,21 +298,25 @@ public class CarteiraRepository {
         return saldo;
     }
 
-    public ObservableList<MoedaSaldo> listarMoedasCarteira(int carteiraId) {
+    public static ObservableList<MoedaSaldo> listarMoedasCarteira(int carteiraId) {
         ObservableList<MoedaSaldo> lista = FXCollections.observableArrayList();
 
         String sql = """
-        SELECT m.nome,
-               SUM(CASE 
-                   WHEN o.tipo = 'compra' THEN t.quantidade 
-                   ELSE -t.quantidade 
-               END) AS quantidade
+        SELECT\s
+            m.nome,\s
+            m.imagem_url,
+            SUM(CASE WHEN o.tipo = 'compra' THEN t.quantidade ELSE -t.quantidade END) AS quantidade,
+            ROUND(
+                SUM(CASE WHEN o.tipo = 'compra' THEN t.quantidade * t.valor_unitario ELSE 0 END) /
+                NULLIF(SUM(CASE WHEN o.tipo = 'compra' THEN t.quantidade ELSE 0 END), 0), 6
+            ) AS preco_medio_compra,
+            MAX(CASE WHEN o.tipo = 'compra' THEN o.data_hora ELSE NULL END) AS ultima_compra
         FROM transacoes t
-        JOIN ordens o 
-            ON (t.ordem_compra_id = o.id AND o.tipo = 'compra' AND o.carteira_id = ?) 
+        JOIN ordens o\s
+            ON (t.ordem_compra_id = o.id AND o.tipo = 'compra' AND o.carteira_id = ?)\s
             OR (t.ordem_venda_id = o.id AND o.tipo = 'venda' AND o.carteira_id = ?)
         JOIN criptomoedas m ON m.id = t.id_moeda
-        GROUP BY m.nome
+        GROUP BY m.nome, m.imagem_url
         HAVING quantidade > 0
     """;
 
@@ -324,7 +328,13 @@ public class CarteiraRepository {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                lista.add(new MoedaSaldo(rs.getString("nome"), rs.getDouble("quantidade")));
+                lista.add(new MoedaSaldo(
+                        rs.getString("nome"),
+                        rs.getDouble("quantidade"),
+                        rs.getString("imagem_url"),
+                        rs.getDouble("preco_medio_compra"),
+                        rs.getTimestamp("ultima_compra")
+                ));
             }
 
         } catch (SQLException e) {
@@ -332,6 +342,51 @@ public class CarteiraRepository {
         }
 
         return lista;
+    }
+
+    public static double calcularSaldoInvestido(int carteiraId) {
+        String sql = """
+        SELECT SUM(quantidade * valor_mais_recente) AS saldo_total
+        FROM (
+            SELECT 
+                m.id AS moeda_id,
+                SUM(CASE 
+                    WHEN o.tipo = 'compra' THEN t.quantidade 
+                    ELSE -t.quantidade 
+                END) AS quantidade,
+                (
+                    SELECT h.valor 
+                    FROM historico_valores h 
+                    WHERE h.cripto_id = m.id 
+                    ORDER BY h.data DESC 
+                    LIMIT 1
+                ) AS valor_mais_recente
+            FROM transacoes t
+            JOIN ordens o 
+                ON (t.ordem_compra_id = o.id AND o.tipo = 'compra' AND o.carteira_id = ?)
+                OR (t.ordem_venda_id = o.id AND o.tipo = 'venda' AND o.carteira_id = ?)
+            JOIN criptomoedas m ON m.id = t.id_moeda
+            GROUP BY m.id
+            HAVING quantidade > 0
+        ) AS subquery
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            stmt.setInt(2, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getDouble("saldo_total");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao calcular saldo investido: " + e.getMessage());
+        }
+
+        return 0.0;
     }
 
 }

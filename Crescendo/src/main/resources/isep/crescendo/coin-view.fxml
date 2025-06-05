@@ -75,21 +75,22 @@
                     <NumberAxis fx:id="eixoY" label="Valor (€)" style="-fx-tick-label-fill: white; -fx-axis-label-fill: #bbb;"/>
                 </yAxis>
             </LineChart>
-        </VBox>
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Quantidade:" style="-fx-text-fill: white;"/>
-            <TextField fx:id="quantidadeCompraField" promptText="ex: 1.5" prefWidth="100"/>
-            <Label text="Preço por unidade (€):" style="-fx-text-fill: white;"/>
-            <TextField fx:id="precoCompraField" promptText="ex: 25000" prefWidth="100"/>
-            <Button text="Comprar" onAction="#handleComprar"/>
-        </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Quantidade:" style="-fx-text-fill: white;"/>
+                <TextField fx:id="quantidadeCompraField" promptText="ex: 1.5" prefWidth="100"/>
+                <Label text="Preço por unidade (€):" style="-fx-text-fill: white;"/>
+                <TextField fx:id="precoCompraField" promptText="ex: 25000" prefWidth="100"/>
+                <Button text="Comprar" onAction="#handleComprar"/>
+            </HBox>
 
-        <HBox spacing="10" alignment="CENTER_LEFT">
-            <Label text="Quantidade a vender:" style="-fx-text-fill: white;"/>
-            <TextField fx:id="quantidadeVendaField" promptText="ex: 1.5" prefWidth="100"/>
-            <Label text="Preço mínimo por unidade (€):" style="-fx-text-fill: white;"/>
-            <TextField fx:id="precoVendaField" promptText="ex: 26000" prefWidth="100"/>
-            <Button text="Vender" onAction="#handleVender"/>
-        </HBox>
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Quantidade a vender:" style="-fx-text-fill: white;"/>
+                <TextField fx:id="quantidadeVendaField" promptText="ex: 1.5" prefWidth="100"/>
+                <Label text="Preço mínimo por unidade (€):" style="-fx-text-fill: white;"/>
+                <TextField fx:id="precoVendaField" promptText="ex: 26000" prefWidth="100"/>
+                <Button text="Vender" onAction="#handleVender"/>
+            </HBox>
+        </VBox>
+
     </HBox>
 </VBox>

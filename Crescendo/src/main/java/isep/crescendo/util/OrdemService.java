@@ -1,6 +1,6 @@
 package isep.crescendo.util;
 
-import isep.crescendo.Repository.Carteira;
+import isep.crescendo.Repository.CarteiraRepository;
 import isep.crescendo.Repository.OrdemRepo;
 import isep.crescendo.Repository.TransacaoRepo;
 import isep.crescendo.model.Ordem;
@@ -13,12 +13,12 @@ public class OrdemService {
 
     private final OrdemRepo ordemRepo;
     private final TransacaoRepo transacaoRepo;
-    private final Carteira carteiraRepo;
+    private final CarteiraRepository carteiraRepo;
 
     public OrdemService() {
         this.ordemRepo = new OrdemRepo();
         this.transacaoRepo = new TransacaoRepo();
-        this.carteiraRepo = new Carteira();
+        this.carteiraRepo = new CarteiraRepository();
     }
 
     public void processarOrdemCompra(Ordem ordemCompra) {

@@ -7,7 +7,7 @@ import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
-import isep.crescendo.Repository.Carteira;
+import isep.crescendo.Repository.CarteiraRepository;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -27,7 +27,7 @@ public class UnderConstructionController {
         quantidadeColuna.setCellValueFactory(new PropertyValueFactory<>("quantidade"));
 
         int carteiraId = SessionManager.getCurrentUser().getId(); // ou obter via método
-        Carteira carteiraRepo = new Carteira();
+        CarteiraRepository carteiraRepo = new CarteiraRepository();
         ObservableList<MoedaSaldo> lista = carteiraRepo.listarMoedasCarteira(carteiraId);
 
         moedasTable.setItems(lista);

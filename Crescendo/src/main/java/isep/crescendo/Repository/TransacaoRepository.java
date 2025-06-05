@@ -7,12 +7,12 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class TransacaoRepo {
+public class TransacaoRepository {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
     private static final String DB_USER = "sql7779870";
     private static final String DB_PASSWORD = "vUwAKDaynR";
 
-    public TransacaoRepo() {
+    public TransacaoRepository() {
         criarTabela();
     }
 
