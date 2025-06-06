@@ -204,4 +204,29 @@ public class OrdemService {
         }
     }
 
+    public void cancelarOrdem(Ordem ordem) {
+        if ("compra".equalsIgnoreCase(ordem.getTipo())) {
+            // Mesma lógica que já tens
+            double quantidadeExecutada = transacaoRepo.somarQuantidadeExecutadaPorOrdemCompra(ordem.getId());
+            double quantidadeRestante = ordem.getQuantidade() - quantidadeExecutada;
+
+            if (quantidadeRestante > 0) {
+                double valorADevolver = quantidadeRestante * ordem.getValor();
+                carteiraRepo.adicionarSaldo(ordem.getCarteiraId(), valorADevolver);
+
+                System.out.printf("Ordem de compra #%d cancelada. Devolvido %.2f€ ao utilizador.\n", ordem.getId(), valorADevolver);
+            }
+
+        } else if ("venda".equalsIgnoreCase(ordem.getTipo())) {
+
+
+            System.out.printf("Ordem de venda #%d cancelada. Restante %.6f não será mais vendida.\n",
+                    ordem.getId(), ordem.getQuantidade());
+
+
+        }
+
+        ordemRepo.marcarComoCancelada(ordem.getId());
+    }
+
 }

@@ -301,7 +301,7 @@ public class OrdemRepo {
             COALESCE(SUM(t.quantidade), 0) AS quantidade_executada,
             COALESCE(SUM(t.quantidade * t.valor_unitario), 0) AS valor_total_executado
         FROM ordens o
-        LEFT JOIN transacoes t ON t.ordem_compra_id = o.id
+        LEFT JOIN transacoes t ON t.ordem_compra_id = o.id OR t.ordem_venda_id = o.id
         WHERE o.carteira_id = ?
         GROUP BY o.id
         ORDER BY o.data_hora DESC
@@ -341,4 +341,20 @@ public class OrdemRepo {
 
         return lista;
     }
+
+    public void marcarComoCancelada(int ordemId) {
+        String sql = "UPDATE ordens SET status = 'cancelada' WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, ordemId);
+            stmt.executeUpdate();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }
