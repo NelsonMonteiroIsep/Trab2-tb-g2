@@ -5,19 +5,25 @@ import isep.crescendo.model.MoedaSaldo;
 import isep.crescendo.model.User;
 import isep.crescendo.util.SessionManager;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.control.Label;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
 import isep.crescendo.model.Carteira;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import java.awt.event.ActionEvent;
+import java.io.IOException;
 import java.time.format.DateTimeFormatter;
+import java.util.Optional;
 
 
 public class WalletController {
@@ -124,5 +130,59 @@ public class WalletController {
         } catch (Exception e) {
             return new Image(getClass().getResourceAsStream("/isep/crescendo/images/default.png"));
         }
+    }
+
+    @FXML
+    private void handleAdicionarSaldo() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/adicionar-saldo-view.fxml"));
+            Parent root = loader.load();
+
+            AdicionarSaldoDialogController controller = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initStyle(StageStyle.UNDECORATED); // Sem barra do SO
+            dialogStage.setScene(new Scene(root));
+
+            controller.setDialogStage(dialogStage);
+
+            controller.setOnValorConfirmado(valor -> {
+                try {
+                    if (valor <= 0) {
+                        mostrarErro("Insira um valor positivo.");
+                        return;
+                    }
+
+                    int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
+                    CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
+                    isep.crescendo.model.Carteira carteira = carteiraRepositoryRepo.procurarPorUserId(userId);
+
+                    if (carteira != null) {
+                        double novoSaldo = carteira.getSaldo() + valor;
+                        carteiraRepositoryRepo.atualizarSaldo(userId, novoSaldo);
+                        atualizarSaldoLabel();
+                    } else {
+                        mostrarErro("Carteira não encontrada para o utilizador.");
+                    }
+
+                } catch (NumberFormatException e) {
+                    mostrarErro("Valor inválido. Insira um número.");
+                }
+            });
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void mostrarErro(String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Erro");
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 }

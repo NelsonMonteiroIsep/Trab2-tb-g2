@@ -37,16 +37,51 @@
 
                 </VBox>
                 <Region HBox.hgrow="ALWAYS"/>
-                <HBox>
-                    <HBox prefHeight="150" maxHeight="150" prefWidth="300" maxWidth="300"
-                          style="-fx-background-color: black;-fx-background-radius: 5;-fx-padding: 15 0 0 15">
-                        <VBox>
-                            <Label text="Saldo Disponivel" style="-fx-text-fill: white;-fx-font-size: 24px;"/>
-                            <Region prefHeight="50"/>
-                            <Label fx:id="saldoLabel" text="15k" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
-                        </VBox>
-                    </HBox>
+
+                <HBox prefHeight="150" maxHeight="150" prefWidth="300" maxWidth="300"
+                      style="-fx-background-color: black;-fx-background-radius: 5;-fx-padding: 15 15 15 15;">
+                    <VBox spacing="10" alignment="TOP_LEFT">
+
+                        <Label text="Saldo Disponivel" style="-fx-text-fill: white;-fx-font-size: 24px;"/>
+
+                        <!-- LINHA com Saldo + botões -->
+                        <HBox spacing="10" alignment="CENTER_LEFT">
+                            <Label fx:id="saldoLabel" text="2355,00 €" style="-fx-text-fill: white;-fx-font-size: 16px;"/>
+
+                            <Region HBox.hgrow="ALWAYS"/> <!-- isto empurra os botões para a direita -->
+
+                            <HBox spacing="5">
+                                <Button fx:id="levantarSaldoButton"  text="−"
+                                        style="
+                            -fx-background-color: #444;
+                            -fx-text-fill: white;
+                            -fx-font-size: 7px;
+                            -fx-background-radius: 5;
+                            -fx-min-width: 25px;
+                            -fx-min-height: 25px;
+                            -fx-max-width: 25px;
+                            -fx-max-height: 25px;
+                            -fx-cursor: hand;
+                        "/>
+
+                                <Button fx:id="carregarSaldoButton" onAction="#handleAdicionarSaldo" text="+"
+                                        style="
+                            -fx-background-color: #444;
+                            -fx-text-fill: white;
+                            -fx-font-size: 7px;
+                            -fx-background-radius: 5;
+                            -fx-min-width: 25px;
+                            -fx-min-height: 25px;
+                            -fx-max-width: 25px;
+                            -fx-max-height: 25px;
+                            -fx-cursor: hand;
+                        "/>
+                            </HBox>
+                        </HBox>
+
+                    </VBox>
                 </HBox>
+
                 <Region prefWidth="50"/>
                 <HBox>
                     <HBox prefHeight="150" maxHeight="150" prefWidth="300" maxWidth="300"
@@ -58,7 +93,9 @@
                         </VBox>
 
                     </HBox>
+
                 </HBox>
+
                 <Region prefWidth="30"/>
             </HBox>
             <Region prefHeight="250"/>

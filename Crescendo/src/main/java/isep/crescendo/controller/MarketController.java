@@ -143,39 +143,7 @@ public class MarketController implements Initializable {
     }
     }
 
-    @FXML
-    private void handleAdicionarSaldo() {
-        TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Adicionar Saldo");
-        dialog.setHeaderText(null);
-        dialog.setContentText("Insira o valor a adicionar:");
 
-        Optional<String> resultado = dialog.showAndWait();
-        resultado.ifPresent(valorStr -> {
-            try {
-                double valor = Double.parseDouble(valorStr);
-                if (valor <= 0) {
-                    mostrarErro("Insira um valor positivo.");
-                    return;
-                }
-
-                int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
-                CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
-                isep.crescendo.model.Carteira carteira = carteiraRepositoryRepo.procurarPorUserId(userId);
-
-                if (carteira != null) {
-                    double novoSaldo = carteira.getSaldo() + valor;
-                    carteiraRepositoryRepo.atualizarSaldo(userId, novoSaldo);
-                    atualizarSaldoLabel();
-                } else {
-                    mostrarErro("Carteira não encontrada para o utilizador.");
-                }
-
-            } catch (NumberFormatException e) {
-                mostrarErro("Valor inválido. Insira um número.");
-            }
-        });
-    }
 
     @FXML
     private void atualizarGrafico() {
@@ -202,13 +170,7 @@ public class MarketController implements Initializable {
             }
         }
     }
-    private void mostrarErro(String mensagem) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle("Erro");
-        alert.setHeaderText(null);
-        alert.setContentText(mensagem);
-        alert.showAndWait();
-    }
+
 
     @FXML
     private void handlePesquisarMoeda() {
