@@ -23,7 +23,7 @@ public class CriptoAlgoritmo {
     private Timeline simulationTimeline;
 
     private int currentMinute = 0;
-    private static final int SIMULATION_INTERVAL_MS = 3000; // 1 segundo real por "minuto" simulado
+    private static final int SIMULATION_INTERVAL_MS = 60; // 1 segundo real por "minuto" simulado
 
     private CyclePhase currentPhase = CyclePhase.ADOCAO;
     private int minutesInCurrentPhase = 0;

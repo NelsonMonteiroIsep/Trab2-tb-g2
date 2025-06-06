@@ -15,23 +15,26 @@
     <!-- Logo / Título -->
     <!-- <Label text="Crescendo." style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" />-->
 
-     <Separator />
+    <Region VBox.vgrow="ALWAYS"/>
 
      <!-- Menu principal -->
-    <VBox spacing="10" alignment="TOP_LEFT">
-        <Button text="🏠 Home"  onAction="#handleRedirectPortfolio" styleClass="menu-button-dark" />
-        <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" />
-        <Button text="🔁 Swap" styleClass="menu-button-dark" />
-        <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark" />
+    <VBox spacing="10" alignment="CENTER_LEFT">
+
+        <Button text="🏠 Home"  onAction="#handleRedirectPortfolio" styleClass="menu-button-dark"  style="-fx-text-fill: #CC9900"/>
+        <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
+        <Button text="🔁 Swap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
+        <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
     </VBox>
 
 
-
-    <Separator />
-
+    <Region VBox.vgrow="ALWAYS"/>
     <!-- Rodapé -->
     <VBox alignment="BOTTOM_LEFT" spacing="5">
         <Label fx:id="menu_label" visible="false">.</Label>
-        <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" />
+        <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900" />
     </VBox>
+
+
+
+
 </VBox>
