@@ -30,9 +30,7 @@
 
     <Button text="🏠 Portfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="📤 Enviar" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="📥 Receber" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="🔁 Swap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
+    <Button text="🔁 Historico" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
     <Button text="💼 Gestão" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
 
     <Region VBox.vgrow="ALWAYS"/>

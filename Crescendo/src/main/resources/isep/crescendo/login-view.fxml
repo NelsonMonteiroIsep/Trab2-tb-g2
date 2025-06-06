@@ -12,18 +12,18 @@
            fx:id="root">
 
     <!-- Background Image -->
-    <ImageView fx:id="backgroundImageView" opacity="0.1" preserveRatio="false" />
+    <ImageView fx:id="backgroundImageView" opacity="0.1"/>
 
     <!-- Main content -->
     <VBox fx:id="mainVBox" styleClass="fields-background"
           spacing="10" alignment="CENTER"
-          maxWidth="600"  maxHeight="600" fillWidth="true"
+          maxWidth="600"  maxHeight="600"
     >
 
         <Region prefHeight="5" maxHeight="10" VBox.vgrow="NEVER"/>
 
         <!-- Logo Image -->
-        <ImageView fx:id="logoImageView" preserveRatio="true" smooth="true" fitWidth="150">
+        <ImageView fx:id="logoImageView" preserveRatio="true" fitWidth="150">
             <image>
                 <Image url="/isep/crescendo/images/Logo.png" />
             </image>
@@ -39,9 +39,7 @@
     <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity" >
 
         <ImageView fitHeight="20" fitWidth="20">
-            <image>
-                <Image url="/isep/crescendo/images/User_Icon.png" />
-            </image>
+            <Image url="/isep/crescendo/images/User_Icon.png"/>
         </ImageView>
 
         <TextField fx:id="emailField" promptText="Log-in" styleClass="transparent-input"
@@ -52,9 +50,7 @@
     <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity" >
 
         <ImageView fitHeight="20" fitWidth="20">
-            <image>
-                <Image url="/isep/crescendo/images/Lock_Icon.png" />
-            </image>
+            <Image url="/isep/crescendo/images/Lock_Icon.png"/>
         </ImageView>
 
         <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"
