@@ -2,43 +2,38 @@
 
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-
-
 <?import javafx.geometry.Insets?>
+
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.MenuLateralController"
-      spacing="30"
-      alignment="CENTER_LEFT"
+      spacing="20"
+      alignment="TOP_CENTER"
       prefWidth="200"
-      prefHeight="1200"
-      maxHeight="1200"
-      maxWidth="200"
+      style="-fx-background-color: #28282b; -fx-padding: 30px; " >
 
-      style="-fx-background-color: #28282b;
-                         -fx-padding: 30px;
-                         -fx-background-radius: 0 5 0 0;
-                         -fx-border-radius: 0 5 0 0;">
-    <VBox.margin>
-        <Insets top="200"/>
-    </VBox.margin>
+    <!-- Logo / Título -->
+    <Label text="Crescendo." style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" />
 
-    <Label text="Crescendo."
-           style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;"/>
+    <Separator />
 
-    <Region VBox.vgrow="ALWAYS"/>
+    <!-- Menu principal -->
+    <VBox spacing="10" alignment="TOP_LEFT">
+        <Button text="🏠 Portfolio" styleClass="menu-button-dark" />
+        <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" />
+        <Button text="📤 Enviar" styleClass="menu-button-dark" />
+        <Button text="📥 Receber" styleClass="menu-button-dark" />
+        <Button text="🔁 Swap" styleClass="menu-button-dark" />
+        <Button text="💼 Gestão" styleClass="menu-button-dark" />
+    </VBox>
 
-    <Button text="🏠 Portfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="📤 Enviar" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="📥 Receber" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="🔁 Swap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
-    <Button text="💼 Gestão" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900;"/>
+    <VBox VBox.vgrow="ALWAYS" /> <!-- Espaço flexível -->
 
-    <Region VBox.vgrow="ALWAYS"/>
+    <Separator />
 
-    <Label fx:id="menu_label" visible="false">.</Label>
-    <VBox alignment="CENTER_LEFT">
-        <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900;"/>
+    <!-- Rodapé -->
+    <VBox alignment="BOTTOM_LEFT" spacing="5">
+        <Label fx:id="menu_label" visible="false">.</Label>
+        <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" />
     </VBox>
 </VBox>

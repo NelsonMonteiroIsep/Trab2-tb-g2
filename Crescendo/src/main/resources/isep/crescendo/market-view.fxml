@@ -4,7 +4,6 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.*?>
-
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.CategoryAxis?>
@@ -22,7 +21,7 @@
         <Label fx:id="userNameLabel" visible="false">.</Label>
     </VBox>
 
-    <BorderPane >
+    <BorderPane VBox.vgrow="ALWAYS">
         <!-- MENU LATERAL -->
         <left>
             <fx:include source="leftbar-componente.fxml"/>
@@ -30,18 +29,11 @@
 
         <!-- CONTEÚDO PRINCIPAL -->
         <center>
-
-
-                <VBox fx:id="coinContainer" spacing="10">
-                    <padding>
-                        <Insets top="10" right="10" bottom="10" left="10"/>
-                    </padding>
-                </VBox>
-
-
-
+            <VBox fx:id="coinContainer" spacing="10" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
+            </VBox>
         </center>
-
-     </BorderPane>
-
- </VBox>
+    </BorderPane>
+</VBox>

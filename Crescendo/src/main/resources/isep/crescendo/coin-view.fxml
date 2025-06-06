@@ -13,6 +13,7 @@
     <padding>
         <Insets top="5" right="10" bottom="5" left="10"/>
     </padding>
+    <Button text="⬅ Voltar" onAction="#handleVoltar" styleClass="menu-button-dark" />
     <Label fx:id="navBarAnyControl" text="Detalhes da Criptomoeda" style="-fx-text-fill: white; -fx-font-size: 20px; -fx-font-weight: bold;"/>
     <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT" spacing="15">
         <Label fx:id="userNameLabel" style="-fx-text-fill: #a0a0a0; -fx-font-size: 14px;"/>

@@ -128,5 +128,24 @@ public class CriptomoedaRepository {
         return lista;
     }
 
+    public ObservableList<isep.crescendo.model.Criptomoeda> getAllCriptomoedasAtivas() {
+        ObservableList<isep.crescendo.model.Criptomoeda> lista = FXCollections.observableArrayList();
+        String sql = "SELECT * FROM criptomoedas WHERE ativo = true ORDER BY nome";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                lista.add(mapResultSetParaCriptomoeda(rs));
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar criptomoedas ativas: " + e.getMessage());
+        }
+        return lista;
+    }
+
+
 
 }

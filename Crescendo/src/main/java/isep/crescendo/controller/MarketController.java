@@ -306,7 +306,7 @@ public class MarketController implements Initializable {
     }
     private void loadCoinComponents() {
         try {
-            ObservableList<isep.crescendo.model.Criptomoeda> moedas = criptoRepo.getAllCriptomoedas();
+            ObservableList<isep.crescendo.model.Criptomoeda> moedas = criptoRepo.getAllCriptomoedasAtivas();
 
             for (isep.crescendo.model.Criptomoeda moeda : moedas) {
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-componente.fxml"));

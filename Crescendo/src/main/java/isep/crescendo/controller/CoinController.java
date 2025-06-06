@@ -334,6 +334,11 @@ public class CoinController implements Initializable {
         SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", navBarAnyControl);
     }
 
+    @FXML
+    private void handleVoltar() {
+        SceneSwitcher.switchScene("/isep/crescendo/market-view.fxml", "/isep/crescendo/styles/login.css", "Login", navBarAnyControl);
+    }
+
 
 
     @FXML
@@ -400,7 +405,7 @@ public class CoinController implements Initializable {
             return;
         }
 
-        criptoSelecionada = criptoRepo.getAllCriptomoedas()
+        criptoSelecionada = criptoRepo.getAllCriptomoedasAtivas()
                 .stream()
                 .filter(c -> c.getNome().toLowerCase().contains(termo) || c.getSimbolo().equalsIgnoreCase(termo))
                 .findFirst()
