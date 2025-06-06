@@ -5,7 +5,9 @@ import isep.crescendo.model.Transacao;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TransacaoRepository {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
@@ -87,6 +89,46 @@ public class TransacaoRepository {
             e.printStackTrace();
         }
         return 0.0;
+    }
+
+    public Map<Integer, List<Transacao>> listarTodasTransacoesDaCarteira(int carteiraId) {
+        Map<Integer, List<Transacao>> map = new HashMap<>();
+
+        String sql = """
+        SELECT t.*, o.carteira_id
+        FROM transacoes t
+        JOIN ordens o ON t.ordem_compra_id = o.id
+        WHERE o.carteira_id = ?
+        ORDER BY t.data_execucao ASC
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Transacao t = new Transacao(
+                        rs.getInt("id"),
+                        rs.getInt("ordem_compra_id"),
+                        rs.getInt("ordem_venda_id"),
+                        rs.getInt("id_moeda"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("valor_unitario"),
+                        rs.getTimestamp("data_execucao").toLocalDateTime()
+                );
+
+                int ordemId = rs.getInt("ordem_compra_id");
+
+                map.computeIfAbsent(ordemId, k -> new ArrayList<>()).add(t);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar transações da carteira: " + e.getMessage());
+        }
+
+        return map;
     }
 
     // Outros métodos futuros: listar por moeda, calcular médias, etc.

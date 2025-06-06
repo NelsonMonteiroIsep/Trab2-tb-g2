@@ -42,7 +42,7 @@ public class WalletController {
             configurarCellFactory();
             cryptoListView.setItems(CarteiraRepository.listarMoedasCarteira(carteiraId));
 
-            saldoInvestidoLabel.setText(String.format("€ %.2f", saldo));
+            saldoInvestidoLabel.setText(String.format(" %.2f €", saldo));
         } else {
             userNameLabel.setText("Bem-vindo, visitante!");
         }

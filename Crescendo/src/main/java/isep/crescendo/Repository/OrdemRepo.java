@@ -6,6 +6,7 @@ import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import isep.crescendo.model.*;
 
 public class OrdemRepo {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
@@ -242,5 +243,102 @@ public class OrdemRepo {
             throw new RuntimeException("Erro ao somar ordens pendentes: " + e.getMessage());
         }
         return 0;
+    }
+
+    public List<Ordem> listarOrdensDaCarteira(int carteiraId) {
+        List<Ordem> ordens = new ArrayList<>();
+
+        String sql = """
+        SELECT * FROM ordens
+        WHERE carteira_id = ?
+        ORDER BY data_hora DESC
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Ordem ordem = new Ordem(
+                        rs.getInt("id"),
+                        rs.getInt("carteira_id"),
+                        rs.getInt("id_moeda"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("valor"),
+                        rs.getString("tipo"),
+                        rs.getString("status"),
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getDouble("valor_total_reservado")
+                );
+
+                ordens.add(ordem);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar ordens da carteira: " + e.getMessage());
+        }
+
+        return ordens;
+    }
+
+
+    public List<OrdemResumo> listarOrdensComResumo(int carteiraId) {
+        List<OrdemResumo> lista = new ArrayList<>();
+
+        String sql = """
+        SELECT 
+            o.id,
+            o.carteira_id,
+            o.id_moeda,
+            o.quantidade,
+            o.valor,
+            o.tipo,
+            o.status,
+            o.data_hora,
+            o.valor_total_reservado,
+            COALESCE(SUM(t.quantidade), 0) AS quantidade_executada,
+            COALESCE(SUM(t.quantidade * t.valor_unitario), 0) AS valor_total_executado
+        FROM ordens o
+        LEFT JOIN transacoes t ON t.ordem_compra_id = o.id
+        WHERE o.carteira_id = ?
+        GROUP BY o.id
+        ORDER BY o.data_hora DESC
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, carteiraId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Ordem ordem = new Ordem(
+                        rs.getInt("id"),
+                        rs.getInt("carteira_id"),
+                        rs.getInt("id_moeda"),
+                        rs.getDouble("quantidade"),
+                        rs.getDouble("valor"),
+                        rs.getString("tipo"),
+                        rs.getString("status"),
+                        rs.getTimestamp("data_hora").toLocalDateTime(),
+                        rs.getDouble("valor_total_reservado")
+                );
+
+                OrdemResumo resumo = new OrdemResumo(
+                        ordem,
+                        rs.getDouble("quantidade_executada"),
+                        rs.getDouble("valor_total_executado")
+                );
+
+                lista.add(resumo);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao listar ordens com resumo: " + e.getMessage());
+        }
+
+        return lista;
     }
 }

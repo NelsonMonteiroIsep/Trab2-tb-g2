@@ -13,18 +13,18 @@
       style="-fx-background-color: #28282b; -fx-padding: 30px; " >
 
     <!-- Logo / Título -->
-    <Label text="Crescendo." style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" />
+    <!-- <Label text="Crescendo." style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" />-->
 
-    <Separator />
+     <Separator />
 
-    <!-- Menu principal -->
+     <!-- Menu principal -->
     <VBox spacing="10" alignment="TOP_LEFT">
-        <Button text="🏠 Portfolio" styleClass="menu-button-dark" />
+        <Button text="🏠 Home"  onAction="#handleRedirectPortfolio" styleClass="menu-button-dark" />
         <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" />
         <Button text="📤 Enviar" styleClass="menu-button-dark" />
         <Button text="📥 Receber" styleClass="menu-button-dark" />
         <Button text="🔁 Swap" styleClass="menu-button-dark" />
-        <Button text="💼 Gestão" styleClass="menu-button-dark" />
+        <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark" />
     </VBox>
 
     <VBox VBox.vgrow="ALWAYS" /> <!-- Espaço flexível -->

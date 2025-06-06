@@ -9,24 +9,21 @@
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.MarketController"
       style="-fx-background-color: black;"
       prefHeight="Infinity">
 
-    <!-- Navbar no topo -->
-    <VBox>
-        <fx:include source="/isep/crescendo/navbar.fxml" />
-        <Label fx:id="userNameLabel" visible="false">.</Label>
-    </VBox>
+<top>
+            <fx:include source="/isep/crescendo/navbar.fxml" />
+</top>
 
-    <BorderPane VBox.vgrow="ALWAYS">
         <!-- MENU LATERAL -->
         <left>
             <fx:include source="leftbar-componente.fxml"/>
         </left>
-
+    <Label fx:id="userNameLabel" visible="false">.</Label>
         <!-- CONTEÚDO PRINCIPAL -->
         <center>
             <VBox fx:id="coinContainer" spacing="10" VBox.vgrow="ALWAYS">
@@ -35,5 +32,4 @@
                 </padding>
             </VBox>
         </center>
-    </BorderPane>
-</VBox>
+</BorderPane>

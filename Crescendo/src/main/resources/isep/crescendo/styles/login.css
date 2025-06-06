@@ -190,8 +190,8 @@
 .menu-button-dark {
     -fx-background-color: transparent;
     -fx-text-fill: white;
-    -fx-font-size: 14px;
-    -fx-background-radius: 5px;
+    -fx-font-size: 17px;
+    -fx-background-radius: 6px;
 }
 .menu-button-dark:hover {
     -fx-background-color: #3c3c3c;
