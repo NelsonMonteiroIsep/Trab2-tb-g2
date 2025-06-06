@@ -4,35 +4,32 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.image.*?>
-
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.chart.LineChart?>
 <?import javafx.scene.chart.CategoryAxis?>
 <?import javafx.scene.chart.NumberAxis?>
 
-<VBox xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
       fx:controller="isep.crescendo.controller.MarketController"
       style="-fx-background-color: black;"
       prefHeight="Infinity">
 
-    <VBox>
-        <fx:include source="/isep/crescendo/navbar.fxml"/>
-        <Label fx:id="userNameLabel" visible="false">.</Label>
-    </VBox>
+<top>
+            <fx:include source="/isep/crescendo/navbar.fxml" />
+</top>
 
-    <BorderPane VBox.vgrow="ALWAYS" maxWidth="700">
+        <!-- MENU LATERAL -->
         <left>
             <fx:include source="leftbar-componente.fxml"/>
         </left>
-
+    <Label fx:id="userNameLabel" visible="false">.</Label>
+        <!-- CONTEÚDO PRINCIPAL -->
         <center>
-            <VBox>
-                <Label text="Criptomoedas"/>
+            <VBox fx:id="coinContainer" spacing="10" VBox.vgrow="ALWAYS">
+                <padding>
+                    <Insets top="10" right="10" bottom="10" left="10"/>
+                </padding>
             </VBox>
-            <VBox fx:id="coinContainer" spacing="10" style="-fx-padding: 10;"/>
-
         </center>
-    </BorderPane>
-
-</VBox>
+</BorderPane>

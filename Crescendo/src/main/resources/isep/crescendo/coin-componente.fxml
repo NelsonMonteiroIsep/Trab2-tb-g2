@@ -6,6 +6,10 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.effect.DropShadow?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
 <HBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml"
@@ -58,4 +62,19 @@
         </HBox>
     </VBox>
 
+    <VBox spacing="2">
+        <Label fx:id="nomeLabel" styleClass="card-title-dark" />
+        <HBox spacing="10">
+            <Label fx:id="simboloLabel" style="-fx-text-fill: #b0b0b0; -fx-font-size: 11px;" />
+            <Label fx:id="descricaoLabel" style="-fx-text-fill: #8c8c8c; -fx-font-size: 11px;" />
+        </HBox>
+    </VBox>
+
+    <Region HBox.hgrow="ALWAYS"/>
+
+    <VBox spacing="5" alignment="CENTER_RIGHT">
+        <Label fx:id="precoLabel" style="-fx-text-fill: white; -fx-font-size: 14px; -fx-font-weight: bold;" />
+        <Label fx:id="variacaoLabel" style="-fx-font-size: 12px;" />
+        <Button text="Ver Detalhes" style="-fx-background-color: transparent; -fx-text-fill: #66afe9; -fx-font-size: 12px; -fx-underline: true;" onAction="#handleClick" />
+    </VBox>
 </HBox>

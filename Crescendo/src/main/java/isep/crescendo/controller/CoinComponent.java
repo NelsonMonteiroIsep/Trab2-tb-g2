@@ -1,7 +1,9 @@
 package isep.crescendo.controller;
 
 import com.fasterxml.jackson.core.json.DupDetector;
+import isep.crescendo.Repository.HistoricoValorRepository;
 import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.model.HistoricoValor;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -16,12 +18,16 @@ import javafx.stage.Stage;
 
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 
 public class CoinComponent {
     @FXML private Label nomeLabel;
     @FXML private Label simboloLabel;
     @FXML private Label descricaoLabel;
+    @FXML private Label precoLabel;
+    @FXML private Label variacaoLabel;
     @FXML private ImageView imagemView;
     private Criptomoeda moeda;
 
@@ -79,21 +85,49 @@ public class CoinComponent {
         simboloLabel.setText(moeda.getSimbolo());
         descricaoLabel.setText(moeda.getDescricao());
 
-
         String imagemUrl = moeda.getImagemUrl();
-
         if (imagemUrl != null && !imagemUrl.trim().isEmpty()) {
             try {
-                Image imagem = new Image(imagemUrl, true);
-                imagemView.setImage(imagem);
+                imagemView.setImage(new Image(imagemUrl, true));
             } catch (IllegalArgumentException e) {
-                System.err.println("Imagem inválida, não será carregada: " + imagemUrl);
-                imagemView.setImage(null); // ou simplesmente ignora
+                System.err.println("Imagem inválida: " + imagemUrl);
+                imagemView.setImage(null);
             }
         } else {
             imagemView.setImage(null);
         }
+
+        // Lógica para mostrar preço e variação
+        HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
+        List<HistoricoValor> historico = historicoRepo.listarPorCripto(moeda.getId());
+
+        if (historico.size() >= 1) {
+            historico.sort(Comparator.comparing(HistoricoValor::getData)); // garante ordem cronológica
+
+            double ultimoValor = historico.get(historico.size() - 1).getValor();
+            precoLabel.setText(String.format("%.2f €", ultimoValor));
+
+            if (historico.size() >= 2) {
+                double penultimo = historico.get(historico.size() - 2).getValor();
+                if (penultimo != 0) {
+                    double variacao = ((ultimoValor - penultimo) / penultimo) * 100;
+                    variacaoLabel.setText(String.format("%+.2f%%", variacao));
+                    variacaoLabel.setStyle("-fx-text-fill: " + (variacao >= 0 ? "#4CAF50" : "#F44336"));
+                } else {
+                    variacaoLabel.setText("0.00%");
+                    variacaoLabel.setStyle("-fx-text-fill: #999999;");
+                }
+            } else {
+                variacaoLabel.setText("N/A");
+                variacaoLabel.setStyle("-fx-text-fill: #999999;");
+            }
+        } else {
+            precoLabel.setText("Sem dados");
+            variacaoLabel.setText("N/A");
+            variacaoLabel.setStyle("-fx-text-fill: #999999;");
+        }
     }
+
 
 }
 

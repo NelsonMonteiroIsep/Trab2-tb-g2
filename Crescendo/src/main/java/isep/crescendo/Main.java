@@ -6,6 +6,8 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
 import java.net.URL;
 
 import java.util.Objects;
@@ -28,6 +30,7 @@ public class Main extends Application {
         }
 
         stage.setTitle("Login");
+      
         stage.setScene(scene);
         stage.show();
         new OrdemRepo();
