@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="isep.crescendo.controller.LeftBarController"
+      fx:id="rootVBox"  spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="200"
+      style="-fx-background-color: #28282b; -fx-padding: 30px;" >
+
+    <Label fx:id="userNameLabel" text="Bem-vindo!" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" visible="false" managed="false"/>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <VBox fx:id="loggedInContentContainer" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
+        <Button text="🏠 Home" onAction="#handleRedirectPortfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900"/>
+        <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
+        <Button text="🔁 Swap" onAction="#handleRedirectSwap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
+        <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+    <VBox alignment="BOTTOM_LEFT" spacing="5">
+        <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900" />
+    </VBox>
+
+</VBox>

@@ -1,0 +1,508 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom, #111, #333);
+
+}
+.custom-title-bar {
+    -fx-background-color: #28282b; /* Cor de fundo da barra de título */
+    -fx-border-width: 0 0 1px 0;   /* Linha fina na parte inferior */
+    -fx-border-color: #383838;    /* Cor da linha */
+}
+
+.app-title-label {
+    -fx-text-fill: #E0E0E0;      /* Cor do texto do título da app */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.title-bar-button {
+    -fx-background-color: #f39c12; /* Cor de fundo dos botões */
+    -fx-text-fill: white;         /* Cor do texto (ícone) */
+    -fx-font-size: 16px;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+}
+
+.title-bar-button:hover {
+    -fx-background-color: #e68a00; /* Tom mais escuro de laranja no hover */
+}
+
+.title-bar-button-close {
+    -fx-background-color: #f39c12; /* Cor de fundo do botão de fechar */
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 5px 10px;
+    -fx-cursor: hand;
+}
+
+.title-bar-button-close:hover {
+    -fx-background-color: #e74c3c; /* Mantém o vermelho no hover para o botão de fechar (ou pode mudar para um tom mais escuro de laranja se preferir consistência) */
+}
+
+
+
+.title-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 0 0 0;
+}
+
+
+
+.input-container {
+    -fx-background-color: white;
+    -fx-padding: 5;
+    -fx-background-radius: 5;
+
+
+}
+
+.custom-button-blue {
+    -fx-background-color: #2196F3;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-blue:hover {
+    -fx-background-color: #1976D2;
+}
+
+.custom-button-green {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-green:hover {
+    -fx-background-color: #388E3C;
+}
+
+.custom-button-orange {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-orange:hover {
+    -fx-background-color: #F57C00;
+}
+
+.custom-button-red {
+    -fx-background-color: #F44336;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-pref-width: 250px;
+    -fx-pref-height: 60px;
+    -fx-background-radius: 0;
+    -fx-border-width: 0;
+}
+.custom-button-red:hover {
+    -fx-background-color: #D32F2F;
+}
+
+.saldo-label {
+    -fx-text-fill: #ffffff;
+    -fx-font-weight: bold;
+    -fx-font-size: 16px;
+}
+
+.transparent-input {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+
+}
+
+.fields-background {
+    -fx-background-color: #28282b;
+    -fx-background-radius: 5;
+    -fx-padding: 60 20 20 20;
+    -fx-border-radius: 2;
+    -fx-border-width: 2;
+    -fx-max-width: 500;
+    -fx-max-height: 600;
+    -fx-min-width: 200;
+    -fx-min-height: 300;
+}
+
+.login-button {
+    -fx-background-color: #ff4d4d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 5;
+}
+
+.link-label {
+    -fx-text-fill: #ff4d4d;
+}
+
+.admin-button-blue {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-green {
+    -fx-background-color: #2ecc71;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-orange {
+    -fx-background-color: #f39c12;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-red {
+    -fx-background-color: #e74c3c;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-background-radius: 10px;
+}
+
+.admin-button-blue:hover,
+.admin-button-green:hover,
+.admin-button-orange:hover,
+.admin-button-red:hover {
+    -fx-opacity: 0.9;
+    -fx-cursor: hand;
+}
+
+.menu-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-alignment: center-left;
+    -fx-pref-width: 160px;
+    -fx-cursor: hand;
+}
+
+.menu-button:hover {
+    -fx-background-color: #16a085;
+}
+
+.card {
+    -fx-background-color: white;
+    -fx-padding: 20px;
+    -fx-spacing: 10px;
+    -fx-pref-width: 180px;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 5, 0.5, 0, 2);
+    -fx-alignment: center;
+}
+
+.card-title {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7f8c8d;
+}
+
+.card-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.menu-button-dark {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 17px;
+    -fx-background-radius: 6px;
+}
+.menu-button-dark:hover {
+    -fx-background-color: #3c3c3c;
+}
+
+.admin-button-blue-dark {
+    -fx-background-color: #1565c0;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-green-dark {
+    -fx-background-color: #2e7d32;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-orange-dark {
+    -fx-background-color: #ef6c00;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+.admin-button-red-dark {
+    -fx-background-color: #c62828;
+    -fx-text-fill: white;
+    -fx-background-radius: 10;
+}
+
+.card-dark {
+    -fx-background-color: #2d2d30;
+    -fx-padding: 20;
+    -fx-spacing: 10;
+    -fx-alignment: center;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, black, 5, 0, 0, 1);
+}
+
+.card-title-dark {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #cccccc;
+}
+
+.card-value-dark {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #ffffff;
+}
+
+.chart {
+    -fx-background-color: black;
+}
+
+.chart-plot-background {
+    -fx-background-color: black;
+}
+
+.axis-label, .axis-tick-label {
+    -fx-text-fill: black;
+}
+
+.chart-series-line {
+    -fx-stroke-width: 2px;
+    -fx-stroke: #00e676;
+}
+
+.chart-line-symbol {
+    -fx-background-color: black, #00e676;
+    -fx-background-radius: 6px;
+    -fx-padding: 4px;
+}
+/* ... (Seu CSS existente do Minimal Dark, até aqui está tudo igual) ... */
+
+/* --- Right Panel Insights --- */
+.right-panel-insights {
+    -fx-background-color: #2A2A2A; /* Cor de fundo para o painel direito, um pouco mais claro que o root */
+    -fx-border-width: 0 0 0 1px;
+    -fx-border-color: #383838; /* Linha divisória fina */
+}
+
+.panel-separator {
+    -fx-background-color: #383838;
+    -fx-pref-height: 1px;
+}
+
+/* --- ListView (marketInsightListView) --- */
+.market-insight-list {
+    -fx-background-color: #1F1F1F; /* Fundo do ListView agora será preto (ou muito escuro) */
+    -fx-padding: 0;
+    -fx-border-color: transparent; /* Sem borda para o ListView em si */
+    -fx-selection-bar: transparent; /* Remove a barra de seleção azul padrão */
+    -fx-placeholder-text-fill: #A0A0A0; /* Cor para o texto do placeholder (se não houver itens) */
+}
+
+/* Garante que o ScrollPane interno do ListView também seja transparente/preto */
+.market-insight-list .scroll-pane {
+    -fx-background-color: transparent;
+}
+.market-insight-list .scroll-pane .viewport {
+    -fx-background-color: transparent; /* A área visível do conteúdo */
+}
+.market-insight-list .scroll-pane .content {
+    -fx-background-color: transparent; /* Onde as células estão */
+}
+
+/* Estilo para as Células Individuais do ListView */
+.market-insight-list .list-cell {
+    -fx-background-color: transparent; /* Fundo transparente para cada célula */
+    -fx-padding: 10px 5px; /* Espaçamento interno da célula */
+    -fx-alignment: CENTER_LEFT;
+    -fx-text-fill: #E0E0E0; /* Cor do texto padrão da célula */
+    -fx-border-color: #383838; /* Linha divisória entre células */
+    -fx-border-width: 0 0 1px 0; /* Apenas uma linha na parte inferior */
+}
+
+/* Remove a borda inferior da última célula para um visual mais limpo */
+.market-insight-list .list-cell:last-child {
+    -fx-border-width: 0;
+}
+
+/* Estilo no hover sobre as células */
+.market-insight-list .list-cell:filled:hover {
+    -fx-background-color: #282828; /* Fundo ligeiramente mais escuro no hover */
+    -fx-cursor: hand;
+}
+
+/* Estilo quando uma célula é selecionada (opcional, pode ser invisível se selection-bar é transparent) */
+.market-insight-list .list-cell:filled:selected {
+    -fx-background-color: #008ADF; /* Exemplo de cor de seleção */
+    -fx-text-fill: white;
+}
+
+/* --- Estilos para o CONTEÚDO dentro das células do ListView --- */
+/* Se você estiver usando uma CellFactory customizada como no MarketController anterior */
+.market-insight-item-layout { /* Exemplo: se o root da sua célula é um HBox com esta classe */
+    -fx-alignment: CENTER_LEFT;
+    -fx-spacing: 12px;
+}
+.market-insight-item-name { /* Exemplo de Label para o nome da moeda */
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.market-insight-item-symbol { /* Exemplo de Label para o símbolo */
+    -fx-text-fill: #A0A0A0;
+    -fx-font-size: 11px;
+}
+.market-insight-item-price { /* Exemplo de Label para o preço */
+    -fx-text-fill: #4CAF50; /* Verde */
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+.market-insight-item-change-positive { /* Exemplo de Label para variação positiva */
+    -fx-text-fill: #4CAF50;
+    -fx-font-size: 11px;
+}
+.market-insight-item-change-negative { /* Exemplo de Label para variação negativa */
+    -fx-text-fill: #F44336;
+    -fx-font-size: 11px;
+}
+
+/* ... (Restante do seu CSS existente) ... */
+
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+.chart {
+    -fx-background-color: #1e1e1e; /* Fundo escuro para o gráfico */
+}
+
+.chart-plot-background {
+    -fx-background-color: #1e1e1e; /* Fundo escuro da área de plotagem */
+}
+
+/* Estilos dos eixos e labels */
+.axis-label {
+    -fx-text-fill: #cccccc; /* Cor do texto dos labels dos eixos */
+    -fx-font-size: 12px;
+}
+
+.axis-tick-label {
+    -fx-text-fill: #999999; /* Cor do texto dos marcadores do eixo */
+    -fx-font-size: 10px;
+}
+
+/* Estilos das linhas de grade (opcional, pode manter transparente se preferir) */
+.chart-vertical-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade verticais */
+    -fx-stroke-dash-array: 2 4; /* Pontilhadas */
+    -fx-stroke-width: 0.5;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade horizontais */
+    -fx-stroke-dash-array: 2 4;
+    -fx-stroke-width: 0.5;
+}
+
+/* Esconder os marcadores dos ticks (opcional, se quiser uma aparência mais limpa) */
+.axis-tick-mark {
+    -fx-stroke: transparent;
+}
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+
+
+/* src/main/resources/isep/crescendo/styles/chart-styles.css */
+
+/* Estilos de fundo do gráfico (se coin.css não sobrescrever) */
+.chart {
+    -fx-background-color: #1e1e1e; /* Fundo escuro para o gráfico */
+}
+
+.chart-plot-background {
+    -fx-background-color: #1e1e1e; /* Fundo escuro da área de plotagem */
+}
+
+/* Estilos dos eixos e labels */
+.axis-label {
+    -fx-text-fill: #cccccc; /* Cor do texto dos labels dos eixos */
+    -fx-font-size: 12px;
+}
+
+.axis-tick-label {
+    -fx-text-fill: #999999; /* Cor do texto dos marcadores do eixo */
+    -fx-font-size: 10px;
+}
+
+/* Estilos das linhas de grade (opcional, pode manter transparente se preferir) */
+.chart-vertical-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade verticais */
+    -fx-stroke-dash-array: 2 4; /* Pontilhadas */
+    -fx-stroke-width: 0.5;
+}
+
+.chart-horizontal-grid-lines {
+    -fx-stroke: #444444; /* Linhas de grade horizontais */
+    -fx-stroke-dash-array: 2 4;
+    -fx-stroke-width: 0.5;
+}
+
+/* Esconder os marcadores dos ticks (opcional, se quiser uma aparência mais limpa) */
+.axis-tick-mark {
+    -fx-stroke: transparent;
+}
+.axis-minor-tick-mark {
+    -fx-stroke: transparent;
+}
+
+
+/* --- Estilos para a ÚNICA série do gráfico --- */
+
+/* Série 0: Histórico e Tempo Real combinados */
+.chart-series-line.series0 {
+    -fx-stroke: #00e676; /* Verde vibrante para a linha combinada */
+    -fx-stroke-width: 2.5px;
+}
+
+/* Remover os símbolos dos pontos na linha (opcional) */
+.chart-line-symbol {
+    -fx-background-color: transparent, transparent;
+    -fx-background-radius: 0px;
+    -fx-padding: 0px;
+}
+
+/* Ajustes na legenda (se houver, embora com uma série só não precise) */
+.chart-legend {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+    -fx-background-radius: 5px;
+    -fx-padding: 5px;
+}
+
+.chart-legend-item {
+    -fx-text-fill: white;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-color: -fx-background; /* Herda a cor da série */
+}

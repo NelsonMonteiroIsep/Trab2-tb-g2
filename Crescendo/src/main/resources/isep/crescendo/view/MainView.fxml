@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane fx:id="rootPane" styleClass="root-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="isep.crescendo.controller.MainController">
+
+    <left>
+    </left>
+
+    <center>
+        <StackPane fx:id="contentArea" alignment="CENTER">
+        </StackPane>
+    </center>
+
+    <right>
+        <fx:include source="RightBarView.fxml"/>
+    </right>
+
+</BorderPane>

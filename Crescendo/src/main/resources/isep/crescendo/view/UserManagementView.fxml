@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<StackPane xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="isep.crescendo.controller.UserManagementController"
+           prefWidth="400" prefHeight="300"
+           styleClass="root"
+           fx:id="root">
+
+    <VBox fx:id="mainVBox" styleClass="fields-background"
+          spacing="10" alignment="CENTER"
+          maxWidth="600" maxHeight="600">
+
+        <Region prefHeight="5" maxHeight="10" VBox.vgrow="NEVER"/>
+
+        <Region prefHeight="30"/>
+
+        <Label text="LOG IN" styleClass="title-label"/>
+
+        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity">
+            <TextField fx:id="emailField" promptText="Log-in" styleClass="transparent-input"
+                       maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <HBox alignment="CENTER_LEFT" spacing="5" styleClass="input-container" maxWidth="Infinity">
+            <PasswordField fx:id="passwordField" promptText="Password" styleClass="transparent-input"
+                           maxWidth="Infinity" HBox.hgrow="ALWAYS" />
+        </HBox>
+
+        <Button text="🔑 Log in" onAction="#handleLogin"
+                maxWidth="Infinity" styleClass="login-button" />
+
+        <Label fx:id="messageLabel" textFill="red"/>
+        <Region VBox.vgrow="ALWAYS" />
+        <VBox alignment="CENTER" spacing="5" maxWidth="Infinity">
+            <Hyperlink text="Clique aqui para criar uma conta" onAction="#handleGoToRegister" styleClass="link-label"/>
+            <Hyperlink text="Esqueceste a password?" onAction="#handleGoToRecovery"/>
+        </VBox>
+    </VBox>
+
+</StackPane>

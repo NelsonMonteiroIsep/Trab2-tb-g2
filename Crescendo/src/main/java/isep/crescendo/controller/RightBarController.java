@@ -61,27 +61,31 @@ public class RightBarController {
         System.out.println("Fetched " + fetchedMoedas.size() + " criptomoedas. Adding to container.");
 
         // This is your "loop" to manually add each component
+        int i = 0;
         for (Criptomoeda moeda : fetchedMoedas) {
-            try {
-                // Load the FXML for a single coin item
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-list-view.fxml"));
-                AnchorPane coinItemRoot = loader.load(); // Or HBox if that's your root element
+            if (i<5) {
+                try {
+                    // Load the FXML for a single coin item
+                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-list-view.fxml"));
+                    AnchorPane coinItemRoot = loader.load(); // Or HBox if that's your root element
 
-                // Get the controller for this specific coin item
-                CoinListViewController controller = loader.getController();
+                    // Get the controller for this specific coin item
+                    CoinListViewController controller = loader.getController();
 
-                // Pass the data to the controller of the loaded item
-                controller.setCriptomoeda(moeda);
+                    // Pass the data to the controller of the loaded item
+                    controller.setCriptomoeda(moeda);
 
-                // Add the loaded FXML component (its root node) to your VBox container
-                coinsContainer.getChildren().add(coinItemRoot);
+                    // Add the loaded FXML component (its root node) to your VBox container
+                    coinsContainer.getChildren().add(coinItemRoot);
 
-            } catch (IOException e) {
-                System.err.println("Erro ao carregar item da moeda " + moeda.getNome() + ": " + e.getMessage());
-                e.printStackTrace();
-                // Optionally add an error message to the container if a specific item fails
-                coinsContainer.getChildren().add(new Label("Erro ao carregar " + moeda.getSimbolo()));
+                } catch (IOException e) {
+                    System.err.println("Erro ao carregar item da moeda " + moeda.getNome() + ": " + e.getMessage());
+                    e.printStackTrace();
+                    // Optionally add an error message to the container if a specific item fails
+                    coinsContainer.getChildren().add(new Label("Erro ao carregar " + moeda.getSimbolo()));
+                }
             }
+            i=i+1;
         }
         System.out.println("Finished loading components into coinsContainer.");
     }
