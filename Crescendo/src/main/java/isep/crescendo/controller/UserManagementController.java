@@ -2,29 +2,30 @@ package isep.crescendo.controller;
 
 import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.SessionManager;
-import javafx.beans.binding.Bindings; // Esta importação pode ser removida se Bindings não for mais usado
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
-// import javafx.scene.image.Image; // Pode ser removida
-// import javafx.scene.image.ImageView; // Pode ser removida
+import javafx.scene.control.*; // Consolidated imports for common controls
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
-import java.io.IOException; // Esta importação pode ser removida se IOException não for mais usada
-import java.net.URL; // Esta importação pode ser removida se URL não for mais usada
+// Removed: import java.io.IOException;
+// Removed: import java.net.URL;
+// Removed: import javafx.beans.binding.Bindings;
+// Removed: import java.awt.event.ActionEvent; // Ensure this is not present, use javafx.event.ActionEvent in relevant controllers
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class UserManagementController {
 
     private final UserRepository userRepositoryRepo = new UserRepository();
+    // Assuming tokenToEmailMap is for a feature not fully shown, if not used, remove.
     private static final Map<String, String> tokenToEmailMap = new HashMap<>();
 
     // Campos do formulário de Registo (assumindo que todos os campos estão neste FXML)
     @FXML
-    private TextField nameField;
+    private TextField nameField; // Ensure this is explicitly TextField
 
-    // Campos do formulário de Login
+    // Campos do formulário de Login e Registo (se partilharem fx:id's no FXML)
     @FXML
     private TextField emailField;
     @FXML
@@ -67,7 +68,8 @@ public class UserManagementController {
     @FXML
     public void initialize() {
         // REMOVIDO: TODO O CÓDIGO RELACIONADO A backgroundImageView e logoImageView
-        // (Isso inclui as linhas 75-84 do seu código anterior)
+        // REMOVIDO AQUI: FXMLLoader userManagementLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/UserManagementView.fxml"));
+        // Esta linha era redundante e potencialmente problemática.
 
         // Inicialmente, mostra apenas o formulário de login
         showLoginForm();
@@ -178,6 +180,7 @@ public class UserManagementController {
             if (user != null && user.verificarPassword(password)) {
                 setMessage("Login bem-sucedido! Bem-vindo, " + user.getNome(), true, messageLabel);
                 SessionManager.setCurrentUser(user);
+
 
                 if (loginCallback != null) {
                     loginCallback.onLoginSuccess(user.isAdmin());

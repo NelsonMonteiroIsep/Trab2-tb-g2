@@ -1,133 +1,196 @@
 package isep.crescendo.controller;
 
-import com.fasterxml.jackson.core.json.DupDetector;
-import isep.crescendo.Repository.HistoricoValorRepository;
 import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.Repository.HistoricoValorRepository;
 import isep.crescendo.model.HistoricoValor;
+
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
-import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+import javafx.scene.layout.VBox;
 
-import java.awt.event.MouseEvent;
 import java.io.IOException;
-import java.util.Comparator;
+import java.io.InputStream; // Adicionar este import
+import java.text.DecimalFormat;
 import java.util.List;
 
-
-public class CoinComponent {
-    @FXML private Label nomeLabel;
-    @FXML private Label simboloLabel;
-    @FXML private Label descricaoLabel;
-    @FXML private Label precoLabel;
-    @FXML private Label variacaoLabel;
-    @FXML private ImageView imagemView;
-    private Criptomoeda moeda;
+public class CoinComponent extends VBox {
 
     @FXML
-    private Label coinLabel;
-
-    String name;
-
-        public void setCoinName(String name) {
-            coinLabel.setText(name);
-        }
+    private ImageView coinIcon;
     @FXML
+    private Label coinNameLabel;
+    @FXML
+    private Label coinSymbolLabel;
+    @FXML
+    private Label currentPriceLabel;
+    @FXML
+    private Label priceChangeLabel;
+    @FXML
+    private LineChart<Number, Number> priceChart;
+    @FXML
+    private NumberAxis xAxis;
+    @FXML
+    private NumberAxis yAxis;
 
+    private Criptomoeda criptomoeda;
+    private final HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
+    private XYChart.Series<Number, Number> series;
+    private DecimalFormat df = new DecimalFormat("#,##0.00");
 
-    public void handleClick(javafx.scene.input.MouseEvent mouseEvent) {
+    public CoinComponent(Criptomoeda criptomoeda, double initialPrice) {
+        this.criptomoeda = criptomoeda;
+
+        FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/CoinComponent.fxml"));
+        loader.setRoot(this);
+        loader.setController(this);
+
         try {
-
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-view.fxml"));
-
-
-            Parent newPage = loader.load();
-
-
-            Scene newScene = new Scene(newPage);
-
-
-            newScene.getStylesheets().add(getClass().getResource("/isep/crescendo/styles/login.css").toExternalForm());
-
-
-            CoinController controller = loader.getController();
-
-
-            controller.setCriptomoeda(this.moeda);
-
-
-            Stage stage = (Stage) ((Node) mouseEvent.getSource()).getScene().getWindow();
-
-
-            stage.setScene(newScene);
-
-
-            stage.show();
-
-
+            loader.load();
         } catch (IOException e) {
-            e.printStackTrace(); // Ou melhor: logar o erro
+            System.err.println("Erro ao carregar componente de moeda: " + e.getMessage());
+            e.printStackTrace();
+            throw new RuntimeException("Falha ao carregar CoinComponent.fxml", e);
         }
+
+        initializeComponent(initialPrice);
     }
 
+    private void initializeComponent(double initialPrice) {
+        if (criptomoeda != null) {
+            coinNameLabel.setText(criptomoeda.getNome());
+            coinSymbolLabel.setText(criptomoeda.getSimbolo());
+            updatePriceDisplay(initialPrice, 0.0);
 
-    public void setCriptomoeda(Criptomoeda moeda) {
-        this.moeda = moeda;
-
-        nomeLabel.setText(moeda.getNome());
-        simboloLabel.setText(moeda.getSimbolo());
-        descricaoLabel.setText(moeda.getDescricao());
-
-        String imagemUrl = moeda.getImagemUrl();
-        if (imagemUrl != null && !imagemUrl.trim().isEmpty()) {
-            try {
-                imagemView.setImage(new Image(imagemUrl, true));
-            } catch (IllegalArgumentException e) {
-                System.err.println("Imagem inválida: " + imagemUrl);
-                imagemView.setImage(null);
-            }
-        } else {
-            imagemView.setImage(null);
-        }
-
-        // Lógica para mostrar preço e variação
-        HistoricoValorRepository historicoRepo = new HistoricoValorRepository();
-        List<HistoricoValor> historico = historicoRepo.listarPorCripto(moeda.getId());
-
-        if (historico.size() >= 1) {
-            historico.sort(Comparator.comparing(HistoricoValor::getData)); // garante ordem cronológica
-
-            double ultimoValor = historico.get(historico.size() - 1).getValor();
-            precoLabel.setText(String.format("%.2f €", ultimoValor));
-
-            if (historico.size() >= 2) {
-                double penultimo = historico.get(historico.size() - 2).getValor();
-                if (penultimo != 0) {
-                    double variacao = ((ultimoValor - penultimo) / penultimo) * 100;
-                    variacaoLabel.setText(String.format("%+.2f%%", variacao));
-                    variacaoLabel.setStyle("-fx-text-fill: " + (variacao >= 0 ? "#4CAF50" : "#F44336"));
-                } else {
-                    variacaoLabel.setText("0.00%");
-                    variacaoLabel.setStyle("-fx-text-fill: #999999;");
+            // ALTERADO: Carregamento de imagem usando getResourceAsStream
+            if (criptomoeda.getImagemUrl() != null && !criptomoeda.getImagemUrl().isEmpty()) {
+                try (InputStream is = getClass().getResourceAsStream(criptomoeda.getImagemUrl())) {
+                    if (is != null) {
+                        coinIcon.setImage(new Image(is));
+                    } else {
+                        System.err.println("Erro: Recurso de imagem não encontrado para " + criptomoeda.getNome() + " no caminho: " + criptomoeda.getImagemUrl());
+                        // Tentar carregar a imagem padrão se o recurso não for encontrado
+                        try (InputStream defaultIs = getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")) {
+                            if (defaultIs != null) {
+                                coinIcon.setImage(new Image(defaultIs));
+                            } else {
+                                System.err.println("Erro fatal: default_coin.png também não encontrado.");
+                            }
+                        } catch (Exception ex) {
+                            System.err.println("Erro ao carregar default_coin.png em CoinComponent: " + ex.getMessage());
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao carregar imagem para " + criptomoeda.getNome() + " (caminho: " + criptomoeda.getImagemUrl() + "): " + e.getMessage());
+                    // Fallback para default_coin.png em caso de qualquer outra exceção de carregamento
+                    try (InputStream defaultIs = getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")) {
+                        if (defaultIs != null) {
+                            coinIcon.setImage(new Image(defaultIs));
+                        } else {
+                            System.err.println("Erro fatal: default_coin.png também não encontrado.");
+                        }
+                    } catch (Exception ex) {
+                        System.err.println("Erro ao carregar default_coin.png em CoinComponent (fallback): " + ex.getMessage());
+                    }
                 }
             } else {
-                variacaoLabel.setText("N/A");
-                variacaoLabel.setStyle("-fx-text-fill: #999999;");
+                // Se a URL da imagem estiver nula ou vazia na criptomoeda
+                try (InputStream defaultIs = getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")) {
+                    if (defaultIs != null) {
+                        coinIcon.setImage(new Image(defaultIs));
+                    } else {
+                        System.err.println("Erro fatal: default_coin.png também não encontrado (URL vazia).");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Erro ao carregar default_coin.png em CoinComponent (URL nula/vazia): " + e.getMessage());
+                }
             }
-        } else {
-            precoLabel.setText("Sem dados");
-            variacaoLabel.setText("N/A");
-            variacaoLabel.setStyle("-fx-text-fill: #999999;");
+
+            series = new XYChart.Series<>();
+            series.setName(criptomoeda.getSimbolo() + " Preço");
+            priceChart.getData().add(series);
+            priceChart.setLegendVisible(false);
+            priceChart.setCreateSymbols(false);
+            priceChart.setHorizontalGridLinesVisible(false);
+            priceChart.setVerticalGridLinesVisible(false);
+
+            xAxis.setLabel("Tempo");
+            xAxis.setTickUnit(1);
+            xAxis.setMinorTickVisible(false);
+            xAxis.setForceZeroInRange(false);
+
+            yAxis.setLabel("Preço (€)");
+
+            loadHistoricalData();
         }
     }
 
+    public void updatePriceDisplay(double newPrice, double priceChange) {
+        currentPriceLabel.setText(df.format(newPrice) + " €");
+        if (priceChange > 0) {
+            priceChangeLabel.setText("+" + df.format(priceChange) + "%");
+            priceChangeLabel.setStyle("-fx-text-fill: #4CAF50;");
+        } else if (priceChange < 0) {
+            priceChangeLabel.setText(df.format(priceChange) + "%");
+            priceChangeLabel.setStyle("-fx-text-fill: #F44336;");
+        } else {
+            priceChangeLabel.setText("0.00%");
+            priceChangeLabel.setStyle("-fx-text-fill: #b0b0b0;");
+        }
+    }
 
+    public void addDataToChart(double newPrice) {
+        int nextTimePoint = series.getData().size();
+        series.getData().add(new XYChart.Data<>(nextTimePoint, newPrice));
+
+        int maxDataPoints = 50;
+        if (series.getData().size() > maxDataPoints) {
+            series.getData().remove(0);
+        }
+
+        if (nextTimePoint > xAxis.getUpperBound()) {
+            xAxis.setUpperBound(nextTimePoint + 10);
+            xAxis.setLowerBound(Math.max(0, nextTimePoint - maxDataPoints + 1));
+        }
+        yAxis.setAutoRanging(true);
+    }
+
+    private void loadHistoricalData() {
+        if (criptomoeda != null) {
+            List<HistoricoValor> historicalRecords = historicoRepo.listarPorCripto(criptomoeda.getId());
+            if (historicalRecords != null && !historicalRecords.isEmpty()) {
+                System.out.println("DEBUG (CoinComponent): Carregando " + historicalRecords.size() + " valores históricos para " + criptomoeda.getNome());
+                series.getData().clear();
+                for (int i = 0; i < historicalRecords.size(); i++) {
+                    series.getData().add(new XYChart.Data<>(i, historicalRecords.get(i).getValor()));
+                }
+                xAxis.setLowerBound(0);
+                xAxis.setUpperBound(historicalRecords.size() + 10);
+                yAxis.setAutoRanging(true);
+            } else {
+                System.out.println("DEBUG (CoinComponent): Nenhum histórico encontrado para " + criptomoeda.getNome() + ". Usando preço inicial passado.");
+            }
+        }
+    }
+
+    public void updateChartWithNewPrice(double newPrice) {
+        double oldPrice = newPrice;
+        if (!series.getData().isEmpty()) {
+            oldPrice = series.getData().get(series.getData().size() - 1).getYValue().doubleValue();
+        }
+
+        double priceChange = ((newPrice - oldPrice) / oldPrice) * 100;
+
+        updatePriceDisplay(newPrice, priceChange);
+        addDataToChart(newPrice);
+    }
+
+    public Criptomoeda getCriptomoeda() {
+        return criptomoeda;
+    }
 }
-

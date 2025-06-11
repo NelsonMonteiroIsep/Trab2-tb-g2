@@ -1,15 +1,14 @@
 package isep.crescendo.controller;
 
+import isep.crescendo.model.Criptomoeda;
 import isep.crescendo.util.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Parent;
-import javafx.scene.Node; // Importe Node
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.layout.Region; // Importe Region para o cast
 
 import java.io.IOException;
 import java.net.URL;
@@ -23,121 +22,114 @@ public class MainController implements Initializable, LoginCallback {
     private StackPane contentArea;
 
     private LeftBarController leftBarController;
-    private UserManagementController userManagementController;
+    private RightBarController rightBarController;
+    // Removido marketController se não for usado após a remoção de navigateToMarket,
+    // mas mantido se handleCriptomoedaClick ainda precisar dele.
+    private MarketController marketController;
 
-    public void setLoginCallback(LoginCallback callback) {
-        // ... (Este método não precisa de ser alterado) ...
-    }
+    private String currentContentFxml = "";
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        if (rootPane == null) {
+            System.err.println("ERRO CRÍTICO (MainController): rootPane é null no initialize. Verifique o fx:id no MainView.fxml.");
+            return;
+        }
+
         try {
             loadLeftBar();
+            loadRightBar();
 
             isep.crescendo.model.User currentUser = SessionManager.getCurrentUser();
-
             if (currentUser != null) {
-                // ... (logic for logged-in user) ...
+                System.out.println("DEBUG (MainController): Usuário logado. Carregando wallet-view.fxml.");
+                loadContent("WalletView.fxml");
             } else {
-                // *** Cenário: NENHUM UTILIZADOR LOGADO - MOSTRA O FORMULÁRIO DE LOGIN ***
-                System.out.println("Nenhum usuário logado. Exibindo formulário de login.");
-                setLeftBarVisibility(false);
-                leftBarController.hideLoggedInContent();
-
-                // Make sure this block is exactly as below
-                FXMLLoader userManagementLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/UserManagementView.fxml"));
-                Parent userManagementContent = userManagementLoader.load();
-                userManagementController = userManagementLoader.getController();
-                userManagementController.setLoginCallback(this);
-
-                contentArea.getChildren().clear(); // <--- Is this line executing?
-                contentArea.getChildren().add(userManagementContent); // <--- Is this line adding the content?
+                System.out.println("DEBUG (MainController): Nenhum usuário logado. Exibindo formulário de login.");
+                loadUserManagementView();
             }
 
         } catch (IOException e) {
-            System.err.println("Erro ao carregar layout inicial ou gestão de utilizadores: " + e.getMessage());
+            System.err.println("Erro geral ao carregar layout inicial ou gestão de utilizadores: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
-    private void loadLeftBar() {
-        try {
-            FXMLLoader leftBarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/LeftBarView.fxml"));
-            Parent leftBar = leftBarLoader.load();
-            leftBarController = leftBarLoader.getController();
+    private void loadLeftBar() throws IOException {
+        System.out.println("DEBUG (MainController): Tentando carregar LeftBarView.fxml...");
+        FXMLLoader leftBarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/LeftBarView.fxml"));
+        Parent leftBar = leftBarLoader.load();
+        leftBarController = leftBarLoader.getController();
+        if (leftBarController != null) {
             leftBarController.setMainController(this);
-
-            rootPane.setLeft(leftBar);
-
-            // CORREÇÃO AQUI: Chame setPrefWidth no próprio objeto 'leftBar'
-            leftBar.prefWidth(0); // Define a largura preferencial para 0 inicialmente
-            // Esta é a forma correta de manipular a largura preferencial de um Node.
-
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar a barra lateral: " + e.getMessage());
-            e.printStackTrace();
+            System.out.println("DEBUG (MainController): LeftBarController obtido e MainController injetado.");
+        } else {
+            System.err.println("ERRO (MainController): getController() retornou null para LeftBarController!");
         }
+        rootPane.setLeft(leftBar);
+        System.out.println("DEBUG (MainController): LeftBar definida na região LEFT do rootPane.");
     }
 
-    public void setLeftBarVisibility(boolean visible) {
-        // rootPane.getLeft() retorna um Node, que é o 'leftBar' (o VBox raiz da barra lateral)
-        Node leftBarNode = rootPane.getLeft();
-
-        if (rootPane != null && leftBarNode != null) {
-            // É seguro fazer o cast para Region, pois VBox (o root da LeftBarView) é um Region.
-            Region leftBarRegion = (Region) leftBarNode;
-
-            if (visible) {
-                // Se visível, restaura a largura preferencial para a largura normal (ex: 200px)
-                leftBarRegion.setPrefWidth(200);
-            } else {
-                // Se não visível, define a largura preferencial para 0
-                leftBarRegion.setPrefWidth(0);
-            }
-            // As propriedades setVisible/setManaged no rootVBox do LeftBarController ainda são importantes para o conteúdo interno
-            if (leftBarController != null) {
-                if (visible) {
-                    leftBarController.showEntireLeftBar();
-                } else {
-                    leftBarController.hideEntireLeftBar();
-                }
-            }
-        }
+    // Mantido loadNavbar se estiver no seu código, mas não é central para a discussão atual
+    private void loadNavbar() throws IOException {
+        System.out.println("DEBUG (MainController): Tentando carregar navbar.fxml...");
+        FXMLLoader navbarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/navbar.fxml"));
+        Parent navbar = navbarLoader.load();
+        rootPane.setTop(navbar);
+        System.out.println("DEBUG (MainController): Navbar definida na região TOP do rootPane.");
     }
 
-    @Override
-    public void onLoginSuccess(boolean isAdmin) {
-        System.out.println("Login bem-sucedido! A mostrar o conteúdo principal.");
-        setLeftBarVisibility(true);
-        leftBarController.showLoggedInContent();
-        // Altere esta linha para carregar a carteira
-        loadContent("WalletView.fxml"); // <--- MUDANÇA AQUI
-        // Aqui você pode adicionar lógica adicional para utilizadores admin vs. normal, se necessário
-    }
-
-    @FXML
-    public void handleLogout(ActionEvent event) {
-        SessionManager.clearSession();
-        System.out.println("Sessão encerrada. Voltando para o formulário de login.");
-
-        setLeftBarVisibility(false);
-        leftBarController.hideLoggedInContent();
-
+    private void loadRightBar() {
+        System.out.println("DEBUG (MainController): Tentando carregar RightBarView.fxml...");
         try {
-            FXMLLoader userManagementLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/UserManagementView.fxml"));
-            Parent userManagementContent = userManagementLoader.load();
-            userManagementController = userManagementLoader.getController();
-            userManagementController.setLoginCallback(this);
+            FXMLLoader rightBarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/RightBarView.fxml"));
+            Parent rightBar = rightBarLoader.load();
+            System.out.println("DEBUG (MainController): RightBarView.fxml carregado. Nó Raiz: " + rightBar);
 
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(userManagementContent);
+            rightBarController = rightBarLoader.getController();
+            if (rightBarController != null) {
+                System.out.println("DEBUG (MainController): RightBarController obtido: " + rightBarController);
+                rightBarController.setMainController(this); // Injeta MainController no RightBarController
+                System.out.println("DEBUG (MainController): MainController (" + this + ") passado para RightBarController (" + rightBarController + ").");
+            } else {
+                System.err.println("ERRO (MainController): getController() retornou null para RightBarController!");
+            }
+
+            if (rootPane != null) {
+                rootPane.setRight(rightBar);
+                System.out.println("DEBUG (MainController): RightBar definida na região RIGHT do rootPane.");
+            } else {
+                System.err.println("ERRO (MainController): rootPane é null ao tentar definir a RightBar.");
+            }
+
         } catch (IOException e) {
-            System.err.println("Erro ao carregar o formulário de login após o logout: " + e.getMessage());
+            System.err.println("Erro ao carregar a barra lateral direita: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    private void loadUserManagementView() throws IOException {
+        FXMLLoader userManagementLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/UserManagementView.fxml"));
+        Parent userManagementContent = userManagementLoader.load();
+        UserManagementController userManagementController = userManagementLoader.getController();
+        if (userManagementController != null) {
+            userManagementController.setLoginCallback(this);
+            System.out.println("DEBUG (MainController): LoginCallback definido para UserManagementController.");
+        } else {
+            System.err.println("ERRO (MainController): getController() retornou null para UserManagementController!");
+        }
+
+        contentArea.getChildren().clear();
+        contentArea.getChildren().add(userManagementContent);
+        this.currentContentFxml = "UserManagementView.fxml";
+        System.out.println("DEBUG (MainController): Conteúdo 'UserManagementView.fxml' carregado na inicialização.");
     }
 
     public void loadContent(String fxmlFileName) {
+        loadContentWithObject(fxmlFileName, null); // Chama o método mais genérico
+    }
+
+    public <T> void loadContentWithObject(String fxmlFileName, T dataObject) {
         try {
             URL fxmlUrl = getClass().getResource("/isep/crescendo/view/" + fxmlFileName);
             if (fxmlUrl == null) {
@@ -146,11 +138,96 @@ public class MainController implements Initializable, LoginCallback {
             }
             FXMLLoader loader = new FXMLLoader(fxmlUrl);
             Parent content = loader.load();
+
+            Object controller = loader.getController();
+            // Apenas para o CoinController/MarketController, como no seu código original
+            if (controller instanceof CoinController && dataObject instanceof Criptomoeda) {
+                ((CoinController) controller).setCriptomoeda((Criptomoeda) dataObject);
+                System.out.println("DEBUG (MainController): Criptomoeda passada para CoinController.");
+            }
+
             contentArea.getChildren().clear();
             contentArea.getChildren().add(content);
+
+            this.currentContentFxml = fxmlFileName;
+            System.out.println("DEBUG (MainController): Conteúdo '" + fxmlFileName + "' carregado.");
         } catch (IOException e) {
             System.err.println("Erro ao carregar conteúdo " + fxmlFileName + ": " + e.getMessage());
             e.printStackTrace();
+        }
+    }
+
+    public String getCurrentContentFxml() {
+        return currentContentFxml;
+    }
+
+    @Override
+    public void onLoginSuccess(boolean isAdmin) {
+        System.out.println("MainController: Login bem-sucedido. is Admin: " + isAdmin);
+        loadContent("WalletView.fxml"); // Carrega a vista padrão após o login
+
+        if (leftBarController != null) {
+            leftBarController.showEntireLeftBar();
+            leftBarController.showLoggedInContent();
+            leftBarController.updateUserNameLabel();
+        }
+        if (rightBarController != null) {
+            rightBarController.showEntireRightBar();
+        }
+    }
+
+    @Override
+    public void onLoginFailure(String message) {
+        System.out.println("MainController: Login falhou: " + message);
+    }
+
+    public void handleLogout(ActionEvent event) {
+        SessionManager.setCurrentUser(null);
+        if (leftBarController != null) {
+            leftBarController.hideEntireLeftBar();
+            leftBarController.hideLoggedInContent();
+        }
+        if (rightBarController != null) {
+            rightBarController.hideEntireRightBar();
+        }
+        try {
+            loadUserManagementView();
+        } catch (IOException e) {
+            System.err.println("Erro ao carregar tela de login após logout: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // --- Métodos Adicionados para Navegação e Manipulação de Criptomoedas ---
+
+    /**
+     * Lida com o clique em uma criptomoeda na RightBar.
+     * Altera o conteúdo principal para a MarketView e exibe o gráfico da criptomoeda.
+     * @param cripto O objeto Criptomoeda que foi clicado.
+     */
+    public void handleCriptomoedaClick(Criptomoeda cripto) {
+        System.out.println("DEBUG (MainController): Criptomoeda clicada na RightBar: " + cripto.getNome());
+        // Assumindo que 'MarketView.fxml' é a vista que mostra o gráfico e seu controlador é um CoinController
+        loadContentWithObject("MarketView.fxml", cripto);
+    }
+
+    /**
+     * Navega para a vista da carteira, geralmente chamada da LeftBar.
+     */
+    public void navigateToWallet() {
+        System.out.println("DEBUG (MainController): Navegando para a Vista da Carteira (via menu).");
+        loadContent("WalletView.fxml");
+    }
+
+    // REMOVIDO: O método 'navigateToMarket()' e toda a sua lógica.
+
+    // Exemplo de manipulação de configuração global do RightBarController (se necessário)
+    public void handleGlobalSettingChange(Boolean newValue) {
+        System.out.println("MainController received global setting change: " + newValue);
+        if (newValue != null && newValue) {
+            // Faça algo quando verdadeiro
+        } else {
+            // Faça algo quando falso ou nulo
         }
     }
 }

@@ -2,91 +2,144 @@ package isep.crescendo.controller;
 
 import isep.crescendo.Repository.CriptomoedaRepository;
 import isep.crescendo.model.Criptomoeda;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets; // Adicione este import
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.control.Label;
-import javafx.scene.layout.VBox; // Import VBox for your new container
-import javafx.scene.layout.AnchorPane; // Or HBox, depending on CoinListItem.fxml's root
-import javafx.scene.control.Button; // If you added fx:id to your button
-import java.io.IOException;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import org.controlsfx.control.ToggleSwitch;
 
-public class RightBarController {
+import java.net.URL;
+import java.util.List;
+import java.util.ResourceBundle;
 
-    @FXML
-    private VBox coinsContainer; // This is your new container for coin items
+public class RightBarController implements Initializable {
 
-    @FXML
-    private Button refreshButton; // Link to your refresh button
-
-    private CriptomoedaRepository criptomoedaRepository = new CriptomoedaRepository();
+    private MainController mainController;
 
     @FXML
-    public void initialize() {
-        // No more ListView specific code (no setPlaceholder, no setCellFactory)
+    private VBox rightBarRoot;
 
-        // Set an action for the refresh button (optional, but good practice)
-        if (refreshButton != null) {
-            refreshButton.setOnAction(event -> {
-                try {
-                    carregarCriptomoedas();
-                } catch (IOException e) {
-                    System.err.println("Erro ao recarregar criptomoedas: " + e.getMessage());
-                    e.printStackTrace();
-                }
-            });
+    @FXML
+    private ListView<Criptomoeda> coinListView;
+
+    @FXML
+    private ToggleSwitch globalToggleSwitch;
+
+    private final BooleanProperty darkModeEnabled = new SimpleBooleanProperty(false);
+
+    private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+
+    @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        if (rightBarRoot != null) {
+            System.out.println("DEBUG (RightBarController): RightBar inicializada. rightBarRoot injetado.");
+        } else {
+            System.err.println("ERRO CRÍTICO (RightBarController): rightBarRoot NÃO foi injetado pelo FXML! Verifique fx:id no FXML.");
         }
 
-        // Load initial data
-        try {
-            carregarCriptomoedas();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar criptomoedas na inicialização: " + e.getMessage());
-            e.printStackTrace();
+        if (globalToggleSwitch != null) {
+            globalToggleSwitch.selectedProperty().bindBidirectional(darkModeEnabled);
+            darkModeEnabled.addListener((obs, oldVal, newVal) -> {
+                System.out.println("Modo Escuro: " + (newVal ? "Ativado" : "Desativado"));
+                if (mainController != null) {
+                    mainController.handleGlobalSettingChange(newVal);
+                }
+            });
+        } else {
+            System.err.println("ERRO (RightBarController): globalToggleSwitch NÃO foi injetado pelo FXML!");
+        }
+
+        if (coinListView != null) {
+            coinListView.setCellFactory(lv -> new ListCell<Criptomoeda>() {
+                @Override
+                protected void updateItem(Criptomoeda cripto, boolean empty) {
+                    super.updateItem(cripto, empty);
+                    if (empty || cripto == null) {
+                        setText(null);
+                        setGraphic(null);
+                    } else {
+                        HBox itemLayout = new HBox(10);
+                        itemLayout.setPadding(new Insets(5));
+
+                        ImageView icon = new ImageView();
+                        icon.setFitHeight(24);
+                        icon.setFitWidth(24);
+                        if (cripto.getImagemUrl() != null && !cripto.getImagemUrl().isEmpty()) {
+                            try {
+                                icon.setImage(new Image(cripto.getImagemUrl(), true));
+                            } catch (Exception e) {
+                                System.err.println("Erro ao carregar imagem para " + cripto.getNome() + ": " + e.getMessage());
+                                icon.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
+                            }
+                        } else {
+                            icon.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
+                        }
+
+                        Label nameLabel = new Label(cripto.getNome() + " (" + cripto.getSimbolo() + ")");
+                        nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+                        itemLayout.getChildren().addAll(icon, nameLabel);
+                        setGraphic(itemLayout);
+
+                        itemLayout.setOnMouseClicked(event -> {
+                            if (mainController != null && cripto != null) {
+                                System.out.println("Criptomoeda clicada na RightBar: " + cripto.getNome());
+                                mainController.loadContentWithObject("MarketView.fxml", cripto); // Abre MarketView com a cripto
+                            }
+                        });
+                    }
+                }
+            });
+            loadCriptomoedasToList();
+        } else {
+            System.err.println("ERRO (RightBarController): coinListView NÃO foi injetado pelo FXML! Verifique fx:id no FXML.");
         }
     }
 
-    private void carregarCriptomoedas() throws IOException {
-        coinsContainer.getChildren().clear(); // Clear existing components before adding new ones
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+        System.out.println("DEBUG (RightBarController): MainController injetado.");
+    }
 
-        System.out.println("Attempting to load criptomoedas from repository...");
-        ObservableList<Criptomoeda> fetchedMoedas = criptomoedaRepository.getAllCriptomoedas();
-
-        if (fetchedMoedas == null || fetchedMoedas.isEmpty()) {
-            System.out.println("No criptomoedas fetched. Displaying placeholder.");
-            coinsContainer.getChildren().add(new Label("Nenhuma criptomoeda disponível.")); // Placeholder if empty
-            return;
+    public void showEntireRightBar() {
+        if (rightBarRoot != null) {
+            rightBarRoot.setVisible(true);
+            rightBarRoot.setManaged(true);
+            System.out.println("DEBUG (RightBarController): RightBar VISÍVEL.");
         }
+    }
 
-        System.out.println("Fetched " + fetchedMoedas.size() + " criptomoedas. Adding to container.");
+    public void hideEntireRightBar() {
+        if (rightBarRoot != null) {
+            rightBarRoot.setVisible(false);
+            rightBarRoot.setManaged(false);
+            System.out.println("DEBUG (RightBarController): RightBar ESCONDIDA.");
+        }
+    }
 
-        // This is your "loop" to manually add each component
-        int i = 0;
-        for (Criptomoeda moeda : fetchedMoedas) {
-            if (i<5) {
-                try {
-                    // Load the FXML for a single coin item
-                    FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/coin-list-view.fxml"));
-                    AnchorPane coinItemRoot = loader.load(); // Or HBox if that's your root element
+    // O método handleShowSettings foi removido, pois o botão não existe mais no FXML.
 
-                    // Get the controller for this specific coin item
-                    CoinListViewController controller = loader.getController();
-
-                    // Pass the data to the controller of the loaded item
-                    controller.setCriptomoeda(moeda);
-
-                    // Add the loaded FXML component (its root node) to your VBox container
-                    coinsContainer.getChildren().add(coinItemRoot);
-
-                } catch (IOException e) {
-                    System.err.println("Erro ao carregar item da moeda " + moeda.getNome() + ": " + e.getMessage());
-                    e.printStackTrace();
-                    // Optionally add an error message to the container if a specific item fails
-                    coinsContainer.getChildren().add(new Label("Erro ao carregar " + moeda.getSimbolo()));
-                }
+    private void loadCriptomoedasToList() {
+        try {
+            List<Criptomoeda> moedas = criptoRepo.getAllCriptomoedasAtivas();
+            ObservableList<Criptomoeda> observableMoedas = FXCollections.observableArrayList(moedas);
+            if (coinListView != null) {
+                coinListView.setItems(observableMoedas);
+                System.out.println("Criptomoedas carregadas na RightBar ListView: " + moedas.size());
             }
-            i=i+1;
+        } catch (Exception e) {
+            System.err.println("Erro ao carregar criptomoedas para a ListView da RightBar: " + e.getMessage());
+            e.printStackTrace();
         }
-        System.out.println("Finished loading components into coinsContainer.");
     }
 }

@@ -12,10 +12,8 @@ module isep.crescendo {
     requires org.kordamp.ikonli.javafx;
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
-    requires com.almasb.fxgl.all; // Mantenha se realmente estiver usando FXGL
     requires java.sql;
     requires jakarta.mail;
-    requires com.fasterxml.jackson.core; // Mantenha se estiver usando Jackson para JSON
 
     // Garante que o JavaFX pode refletir sobre classes no pacote raiz para o FXMLLoader
     // (Útil se você carregar FXMLs diretamente do pacote 'isep.crescendo')

@@ -1,6 +1,6 @@
 package isep.crescendo.Repository;
 
-import isep.crescendo.model.HistoricoValor; // Certifica-te de que este import está correto
+import isep.crescendo.model.HistoricoValor;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -29,13 +29,6 @@ public class HistoricoValorRepository {
      * @throws SQLException Se ocorrer um erro ao estabelecer a conexão.
      */
     private Connection getConnection() throws SQLException {
-        // Para MySQL, não é estritamente necessário carregar o driver manualmente
-        // em versões mais recentes do JDBC (Java 6+), mas é uma boa prática para garantir.
-        // try {
-        //     Class.forName("com.mysql.cj.jdbc.Driver");
-        // } catch (ClassNotFoundException e) {
-        //     throw new SQLException("Driver JDBC do MySQL não encontrado.", e);
-        // }
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
@@ -50,19 +43,18 @@ public class HistoricoValorRepository {
             CREATE TABLE IF NOT EXISTS historico_valores (
                 cripto_id INT NOT NULL,
                 data DATETIME NOT NULL,
-                valor DECIMAL(18, 8) NOT NULL,
+                valor DECIMAL(18, 8) NOT NULL, -- CORREÇÃO AQUI: de 'NOT CELLS' para 'NOT NULL'
                 PRIMARY KEY (cripto_id, data),
                 FOREIGN KEY (cripto_id) REFERENCES criptomoedas(id) ON DELETE CASCADE
             );
         """;
 
-        try (Connection conn = getConnection(); // Obtém a conexão
-             Statement stmt = conn.createStatement()) { // Cria um statement para executar o SQL
-            stmt.execute(sql); // Executa a instrução SQL
+        try (Connection conn = getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(sql);
             System.out.println("Tabela 'historico_valores' verificada/criada com sucesso.");
         } catch (SQLException e) {
             System.err.println("Erro ao criar tabela 'historico_valores': " + e.getMessage());
-            // É importante lançar uma RuntimeException para sinalizar que o repositório não pode funcionar
             throw new RuntimeException("Erro fatal ao inicializar o repositório: Falha ao criar a tabela 'historico_valores'.", e);
         }
     }
@@ -77,17 +69,14 @@ public class HistoricoValorRepository {
         String sql = "INSERT INTO historico_valores (cripto_id, data, valor) VALUES (?, ?, ?)";
 
         try (Connection conn = getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) { // Prepara a instrução SQL
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, criptoId); // Define o primeiro parâmetro (cripto_id)
-            pstmt.setTimestamp(2, Timestamp.valueOf(data)); // Define o segundo parâmetro (data)
-            pstmt.setDouble(3, valor); // Define o terceiro parâmetro (valor)
+            pstmt.setInt(1, criptoId);
+            pstmt.setTimestamp(2, Timestamp.valueOf(data));
+            pstmt.setDouble(3, valor);
 
-            pstmt.executeUpdate(); // Executa a atualização (INSERT)
-            // System.out.println("Valor histórico adicionado para cripto_id " + criptoId + " em " + data);
+            pstmt.executeUpdate();
         } catch (SQLException e) {
-            // Se houver uma duplicata de chave primária (cripto_id, data), isto pode ocorrer.
-            // Pode querer tratar SQLException específica para duplicatas.
             System.err.println("Erro ao adicionar valor histórico para cripto_id " + criptoId + " em " + data + ": " + e.getMessage());
             throw new RuntimeException("Erro ao adicionar valor histórico: " + e.getMessage(), e);
         }
@@ -100,13 +89,14 @@ public class HistoricoValorRepository {
      */
     public List<HistoricoValor> listarPorCripto(int criptoId) {
         List<HistoricoValor> lista = new ArrayList<>();
-        String sql = "SELECT cripto_id, data, valor FROM historico_valores WHERE cripto_id = ? ORDER BY data ASC";
+        // Adicionado LIMIT 100 para evitar carregar muitos dados no gráfico
+        String sql = "SELECT cripto_id, data, valor FROM historico_valores WHERE cripto_id = ? ORDER BY data ASC LIMIT 100";
 
         try (Connection conn = getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setInt(1, criptoId); // Define o parâmetro cripto_id
-            ResultSet rs = pstmt.executeQuery(); // Executa a query
+            pstmt.setInt(1, criptoId);
+            ResultSet rs = pstmt.executeQuery();
 
             while (rs.next()) {
                 HistoricoValor hv = new HistoricoValor();
@@ -143,7 +133,7 @@ public class HistoricoValorRepository {
             if (rs.next()) { // Se encontrou um registro
                 ultimoValor = new HistoricoValor();
                 ultimoValor.setCriptoId(rs.getInt("cripto_id"));
-                Timestamp timestamp = rs.getTimestamp("data"); // Coluna é 'data'
+                Timestamp timestamp = rs.getTimestamp("data");
                 ultimoValor.setData(timestamp.toLocalDateTime());
                 ultimoValor.setValor(rs.getDouble("valor"));
             }

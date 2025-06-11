@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="isep.crescendo.controller.MarketController"
+      style="-fx-background-color: black;"
+      spacing="20"> <padding>
+    <Insets top="10" right="10" bottom="10" left="10"/>
+</padding>
+
+    <VBox  spacing="10">
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <ImageView fx:id="coinLogo" fitHeight="40" fitWidth="40" preserveRatio="true">
+                <image>
+                    <Image url="@../images/default_coin.png"/>
+                </image>
+            </ImageView>
+            <Label fx:id="nameLabel" text="Nome da Moeda" textFill="white">
+                <font>
+                    <Font size="24.0" />
+                </font>
+            </Label>
+            <Label fx:id="symbolLabel" text="SIMB" textFill="gray">
+                <font>
+                    <Font size="18.0" />
+                </font>
+            </Label>
+
+            <ComboBox fx:id="intervaloSelecionadoBox" promptText="Intervalo" />
+            <ComboBox fx:id="periodoSelecionadoBox" promptText="Período" />
+        </HBox>
+
+        <LineChart fx:id="lineChart" title="Performance da Moeda" prefHeight="300">
+            <xAxis>
+                <CategoryAxis fx:id="eixoX" label="Data/Hora" />
+            </xAxis>
+            <yAxis>
+                <NumberAxis fx:id="eixoY" label="Preço (€)" />
+            </yAxis>
+        </LineChart>
+        <Label fx:id="infoLabel" text="Selecione uma moeda para ver o gráfico." textFill="white" />
+    </VBox>
+
+    <Separator />
+
+    <Label text="Mercado de Criptomoedas Ativas" textFill="white">
+        <font>
+            <Font size="18.0" />
+        </font>
+    </Label>
+    <VBox fx:id="coinContainer" spacing="10" VBox.vgrow="ALWAYS">
+    </VBox>
+</VBox>

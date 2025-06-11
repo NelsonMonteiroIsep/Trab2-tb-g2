@@ -9,7 +9,8 @@
 <?import javafx.scene.layout.VBox?>
 
 <BorderPane fx:id="rootPane" styleClass="root-pane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="isep.crescendo.controller.MainController">
-
+    <top>
+    </top>
     <left>
     </left>
 
@@ -19,7 +20,6 @@
     </center>
 
     <right>
-        <fx:include source="RightBarView.fxml"/>
     </right>
 
 </BorderPane>

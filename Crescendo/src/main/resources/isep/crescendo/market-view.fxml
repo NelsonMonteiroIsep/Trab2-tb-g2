@@ -15,14 +15,9 @@
       style="-fx-background-color: black;"
       prefHeight="Infinity">
 
-<top>
-            <fx:include source="/isep/crescendo/navbar.fxml" />
-</top>
 
-        <!-- MENU LATERAL -->
-        <left>
-            <fx:include source="leftbar-componente.fxml"/>
-        </left>
+
+
     <Label fx:id="userNameLabel" visible="false">.</Label>
         <!-- CONTEÚDO PRINCIPAL -->
         <center>

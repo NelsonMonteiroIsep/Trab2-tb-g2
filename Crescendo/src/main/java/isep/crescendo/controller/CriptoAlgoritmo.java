@@ -1,8 +1,6 @@
-// src/main/java/isep/crescendo/controller/CriptoAlgoritmo.java
 package isep.crescendo.controller;
 
 import isep.crescendo.Repository.HistoricoValorRepository;
-import isep.crescendo.controller.CyclePhase;
 import isep.crescendo.model.HistoricoValor;
 
 import javafx.animation.KeyFrame;
@@ -16,6 +14,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.SimpleDoubleProperty;
+
+
 public class CriptoAlgoritmo {
 
     private int criptoIdParaSimulacao;
@@ -23,13 +25,13 @@ public class CriptoAlgoritmo {
     private Timeline simulationTimeline;
 
     private int currentMinute = 0;
-    private static final int SIMULATION_INTERVAL_MS = 60; // 1 segundo real por "minuto" simulado
+    private static final int SIMULATION_INTERVAL_MS = 60; // Frequência de atualização em ms
 
     private CyclePhase currentPhase = CyclePhase.ADOCAO;
     private int minutesInCurrentPhase = 0;
     private int phaseDuration = 0;
 
-    private double currentPrice;
+    private DoubleProperty currentPriceProperty = new SimpleDoubleProperty();
     private double currentVolume;
 
     private static final double PRICE_NOISE_FACTOR = 0.02;
@@ -41,62 +43,62 @@ public class CriptoAlgoritmo {
     private LocalDateTime ultimaHoraSalva = null;
 
     private List<HistoricoValor> historicoEmMemoria;
-    private static final int MAX_HISTORICO_EM_MEMORIA = 3600; // Manter a última 1 hora de dados (3600 segundos/minutos)
-
+    public static final int MAX_HISTORICO_EM_MEMORIA = 3600; // 60 minutos * 60 horas = 3600 minutos
+    public int getCriptoIdParaSimulacao() {
+        return criptoIdParaSimulacao;
+    }
     // Construtor principal que aceita um valor inicial de preço
-    public CriptoAlgoritmo(int criptoId, Double initialPrice) { // Use Double para permitir 'null'
+    public CriptoAlgoritmo(int criptoId, Double initialPrice) {
         this.criptoIdParaSimulacao = criptoId;
         this.historicoValorRepo = new HistoricoValorRepository();
         this.historicoEmMemoria = new ArrayList<>();
 
         if (initialPrice != null) {
-            this.currentPrice = initialPrice;
-            System.out.println("CriptoAlgoritmo: Inicializando Cripto ID " + criptoId + " com valor passado: " + String.format("%.2f", this.currentPrice));
+            this.currentPriceProperty.set(initialPrice);
+            System.out.println("CriptoAlgoritmo: Inicializando Cripto ID " + criptoId + " com valor passado: " + String.format("%.2f", this.currentPriceProperty.get()));
         } else {
-            // Valor padrão se nenhum for passado
-            this.currentPrice = 100.0;
-            System.out.println("CriptoAlgoritmo: Nenhum valor inicial passado para Cripto ID " + criptoId + ". Inicializando com valor padrão: " + String.format("%.2f", this.currentPrice));
+            this.currentPriceProperty.set(100.0); // Valor padrão se nenhum for passado
+            System.out.println("CriptoAlgoritmo: Nenhum valor inicial passado para Cripto ID " + criptoId + ". Inicializando com valor padrão: " + String.format("%.2f", this.currentPriceProperty.get()));
         }
 
-        this.currentVolume = 500.0; // Valor padrão inicial para volume
-
+        this.currentVolume = 500.0;
+        setPhaseDuration(currentPhase); // Define a duração da fase inicial
         System.out.println("CriptoAlgoritmo: Simulação para Cripto ID " + criptoId + " inicializada.");
-        setPhaseDuration(currentPhase);
     }
 
-    // Construtor de conveniência sem valor inicial (chama o principal com null)
+    // Construtor de conveniência sem valor inicial (usará o valor padrão 100.0)
     public CriptoAlgoritmo(int criptoId) {
         this(criptoId, null);
     }
 
-    // Define a duração de cada fase (em "minutos" simulados), com alguma aleatoriedade
     private void setPhaseDuration(CyclePhase phase) {
+        // As durações das fases devem ser mais realistas ou configuráveis
         switch (phase) {
             case ADOCAO:
-                phaseDuration = 60 + random.nextInt(25);
+                phaseDuration = 60 + random.nextInt(25); // 60 a 84 minutos
                 break;
             case EUFORIA:
-                phaseDuration = 30 + random.nextInt(10);
+                phaseDuration = 30 + random.nextInt(10); // 30 a 39 minutos
                 break;
             case DISTRIBUICAO:
-                phaseDuration = 20 + random.nextInt(10);
+                phaseDuration = 20 + random.nextInt(10); // 20 a 29 minutos
                 break;
             case PANICO:
-                phaseDuration = 25 + random.nextInt(10);
+                phaseDuration = 25 + random.nextInt(10); // 25 a 34 minutos
                 break;
             case CAPITULACAO:
-                phaseDuration = 40 + random.nextInt(15);
+                phaseDuration = 40 + random.nextInt(15); // 40 a 54 minutos
                 break;
             case ACUMULACAO:
-                phaseDuration = 60 + random.nextInt(25);
+                phaseDuration = 60 + random.nextInt(25); // 60 a 84 minutos
                 break;
             default:
-                phaseDuration = 20;
+                currentPhase = CyclePhase.ADOCAO;
+                phaseDuration = 20; // Default seguro
                 break;
         }
     }
 
-    // Inicia a simulação
     public void startSimulation() {
         if (simulationTimeline != null) {
             simulationTimeline.stop();
@@ -107,12 +109,11 @@ public class CriptoAlgoritmo {
         simulationTimeline.setCycleCount(Timeline.INDEFINITE);
         simulationTimeline.play();
 
+        // Inicializa ultimaHoraSalva para garantir que a primeira hora cheia seja salva
         ultimaHoraSalva = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS);
-
         System.out.println("CriptoAlgoritmo para Cripto ID " + criptoIdParaSimulacao + " iniciada. Gravando dados em memória e na DB (hora cheia)...");
     }
 
-    // Para a simulação
     public void stopSimulation() {
         if (simulationTimeline != null) {
             simulationTimeline.stop();
@@ -120,12 +121,10 @@ public class CriptoAlgoritmo {
         }
     }
 
-    // Retorna o histórico de valores armazenado em memória (somente leitura)
     public List<HistoricoValor> getHistoricoEmMemoria() {
         return Collections.unmodifiableList(new ArrayList<>(historicoEmMemoria));
     }
 
-    // Atualiza a simulação e armazena os dados
     private void updateSimulationAndStore() {
         minutesInCurrentPhase++;
         if (minutesInCurrentPhase >= phaseDuration) {
@@ -135,20 +134,19 @@ public class CriptoAlgoritmo {
         generateMarketDataForCurrentPhase();
 
         LocalDateTime agora = LocalDateTime.now();
-        double valorGerado = currentPrice;
-        // double volumeGerado = currentVolume; // Comentado/Removido, pois HistoricoValor não tem campo volume
+        double valorGerado = currentPriceProperty.get();
 
+        // Armazena em memória (útil para gráficos de curto prazo)
         HistoricoValor novoRegistro = new HistoricoValor();
         novoRegistro.setCriptoId(criptoIdParaSimulacao);
         novoRegistro.setData(agora);
         novoRegistro.setValor(valorGerado);
-
         historicoEmMemoria.add(novoRegistro);
-
         if (historicoEmMemoria.size() > MAX_HISTORICO_EM_MEMORIA) {
-            historicoEmMemoria.remove(0);
+            historicoEmMemoria.remove(0); // Mantém o tamanho do histórico em memória
         }
 
+        // Salva na base de dados apenas nas horas cheias
         LocalDateTime horaAtualTruncada = agora.truncatedTo(ChronoUnit.HOURS);
 
         if (ultimaHoraSalva == null || horaAtualTruncada.isAfter(ultimaHoraSalva)) {
@@ -159,14 +157,11 @@ public class CriptoAlgoritmo {
             } catch (RuntimeException e) {
                 System.err.println("Erro ao salvar valor histórico na DB para Cripto ID " + criptoIdParaSimulacao + ": " + e.getMessage());
             }
-        } else {
-            // System.out.println("Cripto ID " + criptoIdParaSimulacao + ": Gerado " + String.format("%.2f", valorGerado) + " (Armazenado em memória)");
         }
 
         currentMinute++;
     }
 
-    // Transita para a próxima fase do ciclo de mercado
     private void transitionToNextPhase() {
         switch (currentPhase) {
             case ADOCAO:
@@ -181,11 +176,14 @@ public class CriptoAlgoritmo {
             case PANICO:
                 currentPhase = CyclePhase.CAPITULACAO;
                 break;
+            case CAPITULACAO:
+                currentPhase = CyclePhase.ACUMULACAO;
+                break;
             case ACUMULACAO:
-                currentPhase = CyclePhase.ADOCAO; // Volta ao início do ciclo
+                currentPhase = CyclePhase.ADOCAO;
                 break;
             default:
-                currentPhase = CyclePhase.ADOCAO;
+                currentPhase = CyclePhase.ADOCAO; // Fallback
                 break;
         }
         minutesInCurrentPhase = 0;
@@ -193,7 +191,6 @@ public class CriptoAlgoritmo {
         System.out.println("Cripto ID " + criptoIdParaSimulacao + ": Transição para a fase: " + currentPhase.getDisplayName());
     }
 
-    // Gera o preço e volume com base na fase atual e ruído
     private void generateMarketDataForCurrentPhase() {
         double priceChangeFactor = 0.0;
         double volumeChangeFactor = 0.0;
@@ -203,41 +200,56 @@ public class CriptoAlgoritmo {
 
         switch (currentPhase) {
             case ADOCAO:
-                priceChangeFactor = 0.005 + randomNoisePrice;
-                volumeChangeFactor = 0.01 + randomNoiseVolume;
+                priceChangeFactor = 0.005 + randomNoisePrice; // Leve aumento de preço
+                volumeChangeFactor = 0.01 + randomNoiseVolume; // Aumento de volume
                 break;
             case EUFORIA:
-                priceChangeFactor = 0.02 + randomNoisePrice;
-                volumeChangeFactor = 0.03 + randomNoiseVolume;
+                priceChangeFactor = 0.02 + randomNoisePrice; // Aumento rápido de preço
+                volumeChangeFactor = 0.03 + randomNoiseVolume; // Alto volume
                 break;
             case DISTRIBUICAO:
-                priceChangeFactor = -0.002 + randomNoisePrice;
-                volumeChangeFactor = -0.01 + randomNoiseVolume;
+                priceChangeFactor = -0.002 + randomNoisePrice; // Preço estagna ou ligeiramente cai
+                volumeChangeFactor = -0.01 + randomNoiseVolume; // Volume diminui
                 break;
             case PANICO:
-                priceChangeFactor = -0.03 + randomNoisePrice;
-                volumeChangeFactor = 0.04 + randomNoiseVolume;
+                priceChangeFactor = -0.03 + randomNoisePrice; // Queda acentuada
+                volumeChangeFactor = 0.04 + randomNoiseVolume; // Volume alto por vendas
                 break;
             case CAPITULACAO:
-                priceChangeFactor = -0.01 + randomNoisePrice;
-                volumeChangeFactor = -0.02 + randomNoiseVolume;
+                priceChangeFactor = -0.01 + randomNoisePrice; // Queda contínua, mas mais lenta
+                volumeChangeFactor = -0.02 + randomNoiseVolume; // Volume baixo
                 break;
             case ACUMULACAO:
-                priceChangeFactor = 0.001 + randomNoisePrice;
-                volumeChangeFactor = -0.005 + randomNoiseVolume;
+                priceChangeFactor = 0.001 + randomNoisePrice; // Preço lateraliza ou sobe levemente
+                volumeChangeFactor = -0.005 + randomNoiseVolume; // Volume baixo
                 break;
         }
 
-        currentPrice += currentPrice * priceChangeFactor;
-        if (currentPrice < 0.01) currentPrice = 0.01;
+        double newPrice = currentPriceProperty.get() + currentPriceProperty.get() * priceChangeFactor;
+        if (newPrice < 0.01) newPrice = 0.01; // Preço mínimo
+        this.currentPriceProperty.set(newPrice);
 
-        currentVolume += currentVolume * volumeChangeFactor * 100;
-        if (currentVolume < 10.0) currentVolume = 10.0;
+        currentVolume += currentVolume * volumeChangeFactor * 100; // Ajuste para o volume ser mais significativo
+        if (currentVolume < 10.0) currentVolume = 10.0; // Volume mínimo
 
-        // Adiciona eventos aleatórios de "flash crash" ou "pump" (1% de chance)
-        if (random.nextDouble() < 0.01) {
-            currentPrice *= (1 + (random.nextDouble() * 0.1 - 0.05));
-            currentVolume *= (1 + (random.nextDouble() * 0.2 - 0.1));
+        // Eventos de "Flash Crash/Pump"
+        if (random.nextDouble() < 0.01) { // 1% de chance de um evento súbito
+            double flashEventFactor = (random.nextDouble() * 0.1 - 0.05); // +/- 5%
+            double flashEventPrice = currentPriceProperty.get() * (1 + flashEventFactor);
+            this.currentPriceProperty.set(flashEventPrice);
+            currentVolume *= (1 + (random.nextDouble() * 0.2 - 0.1)); // Volume também reage
         }
+    }
+
+    public DoubleProperty currentPriceProperty() {
+        return currentPriceProperty;
+    }
+
+    public double getCurrentPrice() {
+        return currentPriceProperty.get();
+    }
+
+    public void setCurrentPrice(double newPrice) {
+        this.currentPriceProperty.set(newPrice);
     }
 }

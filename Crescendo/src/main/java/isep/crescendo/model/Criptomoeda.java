@@ -32,4 +32,5 @@ public class Criptomoeda {
 
     public Timestamp getDataCriacao() { return dataCriacao; }
     public void setDataCriacao(Timestamp dataCriacao) { this.dataCriacao = dataCriacao; }
+
 }
