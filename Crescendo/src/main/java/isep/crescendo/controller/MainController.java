@@ -187,9 +187,6 @@ public class MainController implements Initializable, LoginCallback {
             leftBarController.hideEntireLeftBar();
             leftBarController.hideLoggedInContent();
         }
-        if (rightBarController != null) {
-            rightBarController.hideEntireRightBar();
-        }
         try {
             loadUserManagementView();
         } catch (IOException e) {

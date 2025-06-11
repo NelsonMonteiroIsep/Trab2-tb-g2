@@ -32,8 +32,7 @@ public class RightBarController implements Initializable {
     @FXML
     private ListView<Criptomoeda> coinListView;
 
-    @FXML
-    private ToggleSwitch globalToggleSwitch;
+
 
     private final BooleanProperty darkModeEnabled = new SimpleBooleanProperty(false);
 
@@ -47,17 +46,6 @@ public class RightBarController implements Initializable {
             System.err.println("ERRO CRÍTICO (RightBarController): rightBarRoot NÃO foi injetado pelo FXML! Verifique fx:id no FXML.");
         }
 
-        if (globalToggleSwitch != null) {
-            globalToggleSwitch.selectedProperty().bindBidirectional(darkModeEnabled);
-            darkModeEnabled.addListener((obs, oldVal, newVal) -> {
-                System.out.println("Modo Escuro: " + (newVal ? "Ativado" : "Desativado"));
-                if (mainController != null) {
-                    mainController.handleGlobalSettingChange(newVal);
-                }
-            });
-        } else {
-            System.err.println("ERRO (RightBarController): globalToggleSwitch NÃO foi injetado pelo FXML!");
-        }
 
         if (coinListView != null) {
             coinListView.setCellFactory(lv -> new ListCell<Criptomoeda>() {

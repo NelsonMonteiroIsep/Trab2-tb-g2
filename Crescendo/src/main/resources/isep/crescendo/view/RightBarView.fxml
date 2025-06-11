@@ -17,10 +17,6 @@
               style="-fx-background-color: #28282b; -fx-background-radius: 8; -fx-control-inner-background: #28282b;">
     </ListView>
 
-    <HBox alignment="CENTER_LEFT" spacing="10" style="-fx-padding: 10 0 0 0;">
-        <Label text="Modo Escuro" style="-fx-text-fill: white;"/>
-        <ToggleSwitch fx:id="globalToggleSwitch" />
-    </HBox>
 
     <Separator>
         <VBox.margin>

@@ -5,37 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinComponentController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/NavBarController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/CriptoService.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/util/Formatter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/images/default_coin.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/CoinComponent.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/CoinView.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/MarketView.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/NavBarView.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/RegisterView.fxml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/TransacoesView.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/kotlinc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/kotlinc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/build.gradle.kts" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/build.gradle.kts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/CriptomoedaRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/CriptomoedaRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/HistoricoValorRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/Repository/HistoricoValorRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinComponent.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinComponent.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CoinListViewController.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoAlgoritmo.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/CriptoAlgoritmo.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/LeftBarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/LeftBarController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/LoginCallback.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/LoginCallback.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MainController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MainController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MarketController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/UserManagementController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/Criptomoeda.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/model/Criptomoeda.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/module-info.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/module-info.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-list-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-list-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/MainView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/MainView.fxml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/RightBarView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/RightBarView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
