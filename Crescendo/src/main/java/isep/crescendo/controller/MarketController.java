@@ -18,13 +18,16 @@ import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.beans.value.ChangeListener; // Import necessary for ChangeListener
-
+import javafx.scene.image.Image;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.ResourceBundle;
-
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.List;
+import java.util.ArrayList;
 // Make sure your CyclePhase enum is in the same package or imported
 // For example: import isep.crescendo.controller.CriptoAlgoritmo.CyclePhase;
 // Or, if CyclePhase is its own file in the same package: import isep.crescendo.controller.CyclePhase;
@@ -52,6 +55,9 @@ public class MarketController implements Initializable {
     private NumberAxis eixoY;
     @FXML
     private Label infoLabel;
+
+    private Criptomoeda criptomoedaSelecionada;
+
 
     @FXML
     private VBox coinContainer;
@@ -138,21 +144,16 @@ public class MarketController implements Initializable {
         nameLabel.setText(moedaSelecionada.getNome());
         symbolLabel.setText(moedaSelecionada.getSimbolo());
 
-        // Load coin image (as it was)
+        // Load coin image (universal version)
         if (moedaSelecionada.getImagemUrl() != null && !moedaSelecionada.getImagemUrl().isEmpty()) {
-            try (java.io.InputStream is = getClass().getResourceAsStream(moedaSelecionada.getImagemUrl())) {
-                if (is != null) {
-                    coinLogo.setImage(new javafx.scene.image.Image(is));
-                } else {
-                    System.err.println("ERROR MC: Image resource not found for " + moedaSelecionada.getNome() + " at path: " + moedaSelecionada.getImagemUrl());
-                    coinLogo.setImage(new javafx.scene.image.Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
-                }
+            try {
+                coinLogo.setImage(new Image(moedaSelecionada.getImagemUrl(), true));
             } catch (Exception e) {
                 System.err.println("ERROR MC: Failed to load image for " + moedaSelecionada.getNome() + ": " + e.getMessage());
-                coinLogo.setImage(new javafx.scene.image.Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
+                coinLogo.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
             }
         } else {
-            coinLogo.setImage(new javafx.scene.image.Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
+            coinLogo.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
         }
 
         // --- Initialize and Control the Simulation Algorithm ---
@@ -161,7 +162,7 @@ public class MarketController implements Initializable {
         System.out.println("DEBUG MC: New CriptoAlgoritmo instance created for ID: " + moedaSelecionada.getId() + " with initial price: " + initialPrice);
 
         // Load initial chart data (from DB and algorithm's in-memory history)
-        loadInitialChartData(moedaSelecionada.getId());
+        handlePeriodoSelection();
 
         // Connect the chart to the algorithm's price property for real-time updates
         connectChartToAlgorithmPrice();
@@ -174,57 +175,117 @@ public class MarketController implements Initializable {
      * Loads initial chart data: first from DB (if any), then from the algorithm's in-memory history.
      * @param criptoId The ID of the cryptocurrency.
      */
-    private void loadInitialChartData(int criptoId) {
+    private void loadInitialChartData(int criptoId, LocalDateTime dataInicial) {
         clearChart(); // Clear old data
 
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName(moedaSelecionada.getSimbolo() + " Preço");
         lineChart.getData().add(series); // Add the series to the chart
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm:ss"); // More detailed format for debugging
+        // Decide o formato do eixo X com base no Intervalo
+        String selectedInterval = intervaloSelecionadoBox.getSelectionModel().getSelectedItem();
+        DateTimeFormatter formatter;
 
-        // 1. Try to load history from DB (for older/persisted data)
-        List<HistoricoValor> historicoDB = historicoRepo.listarPorCripto(criptoId);
+
+// --- NOVO BLOCO AQUI ---
+        eixoX.setTickLabelRotation(0); // Opcional: manter as labels direitas
+
+        if (selectedInterval == null) selectedInterval = "1 hora"; // fallback padrão
+
+        switch (selectedInterval) {
+            case "15 minutos":
+                formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+                eixoX.setLabel("Hora (15 min)");
+                break;
+            case "30 minutos":
+                formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+                eixoX.setLabel("Hora (30 min)");
+                break;
+            case "1 hora":
+                formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+                eixoX.setLabel("Hora (1h)");
+                break;
+            case "4 horas":
+                formatter = DateTimeFormatter.ofPattern("dd/MM");
+                eixoX.setLabel("Dia (4h)");
+                break;
+            case "1 dia":
+                formatter = DateTimeFormatter.ofPattern("dd/MM");
+                eixoX.setLabel("Dia");
+                break;
+            default:
+                formatter = DateTimeFormatter.ofPattern("dd/MM HH:mm");
+                eixoX.setLabel("Hora/Minuto");
+                break;
+        }
+// --- FIM DO NOVO BLOCO ---
+
+        // 1. Load from DB (filtered by period)
+        List<HistoricoValor> historicoDB = historicoRepo.listarPorCripto(criptoId, dataInicial);
         if (historicoDB != null && !historicoDB.isEmpty()) {
             System.out.println("DEBUG MC: Loading " + historicoDB.size() + " points from DB history for chart.");
+            // Agrupar por intervalo escolhido
+            Map<LocalDateTime, List<Double>> bucketToValues = new TreeMap<>();
+
             for (HistoricoValor hv : historicoDB) {
-                series.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
+                LocalDateTime bucketTime = truncateDateTime(hv.getData(), selectedInterval);
+
+                bucketToValues.putIfAbsent(bucketTime, new ArrayList<>());
+                bucketToValues.get(bucketTime).add(hv.getValor());
+            }
+
+// Agora para cada bucket, calcula média (ou último valor, se preferires)
+            for (Map.Entry<LocalDateTime, List<Double>> entry : bucketToValues.entrySet()) {
+                LocalDateTime bucketTime = entry.getKey();
+                List<Double> valores = entry.getValue();
+
+                // Cálculo da média (podes mudar para último valor se quiseres)
+                double media = valores.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+
+                series.getData().add(new XYChart.Data<>(bucketTime.format(formatter), media));
             }
         } else {
             System.out.println("DEBUG MC: No history found in DB for Cripto ID " + criptoId + ".");
         }
 
-        // 2. Add IN-MEMORY history from the algorithm (this is crucial for detailed real-time data)
         if (criptoAlgoritmoAtual != null) {
             List<HistoricoValor> historicoMemoria = criptoAlgoritmoAtual.getHistoricoEmMemoria();
             if (historicoMemoria != null && !historicoMemoria.isEmpty()) {
                 System.out.println("DEBUG MC: Adding " + historicoMemoria.size() + " points from algorithm's IN-MEMORY history to chart.");
-                // Add only points that are not already in the chart (if there's overlap)
-                // For simplicity, we'll just add all of them, but you could check for duplicates
-                for (HistoricoValor hv : historicoMemoria) {
-                    series.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
+
+                // Descobre o timestamp do último ponto do BD
+                LocalDateTime ultimaDataBD = dataInicial;
+                if (!series.getData().isEmpty()) {
+                    XYChart.Data<String, Number> ultimoPontoBD = series.getData().get(series.getData().size() - 1);
+                    String ultimaDataStr = ultimoPontoBD.getXValue();
+                    try {
+                        ultimaDataBD = LocalDateTime.parse(ultimaDataStr, formatter);
+                    } catch (Exception e) {
+                        // fallback: mantém dataInicial
+                    }
                 }
-            } else {
-                System.out.println("DEBUG MC: Algorithm's in-memory history (Cripto ID " + criptoId + ") is EMPTY. This is normal at startup or if it just started.");
+
+                // Adiciona só os pontos da memória que são mais recentes que o último ponto do BD
+                for (HistoricoValor hv : historicoMemoria) {
+                    if (hv.getData().isAfter(ultimaDataBD)) {
+                        series.getData().add(new XYChart.Data<>(hv.getData().format(formatter), hv.getValor()));
+                    }
+                }
             }
         }
 
-        // Add an initial point if the chart is still empty (e.g., brand new coin or no data yet)
-        if (series.getData().isEmpty() && criptoAlgoritmoAtual != null) {
-            double initialPriceFromAlg = criptoAlgoritmoAtual.getCurrentPrice();
-            series.getData().add(new XYChart.Data<>(LocalDateTime.now().format(formatter), initialPriceFromAlg));
-            infoLabel.setText("Nenhum histórico disponível. Gerando preços em tempo real.");
-            System.out.println("DEBUG MC: Chart still EMPTY, adding initial point from algorithm: " + String.format("%.2f", initialPriceFromAlg));
-        } else {
-            infoLabel.setText(""); // Remove the selection message if data is loaded
-            System.out.println("DEBUG MC: Chart loaded with " + series.getData().size() + " total points after initial load.");
-        }
-
-        // Limit points on initial load to avoid too dense a graph
-        int maxDataPointsOnLoad = 60; // Display the last 60 points on initial load
+        // Limit points on initial load
+        int maxDataPointsOnLoad = 500;
         if (series.getData().size() > maxDataPointsOnLoad) {
             series.getData().remove(0, series.getData().size() - maxDataPointsOnLoad);
             System.out.println("DEBUG MC: Chart truncated to last " + maxDataPointsOnLoad + " points on initial load.");
+        }
+
+        // Update infoLabel
+        if (series.getData().isEmpty()) {
+            infoLabel.setText("Nenhum dado disponível para o período selecionado.");
+        } else {
+            infoLabel.setText("");
         }
     }
 
@@ -274,19 +335,41 @@ public class MarketController implements Initializable {
     private void handleIntervaloSelection() {
         String selectedInterval = intervaloSelecionadoBox.getSelectionModel().getSelectedItem();
         System.out.println("DEBUG MC: Intervalo selected: " + selectedInterval);
-        // For simulation, we'll just reload the chart with current algorithm data
-        if (moedaSelecionada != null && criptoAlgoritmoAtual != null) {
-            loadInitialChartData(moedaSelecionada.getId()); // Reload with current algorithm's history
-        }
+
+        // Força reload com o mesmo período atual
+        handlePeriodoSelection();
     }
 
     @FXML
     private void handlePeriodoSelection() {
         String selectedPeriod = periodoSelecionadoBox.getSelectionModel().getSelectedItem();
         System.out.println("DEBUG MC: Período selected: " + selectedPeriod);
-        // Similar to interval, reload with current algorithm's history
+
         if (moedaSelecionada != null && criptoAlgoritmoAtual != null) {
-            loadInitialChartData(moedaSelecionada.getId()); // Reload with current algorithm's history
+            LocalDateTime dataInicial;
+
+            switch (selectedPeriod) {
+                case "24 horas":
+                    dataInicial = LocalDateTime.now().minusHours(24);
+                    break;
+                case "7 dias":
+                    dataInicial = LocalDateTime.now().minusDays(7);
+                    break;
+                case "30 dias":
+                    dataInicial = LocalDateTime.now().minusDays(30);
+                    break;
+                case "6 meses":
+                    dataInicial = LocalDateTime.now().minusMonths(6);
+                    break;
+                case "1 ano":
+                    dataInicial = LocalDateTime.now().minusYears(1);
+                    break;
+                default:
+                    dataInicial = LocalDateTime.now().minusDays(7);
+                    break;
+            }
+
+            loadInitialChartData(moedaSelecionada.getId(), dataInicial);
         }
     }
 
@@ -312,4 +395,40 @@ public class MarketController implements Initializable {
             System.err.println("ERROR MC: coinContainer is null. Cannot populate active coins display.");
         }
     }
+
+    public void setCriptomoedaSelecionada(Criptomoeda moeda) {
+        this.criptomoedaSelecionada = moeda;
+
+        HistoricoValor ultimoValor = historicoRepo.getUltimoValorPorCripto(moeda.getId());
+        double initialPrice = (ultimoValor != null) ? ultimoValor.getValor() : 100.0;
+
+        updateMarketUI(moeda, initialPrice);
+    }
+
+    private LocalDateTime truncateDateTime(LocalDateTime dateTime, String selectedInterval) {
+        switch (selectedInterval) {
+            case "15 minutos":
+                int minute15 = (dateTime.getMinute() / 15) * 15;
+                return dateTime.withMinute(minute15).withSecond(0).withNano(0);
+
+            case "30 minutos":
+                int minute30 = (dateTime.getMinute() / 30) * 30;
+                return dateTime.withMinute(minute30).withSecond(0).withNano(0);
+
+            case "1 hora":
+                return dateTime.withMinute(0).withSecond(0).withNano(0);
+
+            case "4 horas":
+                int hour4 = (dateTime.getHour() / 4) * 4;
+                return dateTime.withHour(hour4).withMinute(0).withSecond(0).withNano(0);
+
+            case "1 dia":
+                return dateTime.withHour(0).withMinute(0).withSecond(0).withNano(0);
+
+            default:
+                // fallback → 1 hora
+                return dateTime.withMinute(0).withSecond(0).withNano(0);
+        }
+    }
+
 }

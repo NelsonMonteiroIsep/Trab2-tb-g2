@@ -35,8 +35,10 @@
                 </font>
             </Label>
 
-            <ComboBox fx:id="intervaloSelecionadoBox" promptText="Intervalo" />
-            <ComboBox fx:id="periodoSelecionadoBox" promptText="Período" />
+            <ComboBox fx:id="intervaloSelecionadoBox" promptText="Intervalo"
+                      onAction="#handleIntervaloSelection" />
+            <ComboBox fx:id="periodoSelecionadoBox" promptText="Período"
+                      onAction="#handlePeriodoSelection" />
         </HBox>
 
         <LineChart fx:id="lineChart" title="Performance da Moeda" prefHeight="300">

@@ -17,6 +17,8 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import org.controlsfx.control.ToggleSwitch;
+import isep.crescendo.Repository.HistoricoValorRepository;
+import isep.crescendo.model.HistoricoValor;
 
 import java.net.URL;
 import java.util.List;
@@ -33,6 +35,10 @@ public class RightBarController implements Initializable {
     private ListView<Criptomoeda> coinListView;
 
 
+
+
+
+    private final HistoricoValorRepository historicoValorRepository = new HistoricoValorRepository();
 
     private final BooleanProperty darkModeEnabled = new SimpleBooleanProperty(false);
 
@@ -75,8 +81,25 @@ public class RightBarController implements Initializable {
 
                         Label nameLabel = new Label(cripto.getNome() + " (" + cripto.getSimbolo() + ")");
                         nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+                        Label priceLabel = new Label();
+                        priceLabel.setStyle("-fx-text-fill: lightgreen; -fx-font-weight: bold;");
 
-                        itemLayout.getChildren().addAll(icon, nameLabel);
+                        try {
+                            HistoricoValor ultimoValor = historicoValorRepository.getUltimoValorPorCripto(cripto.getId());
+
+
+                            if (ultimoValor != null) {
+                                priceLabel.setText(String.format("%.2f €", ultimoValor.getValor()));
+                            } else {
+                                priceLabel.setText("-- €");
+                            }
+                        } catch (Exception e) {
+                            System.err.println("Erro ao buscar último valor para " + cripto.getNome() + ": " + e.getMessage());
+                            priceLabel.setText("-- €");
+                        }
+
+
+                        itemLayout.getChildren().addAll(icon, nameLabel, priceLabel);
                         setGraphic(itemLayout);
 
                         itemLayout.setOnMouseClicked(event -> {
@@ -88,6 +111,7 @@ public class RightBarController implements Initializable {
                     }
                 }
             });
+
             loadCriptomoedasToList();
         } else {
             System.err.println("ERRO (RightBarController): coinListView NÃO foi injetado pelo FXML! Verifique fx:id no FXML.");

@@ -143,4 +143,32 @@ public class HistoricoValorRepository {
         }
         return ultimoValor;
     }
+
+    public List<HistoricoValor> listarPorCripto(int criptoId, LocalDateTime dataInicial) {
+        List<HistoricoValor> lista = new ArrayList<>();
+        String sql = "SELECT cripto_id, data, valor FROM historico_valores WHERE cripto_id = ? AND data >= ? ORDER BY data ASC";
+
+        try (Connection conn = getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+
+            pstmt.setInt(1, criptoId);
+            pstmt.setTimestamp(2, Timestamp.valueOf(dataInicial));
+
+            ResultSet rs = pstmt.executeQuery();
+
+            while (rs.next()) {
+                HistoricoValor hv = new HistoricoValor();
+                hv.setCriptoId(rs.getInt("cripto_id"));
+                hv.setData(rs.getTimestamp("data").toLocalDateTime());
+                hv.setValor(rs.getDouble("valor"));
+                lista.add(hv);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao listar histórico de valores para cripto_id " + criptoId + ": " + e.getMessage());
+            throw new RuntimeException("Erro ao listar histórico de valores: " + e.getMessage(), e);
+        }
+
+        return lista;
+    }
 }

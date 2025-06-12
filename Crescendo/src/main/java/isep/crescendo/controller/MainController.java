@@ -140,10 +140,13 @@ public class MainController implements Initializable, LoginCallback {
             Parent content = loader.load();
 
             Object controller = loader.getController();
-            // Apenas para o CoinController/MarketController, como no seu código original
+            // Apenas para o CoinController/MarketController
             if (controller instanceof CoinController && dataObject instanceof Criptomoeda) {
                 ((CoinController) controller).setCriptomoeda((Criptomoeda) dataObject);
                 System.out.println("DEBUG (MainController): Criptomoeda passada para CoinController.");
+            } else if (controller instanceof MarketController && dataObject instanceof Criptomoeda) {
+                ((MarketController) controller).setCriptomoedaSelecionada((Criptomoeda) dataObject);
+                System.out.println("DEBUG (MainController): Criptomoeda passada para MarketController.");
             }
 
             contentArea.getChildren().clear();
