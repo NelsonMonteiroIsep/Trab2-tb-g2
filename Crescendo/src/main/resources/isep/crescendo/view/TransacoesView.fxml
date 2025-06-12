@@ -8,9 +8,13 @@
 <?import javafx.collections.FXCollections?>
 <?import java.lang.String?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.scene.chart.BarChart?>
 <VBox fx:controller="isep.crescendo.controller.TransacoesController"
       xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      prefHeight="800.0" prefWidth="1200.0" style="-fx-background-color: black">
+      prefHeight="1000.0" prefWidth="1200.0" style="-fx-background-color: black">
 
     <VBox style="-fx-background-color: #28282b;
                  -fx-background-radius: 5;
@@ -22,35 +26,75 @@
                    style="-fx-text-fill: white; -fx-font-size: 32px;"/>
         </HBox>
 
-        <Region prefHeight="20"/>
+        <Region prefHeight="10"/>
 
-        <HBox spacing="10" alignment="CENTER_LEFT" style="-fx-padding: 10 30 30 30;">
-            <Label text="Estado:" style="-fx-text-fill: white;"/>
-            <ComboBox fx:id="estadoComboBox" prefWidth="150">
-                <items>
-                    <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Todos"/>
-                        <String fx:value="pendente"/>
-                        <String fx:value="executada"/>
-                        <String fx:value="expirada"/>
-                        <String fx:value="cancelada"/>
-                    </FXCollections>
-                </items>
-            </ComboBox>
+        <HBox spacing="10" alignment="CENTER_LEFT"
+              style="-fx-background-color: #28282b;
+             -fx-background-radius: 5;
+             -fx-padding: 20 30 20 30;">
 
-            <Label text="Data:" style="-fx-text-fill: white;"/>
-            <DatePicker fx:id="dataPicker"/>
-            <Button fx:id="exportCsvButton" text="Exportar CSV" />
+            <!-- Filtros à esquerda -->
+            <HBox spacing="10" alignment="CENTER_LEFT">
+                <Label text="Estado:" style="-fx-text-fill: white;"/>
+                <ComboBox fx:id="estadoComboBox" prefWidth="150">
+                    <items>
+                        <FXCollections fx:factory="observableArrayList">
+                            <String fx:value="Todos"/>
+                            <String fx:value="pendente"/>
+                            <String fx:value="executada"/>
+                            <String fx:value="expirada"/>
+                            <String fx:value="cancelada"/>
+                        </FXCollections>
+                    </items>
+                </ComboBox>
+
+                <Label text="Data:" style="-fx-text-fill: white;"/>
+                <DatePicker fx:id="dataPicker"/>
+
+                <Button fx:id="exportCsvButton" text="Exportar CSV" />
+            </HBox>
+
+            <!-- Espaçador no meio -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- VBox com gráfico + botões abaixo -->
+            <VBox spacing="10" alignment="CENTER">
+                <BarChart fx:id="transacoesChart" prefHeight="150" prefWidth="250"
+                          style="-fx-background-color: #28282b; -fx-text-fill: white;">
+                    <xAxis>
+                        <CategoryAxis label="Tipo de Transação"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Nº Transações"/>
+                    </yAxis>
+                </BarChart>
+
+                <!-- Botões debaixo do gráfico -->
+                <HBox spacing="10" alignment="CENTER">
+                    <Label text="De:" style="-fx-text-fill: white;"/>
+                    <DatePicker fx:id="dataInicioPicker"/>
+
+                    <Label text="Até:" style="-fx-text-fill: white;"/>
+                    <DatePicker fx:id="dataFimPicker"/>
+
+                    <Button fx:id="atualizarGraficoButton" text="Atualizar Gráfico"/>
+                </HBox>
+            </VBox>
+
         </HBox>
-        <VBox prefHeight="800" style="-fx-padding: 10 30 30 30;">
 
+
+        <VBox prefHeight="800" style="-fx-padding: 10 30 30 30;">
             <Label text="Histórico de Ordens"
                    style="-fx-text-fill: white; -fx-font-size: 28px; -fx-padding: 0 0 15 0;"/>
 
-            <ListView fx:id="ordensListView" prefHeight="700" prefWidth="1000"
+            <ListView fx:id="ordensListView" prefHeight="600" prefWidth="1000"
                       style="-fx-background-color: black; -fx-background-radius: 5;
                              -fx-control-inner-background: #28282b;
                              -fx-text-fill: white;"/>
+
+
+
         </VBox>
     </VBox>
 </VBox>

@@ -251,5 +251,86 @@ public class TransacaoRepository {
         return result;
     }
 
+    public Map<String, Integer> getNumeroTransacoesPorData(LocalDateTime inicio, LocalDateTime fim) {
+        Map<String, Integer> resultado = new HashMap<>();
+
+        String sql = """
+    SELECT DATE(data_execucao) AS dia, COUNT(*) AS num_transacoes
+    FROM transacoes
+    WHERE data_execucao BETWEEN ? AND ?
+    GROUP BY dia
+    ORDER BY dia ASC
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setTimestamp(1, Timestamp.valueOf(inicio));
+            stmt.setTimestamp(2, Timestamp.valueOf(fim));
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String dia = rs.getString("dia");
+                int numTransacoes = rs.getInt("num_transacoes");
+                resultado.put(dia, numTransacoes);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter número de transações por data: " + e.getMessage());
+        }
+
+        return resultado;
+    }
+
+    public Map<String, Integer> getTotalTransacoesPorTipoDoUser(int userId, LocalDateTime inicio, LocalDateTime fim) {
+        Map<String, Integer> resultado = new HashMap<>();
+
+        String sql = """
+        SELECT tipo, SUM(num_transacoes) AS total_transacoes
+        FROM (
+            SELECT 'compra' AS tipo, COUNT(*) AS num_transacoes
+            FROM transacoes t
+            JOIN ordens o ON t.ordem_compra_id = o.id
+            JOIN carteiras c ON o.carteira_id = c.id
+            WHERE c.user_id = ? AND t.data_execucao BETWEEN ? AND ?
+            
+            UNION ALL
+            
+            SELECT 'venda' AS tipo, COUNT(*) AS num_transacoes
+            FROM transacoes t
+            JOIN ordens o ON t.ordem_venda_id = o.id
+            JOIN carteiras c ON o.carteira_id = c.id
+            WHERE c.user_id = ? AND t.data_execucao BETWEEN ? AND ?
+        ) AS sub
+        GROUP BY tipo
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, userId);
+            stmt.setTimestamp(2, Timestamp.valueOf(inicio));
+            stmt.setTimestamp(3, Timestamp.valueOf(fim));
+
+            stmt.setInt(4, userId);
+            stmt.setTimestamp(5, Timestamp.valueOf(inicio));
+            stmt.setTimestamp(6, Timestamp.valueOf(fim));
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                String tipo = rs.getString("tipo");  // "compra" ou "venda"
+                int numTransacoes = rs.getInt("total_transacoes");
+
+                resultado.put(tipo, numTransacoes);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter total de transações por tipo do user: " + e.getMessage());
+        }
+
+        return resultado;
+    }
+
 
 }

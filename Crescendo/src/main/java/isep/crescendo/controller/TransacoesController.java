@@ -13,6 +13,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
@@ -20,9 +23,12 @@ import javafx.scene.layout.VBox;
 
 import java.io.PrintWriter;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import javafx.scene.control.Tooltip;
+import javafx.util.Duration;
 
 public class TransacoesController {
 
@@ -35,6 +41,20 @@ public class TransacoesController {
     @FXML
     private DatePicker dataPicker;
 
+    @FXML
+    private BarChart<String, Number> transacoesChart;
+
+    @FXML
+    private DatePicker dataInicioPicker;
+
+    @FXML
+    private DatePicker dataFimPicker;
+
+    @FXML
+    private Button atualizarGraficoButton;
+
+    private final TransacaoRepository transacaoRepository = new TransacaoRepository();
+
     private OrdemRepo ordemRepo = new OrdemRepo();
     private CarteiraRepository carteiraRepo = new CarteiraRepository();
     private TransacaoRepository transacaoRepo = new TransacaoRepository();
@@ -42,7 +62,28 @@ public class TransacoesController {
     @FXML
     private void initialize() {
         int carteiraId = SessionManager.getCurrentUser().getId();
+        LocalDateTime fim = LocalDateTime.now();
+        LocalDateTime inicio = fim.minusDays(30);
 
+        // gráfico inicial
+        atualizarGraficoTransacoes(inicio, fim);
+
+        // INICIALIZAR OS DatePickers
+        dataInicioPicker.setValue(inicio.toLocalDate());
+        dataFimPicker.setValue(fim.toLocalDate());
+
+        // BOTÃO ATUALIZAR GRÁFICO
+        atualizarGraficoButton.setOnAction(e -> {
+            LocalDate dataInicio = dataInicioPicker.getValue();
+            LocalDate dataFim = dataFimPicker.getValue();
+
+            if (dataInicio != null && dataFim != null) {
+                LocalDateTime inicioDT = dataInicio.atStartOfDay();
+                LocalDateTime fimDT = dataFim.atTime(23, 59, 59);
+
+                atualizarGraficoTransacoes(inicioDT, fimDT);
+            }
+        });
         List<OrdemResumo> ordensResumo = ordemRepo.listarOrdensComResumo(carteiraId);
         Map<Integer, List<Transacao>> transacoesPorOrdem = transacaoRepo.listarTodasTransacoesDaCarteira(carteiraId);
 
@@ -265,4 +306,53 @@ public class TransacoesController {
         }
     }
 
+    public void atualizarGraficoTransacoes(LocalDateTime inicio, LocalDateTime fim) {
+        int userId = SessionManager.getCurrentUser().getId();
+
+        Map<String, Integer> dados = transacaoRepository.getTotalTransacoesPorTipoDoUser(userId, inicio, fim);
+
+        XYChart.Series<String, Number> comprasSeries = new XYChart.Series<>();
+        comprasSeries.setName("Compra");
+
+        XYChart.Series<String, Number> vendasSeries = new XYChart.Series<>();
+        vendasSeries.setName("Venda");
+
+        int compras = dados.getOrDefault("compra", 0);
+        int vendas = dados.getOrDefault("venda", 0);
+
+        // Compra
+        XYChart.Data<String, Number> compraData = new XYChart.Data<>("Compra", compras);
+        comprasSeries.getData().add(compraData);
+
+        // Venda
+        XYChart.Data<String, Number> vendaData = new XYChart.Data<>("Venda", vendas);
+        vendasSeries.getData().add(vendaData);
+
+        // Limpar gráfico e adicionar as séries
+        transacoesChart.getData().clear();
+        transacoesChart.getData().addAll(comprasSeries, vendasSeries);
+
+        // Adicionar Tooltips (hover)
+        addTooltipToData(compraData);
+        addTooltipToData(vendaData);
+
+        // Definir cores
+        compraData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                newNode.setStyle("-fx-bar-fill: #3498db;"); // Azul
+            }
+        });
+
+        vendaData.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                newNode.setStyle("-fx-bar-fill: #e67e22;"); // Laranja
+            }
+        });
+    }
+
+    private void addTooltipToData(XYChart.Data<String, Number> data) {
+        Tooltip tooltip = new Tooltip(data.getXValue() + ": " + data.getYValue().toString());
+        tooltip.setShowDelay(Duration.millis(100));
+        Tooltip.install(data.getNode(), tooltip);
+    }
 }
