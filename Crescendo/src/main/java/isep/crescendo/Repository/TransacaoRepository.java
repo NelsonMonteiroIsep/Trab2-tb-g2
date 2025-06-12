@@ -131,5 +131,125 @@ public class TransacaoRepository {
         return map;
     }
 
-    // Outros métodos futuros: listar por moeda, calcular médias, etc.
+
+
+    public Map<String, Double> getTotalInvestidoPorMoeda() {
+        Map<String, Double> resultado = new HashMap<>();
+
+        String sql = """
+        SELECT c.nome AS nome_moeda, SUM(t.quantidade * t.valor_unitario) AS total_investido
+        FROM transacoes t
+        JOIN criptomoedas c ON t.id_moeda = c.id
+        GROUP BY t.id_moeda, c.nome
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nomeMoeda = rs.getString("nome_moeda");
+                double totalInvestido = rs.getDouble("total_investido");
+                resultado.put(nomeMoeda, totalInvestido);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter total investido por moeda: " + e.getMessage());
+        }
+
+        return resultado;
+    }
+
+    public List<Object[]> getTop3MoedasMaisTransacoes() {
+        List<Object[]> resultado = new ArrayList<>();
+
+        String sql = """
+        SELECT c.nome AS nome_moeda,
+               COUNT(t.id) AS num_transacoes,
+               c.imagem_url AS imagem_url
+        FROM transacoes t
+        JOIN criptomoedas c ON t.id_moeda = c.id
+        GROUP BY t.id_moeda, c.nome, c.imagem_url
+        ORDER BY num_transacoes DESC
+        LIMIT 3
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nomeMoeda = rs.getString("nome_moeda");
+                long numTransacoes = rs.getLong("num_transacoes");
+                String imagemUrl = rs.getString("imagem_url");
+
+                Object[] row = new Object[]{nomeMoeda, numTransacoes, imagemUrl};
+                resultado.add(row);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter top 3 moedas com mais transações: " + e.getMessage());
+        }
+
+        return resultado;
+    }
+
+
+    public Map<Integer, Double> getVolumePorMoeda() {
+        Map<Integer, Double> result = new HashMap<>();
+
+        String sql = "SELECT id_moeda, SUM(quantidade * valor_unitario) AS volume_total " +
+                "FROM transacoes GROUP BY id_moeda";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                int idMoeda = rs.getInt("id_moeda");
+                double volume = rs.getDouble("volume_total");
+                result.put(idMoeda, volume);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter volume por moeda: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+    // Top utilizadores por volume transacionado (user_id → soma de quantidade * valor_unitario)
+// (precisa JOIN com ordens + carteiras + users)
+    public Map<String, Double> getVolumePorUtilizador() {
+        Map<String, Double> result = new HashMap<>();
+
+        String sql = """
+        SELECT u.nome, SUM(t.quantidade * t.valor_unitario) AS volume_total
+        FROM transacoes t
+        JOIN ordens o ON t.ordem_compra_id = o.id
+        JOIN carteiras c ON o.carteira_id = c.id
+        JOIN users u ON c.user_id = u.id
+        GROUP BY u.id, u.nome
+        ORDER BY volume_total DESC
+        LIMIT 5
+        """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nomeUtilizador = rs.getString("nome");
+                double volume = rs.getDouble("volume_total");
+                result.put(nomeUtilizador, volume);
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao obter volume por utilizador: " + e.getMessage());
+        }
+
+        return result;
+    }
+
+
 }

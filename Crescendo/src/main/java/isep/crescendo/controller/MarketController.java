@@ -1,10 +1,14 @@
 package isep.crescendo.controller;
 
+import isep.crescendo.model.Carteira;
 import isep.crescendo.model.Criptomoeda;
 import isep.crescendo.model.HistoricoValor;
 import isep.crescendo.Repository.CriptomoedaRepository;
 import isep.crescendo.Repository.HistoricoValorRepository;
 
+import isep.crescendo.model.Ordem;
+import isep.crescendo.util.OrdemService;
+import isep.crescendo.util.SessionManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,6 +19,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import javafx.beans.value.ChangeListener; // Import necessary for ChangeListener
@@ -39,6 +44,12 @@ public class MarketController implements Initializable {
     private VBox marketVBox;
     @FXML
     private ImageView coinLogo;
+
+    @FXML private TextField quantidadeCompraField;
+    @FXML private TextField precoCompraField;
+    @FXML private TextField quantidadeVendaField;
+    @FXML private TextField precoVendaField;
+    private final OrdemService ordemService = new OrdemService();
     @FXML
     private Label nameLabel;
     @FXML
@@ -428,6 +439,80 @@ public class MarketController implements Initializable {
             default:
                 // fallback → 1 hora
                 return dateTime.withMinute(0).withSecond(0).withNano(0);
+        }
+    }
+
+    @FXML
+    public void handleComprar() {
+        try {
+            double quantidade = Double.parseDouble(quantidadeCompraField.getText());
+            double preco = Double.parseDouble(precoCompraField.getText());
+
+            if (quantidade <= 0 || preco <= 0) {
+                System.out.println("Quantidade e preço devem ser maiores que zero.");
+                return;
+            }
+
+            int userId = SessionManager.getCurrentUser().getId();
+            isep.crescendo.model.Carteira carteira = isep.crescendo.Repository.CarteiraRepository.procurarPorUserId(userId);
+
+            if (carteira == null) {
+                System.out.println("Carteira não encontrada.");
+                return;
+            }
+
+            int carteiraId = carteira.getId();
+            int idMoedaAtual = moedaSelecionada.getId(); // <--- CORRIGIDO
+
+            Ordem ordemCompra = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "compra");
+
+            ordemService.processarOrdemCompra(ordemCompra);
+
+
+            System.out.println("Ordem de compra enviada com sucesso!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: campos inválidos para compra.");
+        }
+    }
+
+    @FXML
+    public void handleVender() {
+        try {
+            double quantidade = Double.parseDouble(quantidadeVendaField.getText());
+            double preco = Double.parseDouble(precoVendaField.getText());
+
+            if (quantidade <= 0 || preco <= 0) {
+                System.out.println("Quantidade e preço devem ser maiores que zero.");
+                return;
+            }
+
+            int userId = SessionManager.getCurrentUser().getId();
+            Carteira carteira = isep.crescendo.Repository.CarteiraRepository.procurarPorUserId(userId);
+            if (carteira == null) {
+                System.out.println("Carteira não encontrada.");
+                return;
+            }
+
+            int carteiraId = carteira.getId();
+            int idMoedaAtual = moedaSelecionada.getId(); // <--- CORRIGIDO
+
+            isep.crescendo.Repository.CarteiraRepository carteiraRepo = new isep.crescendo.Repository.CarteiraRepository();
+            boolean podeVender = carteiraRepo.podeVender(carteiraId, idMoedaAtual, quantidade);
+
+            if (!podeVender) {
+                System.out.println("Saldo insuficiente ou já comprometido em ordens abertas.");
+                return;
+            }
+
+            Ordem ordemVenda = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "venda");
+            ordemService.processarOrdemVenda(ordemVenda);
+
+
+            System.out.println("Ordem de venda enviada com sucesso!");
+
+        } catch (NumberFormatException e) {
+            System.out.println("Erro: campos inválidos para venda.");
         }
     }
 

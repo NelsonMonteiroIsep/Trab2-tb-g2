@@ -165,7 +165,7 @@ public class LeftBarController implements Initializable {
     public void handleRedirectPortfolio(ActionEvent actionEvent) {
         System.out.println("LeftBarController: Botão Portfólio clicado.");
         if (mainController != null) {
-            mainController.loadContent("portfolio-view.fxml");
+            mainController.loadContent("HomeView.fxml");
         } else {
             System.err.println("ERRO (LeftBarController): mainController não está definido para carregar portfolio-view.");
         }

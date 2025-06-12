@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.chart.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.image.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="isep.crescendo.controller.HomeController"
+      prefHeight="800.0" prefWidth="1200.0"
+      style="-fx-background-color: black;">
+
+
+    <!-- Caixa principal com fundo cinza arredondado -->
+    <VBox style="-fx-background-color: #28282b;
+                 -fx-background-radius: 5;
+                 -fx-background-insets: 30 30 30 30;
+                 -fx-padding: 30 30 30 30;">
+
+        <!-- Título -->
+        <HBox style="-fx-padding: 10 30 30 30;">
+            <Label text="Home"
+                   style="-fx-text-fill: white; -fx-font-size: 32px;"/>
+        </HBox>
+
+        <Region prefHeight="20"/>
+
+        <!-- Parte superior: Gráfico -->
+        <HBox spacing="50" style="-fx-padding: 10 30 30 30;" alignment="CENTER">
+
+            <!-- PieChart -->
+            <VBox spacing="10" style="-fx-background-color: black;
+                              -fx-background-radius: 5;
+                              -fx-padding: 15 15 15 15;">
+                <Label text="Distribuição Total Investida (Top Moedas)"
+                       style="-fx-text-fill: #CC9900; -fx-font-size: 24px;"/>
+                <PieChart fx:id="investimentoPieChart"
+                          prefWidth="500" prefHeight="400"
+                          style="-fx-text-fill: white;"/>
+            </VBox>
+
+            <!-- BarChart -->
+            <VBox spacing="10" style="-fx-background-color: black;
+                              -fx-background-radius: 5;
+                              -fx-padding: 15 15 15 15;">
+                <Label text="Top 5 Utilizadores por Volume"
+                       style="-fx-text-fill: #CC9900; -fx-font-size: 24px;"/>
+                <BarChart fx:id="volumePorUtilizadorBarChart"
+                          prefWidth="500" prefHeight="400">
+                    <xAxis>
+                        <CategoryAxis label="Utilizador"/>
+                    </xAxis>
+                    <yAxis>
+                        <NumberAxis label="Volume (€)"/>
+                    </yAxis>
+                </BarChart>
+            </VBox>
+
+        </HBox>
+
+        <Region prefHeight="20"/>
+
+        <!-- Parte inferior: Top 3 moedas -->
+        <VBox spacing="10" style="-fx-padding: 10 30 30 30;">
+            <Label text="Top 3 Moedas com Mais Transações"
+                   style="-fx-text-fill: white; -fx-font-size: 28px; -fx-padding: 0 0 15 0;"/>
+
+            <HBox spacing="20" alignment="CENTER">
+                <!-- Top Moeda 1 -->
+                <VBox spacing="10" alignment="CENTER" prefWidth="200" style="-fx-background-color: black;
+                                                                             -fx-background-radius: 5;
+                                                                             -fx-padding: 15 15 15 15;">
+                    <ImageView fx:id="top1Image" fitHeight="100" fitWidth="100" preserveRatio="true"/>
+                    <Label fx:id="top1NameLabel" text="Moeda 1"
+                           style="-fx-text-fill: #CC9900; -fx-font-size: 20px;"/>
+                    <Label fx:id="top1TransacoesLabel" text="0 transações"
+                           style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+                </VBox>
+
+                <!-- Top Moeda 2 -->
+                <VBox spacing="10" alignment="CENTER" prefWidth="200" style="-fx-background-color: black;
+                                                                             -fx-background-radius: 5;
+                                                                             -fx-padding: 15 15 15 15;">
+                    <ImageView fx:id="top2Image" fitHeight="100" fitWidth="100" preserveRatio="true"/>
+                    <Label fx:id="top2NameLabel" text="Moeda 2"
+                           style="-fx-text-fill: #CC9900; -fx-font-size: 20px;"/>
+                    <Label fx:id="top2TransacoesLabel" text="0 transações"
+                           style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+                </VBox>
+
+                <!-- Top Moeda 3 -->
+                <VBox spacing="10" alignment="CENTER" prefWidth="200" style="-fx-background-color: black;
+                                                                             -fx-background-radius: 5;
+                                                                             -fx-padding: 15 15 15 15;">
+                    <ImageView fx:id="top3Image" fitHeight="100" fitWidth="100" preserveRatio="true"/>
+                    <Label fx:id="top3NameLabel" text="Moeda 3"
+                           style="-fx-text-fill: #CC9900; -fx-font-size: 20px;"/>
+                    <Label fx:id="top3TransacoesLabel" text="0 transações"
+                           style="-fx-text-fill: white; -fx-font-size: 14px;"/>
+                </VBox>
+            </HBox>
+        </VBox>
+
+    </VBox>
+</VBox>
