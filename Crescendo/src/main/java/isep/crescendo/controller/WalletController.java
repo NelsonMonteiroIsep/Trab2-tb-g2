@@ -178,6 +178,61 @@ public class WalletController {
         }
     }
 
+    @FXML
+    private void handlelevantarSaldo() {
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/levantar-saldo-view.fxml"));
+            Parent root = loader.load();
+
+            AdicionarSaldoDialogController controller = loader.getController();
+
+            Stage dialogStage = new Stage();
+            dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.initStyle(StageStyle.UNDECORATED); // Sem barra do SO
+            dialogStage.setScene(new Scene(root));
+
+            controller.setDialogStage(dialogStage);
+
+            int userId = SessionManager.getCurrentUser().getId(); // Assumindo SessionManager
+            CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
+            isep.crescendo.model.Carteira carteira = carteiraRepositoryRepo.procurarPorUserId(userId);
+
+            if (carteira == null) {
+                mostrarErro("Carteira não encontrada para o utilizador.");
+                return;
+            }
+
+            // PASSAR saldo atual para o DialogController:
+            controller.setSaldoDisponivel(carteira.getSaldo());
+
+            controller.setOnValorConfirmado(valor -> {
+                try {
+                    if (valor <= 0) {
+                        mostrarErro("Insira um valor positivo.");
+                        return;
+                    }
+
+                    if (valor > carteira.getSaldo()) {
+                        mostrarErro("Valor superior ao saldo disponível.");
+                        return;
+                    }
+
+                    double novoSaldo = carteira.getSaldo() - valor;
+                    carteiraRepositoryRepo.atualizarSaldo(userId, novoSaldo);
+                    atualizarSaldoLabel();
+
+                } catch (NumberFormatException e) {
+                    mostrarErro("Valor inválido. Insira um número.");
+                }
+            });
+
+            dialogStage.showAndWait();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     private void mostrarErro(String mensagem) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle("Erro");

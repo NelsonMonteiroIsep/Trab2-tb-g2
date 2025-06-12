@@ -4,16 +4,31 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 <VBox xmlns="http://javafx.com/javafx/8"
       xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="isep.crescendo.controller.LeftBarController"
-      fx:id="rootVBox"  spacing="20"
+      fx:id="rootVBox" spacing="20"
       alignment="TOP_CENTER"
       prefWidth="200"
       style="-fx-background-color: #28282b; -fx-padding: 30px;" >
 
-    <Label fx:id="userNameLabel" text="Bem-vindo!" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" visible="false" managed="false"/>
+    <ImageView fx:id="coinLogo" fitHeight="40" fitWidth="40" preserveRatio="true">
+        <image>
+            <Image url="@../images/default_coin.png"/>
+        </image>
+    </ImageView>
 
+    <!-- BEM-VINDO LABEL -->
+    <Label fx:id="userNameLabel" text="Bem-vindo!"
+           style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #CC9900;"
+           visible="false" managed="false"/>
+
+    <!-- LINHA ABAIXO -->
+    <Separator style="-fx-background-color: #CC9900; -fx-border-color: #CC9900;" prefWidth="160"/>
+
+    <!-- RESTO DO MENU -->
     <Region VBox.vgrow="ALWAYS"/>
 
     <VBox fx:id="loggedInContentContainer" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
@@ -24,6 +39,7 @@
     </VBox>
 
     <Region VBox.vgrow="ALWAYS"/>
+
     <VBox alignment="BOTTOM_LEFT" spacing="5">
         <Button text="🚪 Sair" styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900" />
     </VBox>
