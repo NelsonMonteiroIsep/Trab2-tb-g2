@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+
+<VBox xmlns="http://javafx.com/javafx/8"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="isep.crescendo.controller.AdminLeftBarController"
+      fx:id="rootVBox" spacing="20"
+      alignment="TOP_CENTER"
+      prefWidth="200"
+      style="-fx-background-color: #28282b; -fx-padding: 30px;" >
+
+    <!-- LOGO -->
+    <ImageView fx:id="logoImageView" fitHeight="40" fitWidth="40" preserveRatio="true">
+        <image>
+            <Image url="@../images/default_coin.png"/>
+        </image>
+    </ImageView>
+
+    <!-- LABEL ADMIN -->
+    <Label fx:id="adminLabel" text="👤 Admin"
+           style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #CC9900;" />
+
+    <!-- LINHA ABAIXO -->
+    <Separator style="-fx-background-color: #CC9900; -fx-border-color: #CC9900;" prefWidth="160"/>
+    <Region VBox.vgrow="ALWAYS"/>
+    <!-- MENU ADMIN -->
+    <VBox fx:id="loggedInContentContainer" spacing="10" alignment="CENTER_LEFT">
+        <Button fx:id="dashboardButton" text="🏠 Dashboard"
+                styleClass="menu-button-dark" onAction="#handleDash" style="-fx-text-fill: #CC9900" />
+
+        <Button fx:id="userManagementButton" text="👥 Utilizadores"
+                styleClass="menu-button-dark" onAction="#handleUserManagement" style="-fx-text-fill: #CC9900" />
+
+        <Button fx:id="cryptosButton" text="💰 Criptomoedas"
+                styleClass="menu-button-dark" onAction="#handleCryptos" style="-fx-text-fill: #CC9900" />
+    </VBox>
+
+    <Region VBox.vgrow="ALWAYS"/>
+
+    <!-- BOTÃO SAIR -->
+    <VBox alignment="BOTTOM_LEFT" spacing="5">
+        <Button fx:id="logoutButton" text="🚪 Sair"
+                styleClass="menu-button-dark" onAction="#handleLogout" style="-fx-text-fill: #CC9900" />
+    </VBox>
+
+</VBox>
+

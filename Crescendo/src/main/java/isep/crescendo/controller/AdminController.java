@@ -205,7 +205,7 @@ public class AdminController {
     @FXML
     private void handleVoltar(ActionEvent event) {
         SceneSwitcher.switchScene(
-                "/isep/crescendo/admin-view.fxml",
+                "/isep/crescendo/view/admin-view.fxml",
                 "/isep/crescendo/styles/login.css",
                 "Área do Administrador",
                 userTable  // qualquer Control da cena atual
@@ -222,7 +222,7 @@ public class AdminController {
     @FXML
     private void handleUserManagement(ActionEvent event) {
         SceneSwitcher.switchScene(
-                "/isep/crescendo/admin-user-management-view.fxml",
+                "/isep/crescendo/view/admin-user-management-view.fxml",
                 "/isep/crescendo/styles/login.css",
                 "Marketplace",
                 (Control) event.getSource()
@@ -237,7 +237,7 @@ public class AdminController {
     @FXML
     private void handleCripto() {
         SceneSwitcher.switchScene(
-                "/isep/crescendo/admin-cripto-view.fxml",
+                "/isep/crescendo/view/admin-cripto-view.fxml",
                 "/isep/crescendo/styles/login.css",
                 "Admin Cripto",
                 searchField
@@ -247,7 +247,7 @@ public class AdminController {
     @FXML
     private void handleDash() {
         SceneSwitcher.switchScene(
-                "/isep/crescendo/admin-view.fxml",
+                "/isep/crescendo/view/admin-view.fxml",
                 "/isep/crescendo/styles/login.css",
                 "Admin Cripto",
                 searchField

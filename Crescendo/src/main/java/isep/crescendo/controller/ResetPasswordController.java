@@ -39,7 +39,11 @@ public class ResetPasswordController {
 
     private final UserRepository userRepo = new UserRepository();
 
+    private MainController mainController;
 
+    public void setMainController(MainController mainController) {
+        this.mainController = mainController;
+    }
     @FXML
     private void handleResetPassword() {
         String token = tokenField.getText();
@@ -113,8 +117,11 @@ public class ResetPasswordController {
 
     @FXML
     private void handleGoToLogin() {
-        if (messageLabel == null) {SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
-        }else {SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
+        if (mainController != null) {
+            mainController.loadContent("UserManagementView.fxml"); // volta ao login
+        } else {
+            System.err.println("ERRO: mainController é null em handleGoToLogin.");
+        }
     }
 
 

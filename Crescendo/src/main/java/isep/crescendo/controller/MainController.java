@@ -57,9 +57,17 @@ public class MainController implements Initializable, LoginCallback {
 
     private void loadLeftBar() throws IOException {
         System.out.println("DEBUG (MainController): Tentando carregar LeftBarView.fxml...");
-        FXMLLoader leftBarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/LeftBarView.fxml"));
+        String leftBarFxml = SessionManager.isAdminSession() ? "AdminLeftBarView.fxml" : "LeftBarView.fxml";
+
+        FXMLLoader leftBarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/" + leftBarFxml));
         Parent leftBar = leftBarLoader.load();
-        leftBarController = leftBarLoader.getController();
+        if (SessionManager.isAdminSession()) {
+            AdminLeftBarController adminLeftBarController = leftBarLoader.getController();
+            adminLeftBarController.setMainController(this);
+        } else {
+            leftBarController = leftBarLoader.getController();
+            leftBarController.setMainController(this);
+        }
         if (leftBarController != null) {
             leftBarController.setMainController(this);
             System.out.println("DEBUG (MainController): LeftBarController obtido e MainController injetado.");
@@ -180,13 +188,17 @@ public class MainController implements Initializable, LoginCallback {
     @Override
     public void onLoginSuccess(boolean isAdmin) {
         System.out.println("MainController: Login bem-sucedido. is Admin: " + isAdmin);
+
+        try {
+            // Força recarregar a LeftBar com base no isAdminSession atualizado
+            loadLeftBar();
+        } catch (IOException e) {
+            System.err.println("Erro ao recarregar LeftBar após login: " + e.getMessage());
+            e.printStackTrace();
+        }
+
         loadContent("WalletView.fxml"); // Carrega a vista padrão após o login
 
-        if (leftBarController != null) {
-            leftBarController.showEntireLeftBar();
-            leftBarController.showLoggedInContent();
-            leftBarController.updateUserNameLabel();
-        }
         if (rightBarController != null) {
             rightBarController.showEntireRightBar();
         }
@@ -202,6 +214,7 @@ public class MainController implements Initializable, LoginCallback {
         if (leftBarController != null) {
             leftBarController.hideEntireLeftBar();
             leftBarController.hideLoggedInContent();
+            rootPane.setLeft(null);
         }
         try {
             loadUserManagementView();
@@ -243,4 +256,5 @@ public class MainController implements Initializable, LoginCallback {
             // Faça algo quando falso ou nulo
         }
     }
+
 }

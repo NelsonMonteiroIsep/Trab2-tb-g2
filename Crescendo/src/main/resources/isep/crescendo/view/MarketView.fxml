@@ -75,9 +75,7 @@
                           -fx-background-insets: 0 30 30 30;"
               maxWidth="800" alignment="CENTER">
 
-            <Label text="Comprar / Vender"
-                   style="-fx-text-fill: #CC9900; -fx-font-size: 28px; -fx-font-weight: bold;"
-                   alignment="CENTER"/>
+           a
 
             <!-- Secção Comprar -->
             <VBox spacing="10" >
