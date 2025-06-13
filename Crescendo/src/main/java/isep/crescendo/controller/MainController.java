@@ -114,7 +114,8 @@ public class MainController implements Initializable, LoginCallback {
         UserManagementController userManagementController = userManagementLoader.getController();
         if (userManagementController != null) {
             userManagementController.setLoginCallback(this);
-            System.out.println("DEBUG (MainController): LoginCallback definido para UserManagementController.");
+            userManagementController.setMainController(this); // <---- ADICIONAR ESTA LINHA
+            System.out.println("DEBUG (MainController): LoginCallback e MainController definidos para UserManagementController.");
         } else {
             System.err.println("ERRO (MainController): getController() retornou null para UserManagementController!");
         }
@@ -127,6 +128,7 @@ public class MainController implements Initializable, LoginCallback {
 
     public void loadContent(String fxmlFileName) {
         loadContentWithObject(fxmlFileName, null); // Chama o método mais genérico
+
     }
 
     public <T> void loadContentWithObject(String fxmlFileName, T dataObject) {
@@ -147,6 +149,17 @@ public class MainController implements Initializable, LoginCallback {
             } else if (controller instanceof MarketController && dataObject instanceof Criptomoeda) {
                 ((MarketController) controller).setCriptomoedaSelecionada((Criptomoeda) dataObject);
                 System.out.println("DEBUG (MainController): Criptomoeda passada para MarketController.");
+            }
+            if (controller instanceof UserManagementController) {
+                ((UserManagementController) controller).setMainController(this);
+                ((UserManagementController) controller).setLoginCallback(this);
+                System.out.println("DEBUG (MainController): LoginCallback e MainController definidos para UserManagementController.");
+            } else if (controller instanceof UserManagementController) {
+                ((UserManagementController) controller).setMainController(this);
+                System.out.println("DEBUG (MainController): MainController definido para RegisterController.");
+            } else if (controller instanceof UserManagementController) {
+                ((UserManagementController) controller).setMainController(this);
+                System.out.println("DEBUG (MainController): MainController definido para RecoveryController.");
             }
 
             contentArea.getChildren().clear();

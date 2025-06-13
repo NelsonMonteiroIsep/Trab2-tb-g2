@@ -76,7 +76,7 @@
             <VBox spacing="10" style="-fx-background-color: black;
                                       -fx-background-radius: 5;
                                       -fx-padding: 15 15 15 15;">
-                <Label text="Saldo Investido"
+                <Label text="Valor das moedas"
                        style="-fx-text-fill: white; -fx-font-size: 24px;"/>
                 <Label fx:id="saldoInvestidoLabel" text="0,00 €"
                        style="-fx-text-fill: white; -fx-font-size: 16px;

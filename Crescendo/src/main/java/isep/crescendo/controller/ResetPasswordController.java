@@ -68,7 +68,7 @@ public class ResetPasswordController {
                     PauseTransition pause = new PauseTransition(Duration.seconds(3));
                     pause.setOnFinished(evt -> {
                         SceneSwitcher.switchScene(
-                                "/isep/crescendo/login-view.fxml",
+                                "/isep/crescendo/view/login-view.fxml",
                                 "/isep/crescendo/styles/login.css",
                                 "Login",
                                 tokenField    // nó válido nesta cena
@@ -113,8 +113,8 @@ public class ResetPasswordController {
 
     @FXML
     private void handleGoToLogin() {
-        if (messageLabel == null) {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
-        }else {SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
+        if (messageLabel == null) {SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", resetMessageLabel);
+        }else {SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", messageLabel);}
     }
 
 
@@ -138,7 +138,7 @@ public class ResetPasswordController {
 
             // 3) Vai para o reset-password.fxml
             SceneSwitcher.switchScene(
-                    "/isep/crescendo/reset-password-view.fxml",   // caminho do FXML de reset
+                    "/isep/crescendo/view/reset-password-view.fxml",   // caminho do FXML de reset
                     "/isep/crescendo/styles/login.css",      // CSS que quiseres
                     "Redefinir Password",                    // título da janela
                     emailField                               // qualquer Node da cena atual

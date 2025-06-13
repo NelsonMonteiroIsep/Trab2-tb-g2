@@ -231,7 +231,7 @@ public class AdminController {
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login",searchField );
+        SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login",searchField );
     }
 
     @FXML

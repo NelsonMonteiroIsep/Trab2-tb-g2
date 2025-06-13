@@ -12,7 +12,7 @@ public class MenuLateralController {
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", menu_label);
+        SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", menu_label);
     }
     @FXML
     private void handleRedirectWallet(){

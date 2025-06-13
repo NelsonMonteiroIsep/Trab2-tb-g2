@@ -331,7 +331,7 @@ public class CoinController implements Initializable {
     private void handleLogout() {
         dispose();
         SessionManager.setCurrentUser(null);
-        SceneSwitcher.switchScene("/isep/crescendo/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", navBarAnyControl);
+        SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login", navBarAnyControl);
     }
 
     @FXML
