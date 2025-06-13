@@ -40,36 +40,44 @@
 
                 <!-- Gráficos -->
                 <VBox spacing="20">
+                    <HBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TitledPane text="Volume de Transações Global por Dia"  >
+                            <LineChart fx:id="lineChartVolumeGlobal">
+                                <xAxis>
+                                    <CategoryAxis label="Data"/>
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Volume em Euros"/>
+                                </yAxis>
+                            </LineChart>
+                        </TitledPane>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TitledPane text="Top 5 Utilizadores por Volume" expanded="true">
+                            <BarChart fx:id="barChartTopUsers">
+                                <xAxis>
+                                    <CategoryAxis label="Utilizador"/>
+                                </xAxis>
+                                <yAxis>
+                                    <NumberAxis label="Volume em Euros"/>
+                                </yAxis>
+                            </BarChart>
+                        </TitledPane>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
 
-                    <TitledPane text="Volume de Transações Global por Dia" expanded="true">
-                        <LineChart fx:id="lineChartVolumeGlobal">
-                            <xAxis>
-                                <CategoryAxis label="Data"/>
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis label="Volume em Euros"/>
-                            </yAxis>
-                        </LineChart>
-                    </TitledPane>
+                    <HBox>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TitledPane text="Top 3 Moedas com mais Transações" expanded="true">
+                            <PieChart fx:id="pieChartTop3Moedas"/>
+                        </TitledPane>
+                        <Region HBox.hgrow="ALWAYS"/>
+                        <TitledPane text="Distribuição do Volume por Moeda" expanded="true">
+                            <PieChart fx:id="pieChartVolumePorMoeda"/>
+                        </TitledPane>
+                        <Region HBox.hgrow="ALWAYS"/>
+                    </HBox>
 
-                    <TitledPane text="Top 5 Utilizadores por Volume" expanded="true">
-                        <BarChart fx:id="barChartTopUsers">
-                            <xAxis>
-                                <CategoryAxis label="Utilizador"/>
-                            </xAxis>
-                            <yAxis>
-                                <NumberAxis label="Volume em Euros"/>
-                            </yAxis>
-                        </BarChart>
-                    </TitledPane>
-
-                    <TitledPane text="Top 3 Moedas com mais Transações" expanded="true">
-                        <PieChart fx:id="pieChartTop3Moedas"/>
-                    </TitledPane>
-
-                    <TitledPane text="Distribuição do Volume por Moeda" expanded="true">
-                        <PieChart fx:id="pieChartVolumePorMoeda"/>
-                    </TitledPane>
 
                 </VBox>
 
