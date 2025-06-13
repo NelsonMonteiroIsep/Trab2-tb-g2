@@ -28,7 +28,7 @@ public class HistoricoValorRepository {
      * @return Uma conexão JDBC com a base de dados MySQL.
      * @throws SQLException Se ocorrer um erro ao estabelecer a conexão.
      */
-    private Connection getConnection() throws SQLException {
+    private static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
     }
 
@@ -170,5 +170,35 @@ public class HistoricoValorRepository {
         }
 
         return lista;
+    }
+
+    public static double getValorByCriptoNomeAndData(String nomeCripto, String dataYYYYMMDD) {
+        String sql = """
+        SELECT valor
+        FROM historico_valores h
+        JOIN criptomoedas c ON h.cripto_id = c.id
+        WHERE c.nome = ?
+          AND DATE(h.data) <= ?
+        ORDER BY h.data DESC
+        LIMIT 1
+    """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setString(1, nomeCripto);
+            stmt.setString(2, dataYYYYMMDD);  // usar String "YYYY-MM-DD"
+
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("valor");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        // Se não houver NENHUM valor anterior → 0.0
+        return 0.0;
     }
 }

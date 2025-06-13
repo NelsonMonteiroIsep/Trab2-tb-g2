@@ -3,6 +3,11 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.NumberAxis?>
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
 <BorderPane fx:controller="isep.crescendo.controller.AdminController"
             prefHeight="800.0" prefWidth="1200.0"
             style="-fx-background-color: linear-gradient(to bottom, #1e1e1e, #2c2c2c);"
@@ -23,23 +28,6 @@
                               -fx-text-fill: #ffffff;"
                        text="Gestão de Utilizadores"/>
 
-                <!-- Filtro -->
-                <HBox maxWidth="800" spacing="10" alignment="CENTER">
-                    <TextField HBox.hgrow="ALWAYS"
-                               fx:id="filterField"
-                               promptText="Pesquisar por nome ou email..."
-                               style="-fx-background-radius: 10;
-                                      -fx-padding: 10;
-                                      -fx-background-color: #3c3c3c;
-                                      -fx-text-fill: white;
-                                      -fx-prompt-text-fill: #aaaaaa;"/>
-                    <Button onAction="#handlePesquisar"
-                            style="-fx-background-color: #00bfa5;
-                                   -fx-text-fill: white;
-                                   -fx-background-radius: 10;
-                                   -fx-font-weight: bold;"
-                            text="Pesquisar"/>
-                </HBox>
 
                 <!-- Tabela de Utilizadores -->
                 <TableView fx:id="userTable"
@@ -91,6 +79,84 @@
                                    -fx-font-weight: bold;"
                             text="Apagar Utilizador"/>
                 </HBox>
+
+                <!-- Seção Análise Gráfica -->
+                <VBox spacing="15" style="-fx-background-color: #2b2b2b;
+                          -fx-background-radius: 15;
+                          -fx-padding: 20;
+                          "
+                      alignment="TOP_CENTER">
+
+                    <Label style="-fx-font-size: 24px;
+                  -fx-font-weight: bold;
+                  -fx-text-fill: #ffffff;"
+                           text="Análise Gráfica de Utilizadores"/>
+
+                    <HBox spacing="10" alignment="CENTER_LEFT">
+                        <Label style="-fx-text-fill: white;" text="Data Início:"/>
+                        <DatePicker fx:id="datePickerInicio"/>
+
+                        <Label style="-fx-text-fill: white;" text="Data Fim:"/>
+                        <DatePicker fx:id="datePickerFim"/>
+
+                        <Label style="-fx-text-fill: white;" text="Modo Saldos:"/>
+                        <ComboBox fx:id="comboSaldoModo">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Quantidade"/>
+                                    <String fx:value="Valor em Euros"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+
+                        <Label style="-fx-text-fill: white;" text="Modo Transações:"/>
+                        <ComboBox fx:id="comboTransacoesModo">
+                            <items>
+                                <FXCollections fx:factory="observableArrayList">
+                                    <String fx:value="Número de Transações"/>
+                                    <String fx:value="Volume em Euros"/>
+                                </FXCollections>
+                            </items>
+                        </ComboBox>
+
+                        <Button onAction="#handleVerGraficoSaldos"
+                                style="-fx-background-color: #2196f3;
+                       -fx-text-fill: white;
+                       -fx-background-radius: 8;
+                       -fx-padding: 8 16;
+                       -fx-font-weight: bold;"
+                                text="Ver Gráfico de Saldos"/>
+
+                        <Button onAction="#handleVerGraficoTransacoes"
+                                style="-fx-background-color: #ff9800;
+                       -fx-text-fill: white;
+                       -fx-background-radius: 8;
+                       -fx-padding: 8 16;
+                       -fx-font-weight: bold;"
+                                text="Ver Gráfico de Transações"/>
+
+                        <Button onAction="#handleExportarCSV"
+                                style="-fx-background-color: #4caf50;
+                       -fx-text-fill: white;
+                       -fx-background-radius: 8;
+                       -fx-padding: 8 16;
+                       -fx-font-weight: bold;"
+                                text="Exportar CSV"/>
+                    </HBox>
+
+                    <LineChart fx:id="lineChart"
+                               prefHeight="400"
+                               prefWidth="1000"
+                               style="-fx-background-color: #1e1e1e;">
+                        <xAxis>
+                            <CategoryAxis fx:id="xAxis" label="Data" />
+                        </xAxis>
+                        <yAxis>
+                            <NumberAxis fx:id="yAxis" label="Valor" />
+                        </yAxis>
+                    </LineChart>
+
+                </VBox>
 
             </VBox> <!-- Caixa principal -->
 

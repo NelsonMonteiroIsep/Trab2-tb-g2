@@ -1,6 +1,7 @@
 package isep.crescendo.controller;
 
 import isep.crescendo.Repository.CarteiraRepository;
+import isep.crescendo.Repository.TransacaoRepository;
 import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
@@ -13,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.chart.*;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.control.TextInputDialog;
@@ -22,6 +24,7 @@ import javafx.stage.Stage;
 import isep.crescendo.Repository.CriptomoedaRepository;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.Optional;
 
 public class AdminController {
@@ -36,6 +39,18 @@ public class AdminController {
     @FXML private Button btnUser;
     @FXML
     private Button btnCriar, btnDesativar;
+    @FXML private DatePicker datePickerInicio;
+    @FXML private DatePicker datePickerFim;
+    @FXML private LineChart<String, Number> lineChart;
+    @FXML private CategoryAxis xAxis;
+    @FXML private NumberAxis yAxis;
+    @FXML private LineChart<String, Number> lineChartVolumeGlobal;
+    @FXML private BarChart<String, Number> barChartTopUsers;
+    @FXML private PieChart pieChartTop3Moedas;
+    @FXML private PieChart pieChartVolumePorMoeda;
+    @FXML private ProgressBar progressAtividade;
+    @FXML private Label labelAtividadePercent;
+    @FXML private Label labelTotalInvestido;
 
     @FXML
     private Label labelTotalUsers;
@@ -58,47 +73,84 @@ public class AdminController {
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> simboloColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> descricaoColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, Boolean> ativoColumn;
+
+    @FXML private ComboBox<String> comboSaldoModo;
+    @FXML private ComboBox<String> comboTransacoesModo;
+
+
     private ObservableList<isep.crescendo.model.User> userList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        if (labelTotalUsers != null){
-        int totalUsers = userRepositoryRepo.countUsers();
-        labelTotalUsers.setText(String.valueOf(totalUsers));}
+        // === DASHBOARD ===
+        try {
+            if (labelTotalUsers != null) {
+                int totalUsers = userRepositoryRepo.countUsers();
+                labelTotalUsers.setText(String.valueOf(totalUsers));
+            }
 
-        if (idColumn != null && nomeColumn != null && emailColumn != null && isAdminColumn != null) {
-            idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
-            nomeColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
-            emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
-            isAdminColumn.setCellValueFactory(new PropertyValueFactory<>("admin"));
+            if (labelTotalInvestido != null) {
+                double totalInvestido = new TransacaoRepository().getTotalInvestidoPorMoeda().values().stream().mapToDouble(Double::doubleValue).sum();
+                labelTotalInvestido.setText(String.format("%.2f €", totalInvestido));
+            }
 
-            carregarUtilizadores();
+            if (progressAtividade != null && labelAtividadePercent != null) {
+                updateAtividade();
+            }
 
+            if (lineChartVolumeGlobal != null) {
+                carregarLineChartVolumeGlobal();
+            }
+
+            if (barChartTopUsers != null) {
+                carregarBarChartTopUsers();
+            }
+
+            if (pieChartTop3Moedas != null) {
+                carregarPieChartTop3Moedas();
+            }
+
+            if (pieChartVolumePorMoeda != null) {
+                carregarPieChartVolumePorMoeda();
+            }
+
+        } catch (Exception e) {
+            System.out.println("Dashboard não presente nesta view.");
         }
 
-        if (idCriptoColumn != null && nomeCriptoColumn != null && simboloColumn != null && descricaoColumn != null && ativoColumn != null) {
+        // === GESTÃO UTILIZADORES ===
+        if (userTable != null) {
+            userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+
+            if (idColumn != null && nomeColumn != null && emailColumn != null && isAdminColumn != null) {
+                idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+                nomeColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
+                emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+                isAdminColumn.setCellValueFactory(new PropertyValueFactory<>("admin"));
+                carregarUtilizadores();
+            }
+        }
+
+        // === GESTÃO CRIPTOMOEDAS ===
+        if (listaCriptomoedas != null) {
             idCriptoColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
             nomeCriptoColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
             simboloColumn.setCellValueFactory(new PropertyValueFactory<>("simbolo"));
             descricaoColumn.setCellValueFactory(new PropertyValueFactory<>("descricao"));
             ativoColumn.setCellValueFactory(new PropertyValueFactory<>("ativo"));
 
-            // Se quiser, adicionar cellFactory para 'ativo' para mostrar "Sim"/"Não"
             ativoColumn.setCellFactory(column -> new TableCell<isep.crescendo.model.Criptomoeda, Boolean>() {
                 @Override
                 protected void updateItem(Boolean ativo, boolean empty) {
                     super.updateItem(ativo, empty);
-                    if (empty || ativo == null) {
-                        setText(null);
-                    } else {
-                        setText(ativo ? "Sim" : "Não");
-                    }
+                    setText(empty || ativo == null ? null : ativo ? "Sim" : "Não");
                 }
             });
 
             carregarCriptomoedas();
         }
     }
+
 
     private void carregarUtilizadores() {
         users.setAll(userRepositoryRepo.listarTodos());
@@ -109,6 +161,65 @@ public class AdminController {
         criptomoedas.clear();
         criptomoedas.addAll(criptoRepo.getAllCriptomoedas());
         listaCriptomoedas.setItems(criptomoedas);
+    }
+    private void carregarDashboard() {
+        carregarVolumeGlobalPorDia();
+        carregarTop5UsersPorVolume();
+        carregarTop3MoedasPorTransacoes();
+        carregarDistribuicaoVolumePorMoeda();
+        carregarAtividade();
+        carregarTotalInvestido();
+    }
+    private void carregarVolumeGlobalPorDia() {
+        lineChartVolumeGlobal.getData().clear();
+        var volumePorDia = isep.crescendo.Repository.TransacaoRepository.getVolumeGlobalPorDia();
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Volume Global");
+
+        for (var entry : volumePorDia.entrySet()) {
+            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        lineChartVolumeGlobal.getData().add(series);
+    }
+    private void carregarTop5UsersPorVolume() {
+        barChartTopUsers.getData().clear();
+        var topUsers = isep.crescendo.Repository.TransacaoRepository.getTop5UsersPorVolume();
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Top 5 Utilizadores");
+
+        for (var entry : topUsers.entrySet()) {
+            series.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        barChartTopUsers.getData().add(series);
+    }
+    private void carregarTop3MoedasPorTransacoes() {
+        pieChartTop3Moedas.getData().clear();
+        var topMoedas = isep.crescendo.Repository.TransacaoRepository.getTop3MoedasPorTransacoes();
+
+        for (var entry : topMoedas.entrySet()) {
+            pieChartTop3Moedas.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        }
+    }
+    private void carregarDistribuicaoVolumePorMoeda() {
+        pieChartVolumePorMoeda.getData().clear();
+        var volumePorMoeda = isep.crescendo.Repository.TransacaoRepository.getDistribuicaoVolumePorMoeda();
+
+        for (var entry : volumePorMoeda.entrySet()) {
+            pieChartVolumePorMoeda.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
+        }
+    }
+    private void carregarAtividade() {
+        double atividadePercent = isep.crescendo.Repository.TransacaoRepository.getPercentAtividadeUltimos30Dias();
+        progressAtividade.setProgress(atividadePercent);
+        labelAtividadePercent.setText((int)(atividadePercent * 100) + "%");
+    }
+    private void carregarTotalInvestido() {
+        double totalInvestido = isep.crescendo.Repository.TransacaoRepository.getTotalInvestido();
+        labelTotalInvestido.setText(String.format("%.2f €", totalInvestido));
     }
 
     @FXML
@@ -329,7 +440,185 @@ public class AdminController {
         userTable.setItems(sortedData);
     }
 
+    @FXML
+    private void handleVerGraficoSaldos() {
+        if (userTable == null || comboSaldoModo == null || lineChart == null || datePickerInicio == null || datePickerFim == null) {
+            mostrarAlerta("Esta funcionalidade só está disponível na Gestão de Utilizadores.");
+            return;
+        }
+
+        var selecionados = userTable.getSelectionModel().getSelectedItems();
+        if (selecionados.isEmpty() || datePickerInicio.getValue() == null || datePickerFim.getValue() == null) {
+            mostrarAlerta("Selecione pelo menos um utilizador e um intervalo de datas.");
+            return;
+        }
+
+        boolean mostrarEmEuros = "Valor em Euros".equals(comboSaldoModo.getValue());
+        lineChart.getData().clear();
+        xAxis.setLabel("Data");
+        yAxis.setLabel(mostrarEmEuros ? "Valor em Euros" : "Quantidade de Moeda");
+
+        for (var user : selecionados) {
+            var historico = isep.crescendo.Repository.TransacaoRepository.getHistoricoSaldoPorCripto(
+                    user.getId(),
+                    datePickerInicio.getValue(),
+                    datePickerFim.getValue()
+            );
+
+            for (var entry : historico.entrySet()) {
+                String nomeCripto = entry.getKey();
+                var saldoPorDia = entry.getValue();
+
+                XYChart.Series<String, Number> serie = new XYChart.Series<>();
+                serie.setName(user.getNome() + " - " + nomeCripto);
+
+                for (var saldoEntry : saldoPorDia.entrySet()) {
+                    double valor = saldoEntry.getValue();
+                    if (mostrarEmEuros) {
+                        valor *= isep.crescendo.Repository.HistoricoValorRepository.getValorByCriptoNomeAndData(
+                                nomeCripto, saldoEntry.getKey());
+                    }
+                    serie.getData().add(new XYChart.Data<>(saldoEntry.getKey(), valor));
+                }
+
+                lineChart.getData().add(serie);
+            }
+        }
     }
+
+    @FXML
+    private void handleVerGraficoTransacoes() {
+        if (userTable == null || comboTransacoesModo == null || lineChart == null || datePickerInicio == null || datePickerFim == null) {
+            mostrarAlerta("Esta funcionalidade só está disponível na Gestão de Utilizadores.");
+            return;
+        }
+
+        var selecionados = userTable.getSelectionModel().getSelectedItems();
+        if (selecionados.isEmpty() || datePickerInicio.getValue() == null || datePickerFim.getValue() == null) {
+            mostrarAlerta("Selecione pelo menos um utilizador e um intervalo de datas.");
+            return;
+        }
+
+        boolean mostrarVolumeEuros = "Volume em Euros".equals(comboTransacoesModo.getValue());
+        lineChart.getData().clear();
+        xAxis.setLabel("Data");
+        yAxis.setLabel(mostrarVolumeEuros ? "Volume em Euros" : "Número de Transações");
+
+        var historico = isep.crescendo.Repository.TransacaoRepository.getVolumeTransacoesPorDia(
+                selecionados.stream().map(u -> u.getId()).toList(),
+                datePickerInicio.getValue(),
+                datePickerFim.getValue(),
+                mostrarVolumeEuros
+        );
+
+        for (var entry : historico.entrySet()) {
+            int userId = entry.getKey();
+            String userName = users.stream().filter(u -> u.getId() == userId).findFirst().map(u -> u.getNome()).orElse("User " + userId);
+
+            var transacoesPorDia = entry.getValue();
+            XYChart.Series<String, Number> serie = new XYChart.Series<>();
+            serie.setName(userName);
+
+            for (var transEntry : transacoesPorDia.entrySet()) {
+                serie.getData().add(new XYChart.Data<>(transEntry.getKey(), transEntry.getValue()));
+            }
+
+            lineChart.getData().add(serie);
+        }
+    }
+
+    @FXML
+    private void handleExportarCSV() {
+        if (lineChart == null) {
+            mostrarAlerta("Esta funcionalidade só está disponível na Gestão de Utilizadores.");
+            return;
+        }
+
+        StringBuilder csv = new StringBuilder();
+        csv.append("Utilizador, Série, Data, Valor\n");
+
+        for (var series : lineChart.getData()) {
+            String serieName = series.getName();
+            for (var dataPoint : series.getData()) {
+                csv.append("\"").append(serieName).append("\",")
+                        .append(",").append(dataPoint.getXValue()).append(",")
+                        .append(dataPoint.getYValue()).append("\n");
+            }
+        }
+
+        try {
+            java.nio.file.Files.write(java.nio.file.Paths.get("export_grafico.csv"), csv.toString().getBytes());
+            mostrarAlerta("Exportação concluída com sucesso: export_grafico.csv");
+        } catch (IOException e) {
+            e.printStackTrace();
+            mostrarAlerta("Erro ao salvar o ficheiro.");
+        }
+    }
+
+    private void updateAtividade() {
+        var map = new TransacaoRepository().getNumeroTransacoesPorData(LocalDate.now().minusDays(30).atStartOfDay(), LocalDate.now().atTime(23,59,59));
+        int diasComTransacoes = (int) map.values().stream().filter(v -> v > 0).count();
+        double percent = diasComTransacoes / 30.0;
+        progressAtividade.setProgress(percent);
+        labelAtividadePercent.setText(String.format("%.0f%%", percent * 100));
+    }
+
+    private void carregarLineChartVolumeGlobal() {
+        lineChartVolumeGlobal.getData().clear();
+        var map = new TransacaoRepository().getNumeroTransacoesPorData(LocalDate.now().minusDays(30).atStartOfDay(), LocalDate.now().atTime(23,59,59));
+
+        XYChart.Series<String, Number> serie = new XYChart.Series<>();
+        serie.setName("Volume de Transações");
+
+        for (var entry : map.entrySet()) {
+            serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        lineChartVolumeGlobal.getData().add(serie);
+    }
+
+    private void carregarBarChartTopUsers() {
+        barChartTopUsers.getData().clear();
+        var map = new TransacaoRepository().getVolumePorUtilizador();
+
+        XYChart.Series<String, Number> serie = new XYChart.Series<>();
+        serie.setName("Volume em Euros");
+
+        for (var entry : map.entrySet()) {
+            serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
+        }
+
+        barChartTopUsers.getData().add(serie);
+    }
+
+    private void carregarPieChartTop3Moedas() {
+        pieChartTop3Moedas.getData().clear();
+        var list = new TransacaoRepository().getTop3MoedasMaisTransacoes();
+
+        for (var row : list) {
+            String nomeMoeda = (String) row[0];
+            long numTransacoes = (long) row[1];
+            pieChartTop3Moedas.getData().add(new PieChart.Data(nomeMoeda, numTransacoes));
+        }
+    }
+
+    private void carregarPieChartVolumePorMoeda() {
+        pieChartVolumePorMoeda.getData().clear();
+        var map = new TransacaoRepository().getVolumePorMoeda();
+
+        CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+
+        for (var entry : map.entrySet()) {
+            int idMoeda = entry.getKey();
+            double volume = entry.getValue();
+
+            String nomeMoeda = criptoRepo.getNomeById(idMoeda); // tens de implementar este método
+            pieChartVolumePorMoeda.getData().add(new PieChart.Data(nomeMoeda, volume));
+        }
+    }
+    }
+
+
 
 
 

@@ -3,11 +3,9 @@ package isep.crescendo.Repository;
 import isep.crescendo.model.Transacao;
 
 import java.sql.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class TransacaoRepository {
     private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
@@ -332,5 +330,310 @@ public class TransacaoRepository {
         return resultado;
     }
 
+    public static Map<String, Map<String, Double>> getHistoricoSaldoPorCripto(int userId, LocalDate dataInicio, LocalDate dataFim) {
+        Map<String, Map<String, Double>> historico = new HashMap<>();
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            for (LocalDate data = dataInicio; !data.isAfter(dataFim); data = data.plusDays(1)) {
+                String sql = """
+                SELECT nome_cripto, SUM(saldo) AS saldo_total
+                FROM (
+                    -- Compras
+                    SELECT c.nome AS nome_cripto, t.quantidade AS saldo
+                    FROM transacoes t
+                    JOIN ordens o ON t.ordem_compra_id = o.id
+                    JOIN carteiras ca ON o.carteira_id = ca.id
+                    JOIN criptomoedas c ON t.id_moeda = c.id
+                    WHERE ca.user_id = ?
+                      AND t.data_execucao <= ?
+
+                    UNION ALL
+
+                    -- Vendas
+                    SELECT c.nome AS nome_cripto, -t.quantidade AS saldo
+                    FROM transacoes t
+                    JOIN ordens o ON t.ordem_venda_id = o.id
+                    JOIN carteiras ca ON o.carteira_id = ca.id
+                    JOIN criptomoedas c ON t.id_moeda = c.id
+                    WHERE ca.user_id = ?
+                      AND t.data_execucao <= ?
+                ) AS saldo_union
+                GROUP BY nome_cripto
+                """;
+
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, userId);
+                    stmt.setTimestamp(2, Timestamp.valueOf(data.atTime(23, 59, 59)));
+                    stmt.setInt(3, userId);
+                    stmt.setTimestamp(4, Timestamp.valueOf(data.atTime(23, 59, 59)));
+
+                    ResultSet rs = stmt.executeQuery();
+                    while (rs.next()) {
+                        String nomeCripto = rs.getString("nome_cripto");
+                        double saldo = rs.getDouble("saldo_total");
+
+                        historico.putIfAbsent(nomeCripto, new LinkedHashMap<>());
+                        historico.get(nomeCripto).put(data.toString(), saldo);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return historico;
+    }
+
+
+    public static Map<Integer, Map<String, Double>> getVolumeTransacoesPorDia(List<Integer> userIdList, LocalDate dataInicio, LocalDate dataFim, boolean volumeEmEuros) {
+        Map<Integer, Map<String, Double>> historico = new HashMap<>();
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+            String sql = """
+            SELECT c.user_id,
+                   DATE(t.data_execucao) AS dia,
+                   %s AS valor
+            FROM transacoes t
+            JOIN ordens o ON t.ordem_compra_id = o.id OR t.ordem_venda_id = o.id
+            JOIN carteiras c ON o.carteira_id = c.id
+            WHERE c.user_id IN (%s)
+              AND t.data_execucao BETWEEN ? AND ?
+            GROUP BY c.user_id, dia
+            ORDER BY c.user_id, dia
+            """;
+
+            String valorSelect = volumeEmEuros ? "SUM(t.quantidade * t.valor_unitario)" : "COUNT(*)";
+
+            String placeholders = userIdList.stream().map(id -> "?").collect(java.util.stream.Collectors.joining(","));
+
+            sql = String.format(sql, valorSelect, placeholders);
+
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                int index = 1;
+                for (Integer userId : userIdList) {
+                    stmt.setInt(index++, userId);
+                }
+                stmt.setTimestamp(index++, Timestamp.valueOf(dataInicio.atStartOfDay()));
+                stmt.setTimestamp(index, Timestamp.valueOf(dataFim.atTime(23, 59, 59)));
+
+                ResultSet rs = stmt.executeQuery();
+
+                while (rs.next()) {
+                    int userId = rs.getInt("user_id");
+                    String dia = rs.getString("dia");
+                    double valor = rs.getDouble("valor");
+
+                    historico.putIfAbsent(userId, new LinkedHashMap<>());
+                    historico.get(userId).put(dia, valor);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return historico;
+    }
+
+    public String getNomeById(int id) {
+        String sql = "SELECT nome FROM criptomoedas WHERE id = ?";
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getString("nome");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return "Unknown";
+    }
+
+    // 1️⃣ Volume Global por Dia
+    public static Map<String, Double> getVolumeGlobalPorDia() {
+        Map<String, Double> result = new LinkedHashMap<>();
+
+        String sql = """
+            SELECT DATE(data_execucao) AS dia, SUM(quantidade * valor_unitario) AS volume
+            FROM transacoes
+            GROUP BY dia
+            ORDER BY dia ASC
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String dia = rs.getString("dia");
+                double volume = rs.getDouble("volume");
+                result.put(dia, volume);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    // 2️⃣ Top 5 Utilizadores por Volume — com JOIN correto!
+    public static Map<String, Double> getTop5UsersPorVolume() {
+        Map<String, Double> result = new LinkedHashMap<>();
+
+        String sql = """
+            SELECT u.nome, SUM(t.quantidade * t.valor_unitario) AS volume
+            FROM transacoes t
+            JOIN ordens o ON t.ordem_compra_id = o.id OR t.ordem_venda_id = o.id
+            JOIN carteiras c ON o.carteira_id = c.id
+            JOIN users u ON c.user_id = u.id
+            GROUP BY u.id
+            ORDER BY volume DESC
+            LIMIT 5
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                double volume = rs.getDouble("volume");
+                result.put(nome, volume);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    // 3️⃣ Top 3 Moedas com mais Transações — corrige para id_moeda
+    public static Map<String, Integer> getTop3MoedasPorTransacoes() {
+        Map<String, Integer> result = new LinkedHashMap<>();
+
+        String sql = """
+            SELECT c.nome, COUNT(t.id) AS num_transacoes
+            FROM transacoes t
+            JOIN criptomoedas c ON c.id = t.id_moeda
+            GROUP BY c.id
+            ORDER BY num_transacoes DESC
+            LIMIT 3
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                int numTransacoes = rs.getInt("num_transacoes");
+                result.put(nome, numTransacoes);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    // 4️⃣ Distribuição do Volume por Moeda — corrige para id_moeda
+    public static Map<String, Double> getDistribuicaoVolumePorMoeda() {
+        Map<String, Double> result = new LinkedHashMap<>();
+
+        String sql = """
+            SELECT c.nome, SUM(t.quantidade * t.valor_unitario) AS volume
+            FROM transacoes t
+            JOIN criptomoedas c ON c.id = t.id_moeda
+            GROUP BY c.id
+            ORDER BY volume DESC
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String nome = rs.getString("nome");
+                double volume = rs.getDouble("volume");
+                result.put(nome, volume);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return result;
+    }
+
+    // 5️⃣ Percentagem de Atividade nos Últimos 30 Dias — com JOIN correto!
+    public static double getPercentAtividadeUltimos30Dias() {
+        double percent = 0.0;
+
+        String sqlTotal = "SELECT COUNT(*) AS total FROM users";
+        String sqlAtivos = """
+            SELECT COUNT(DISTINCT c.user_id) AS ativos
+            FROM transacoes t
+            JOIN ordens o ON t.ordem_compra_id = o.id OR t.ordem_venda_id = o.id
+            JOIN carteiras c ON o.carteira_id = c.id
+            WHERE t.data_execucao >= (CURRENT_DATE - INTERVAL 30 DAY)
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmtTotal = conn.prepareStatement(sqlTotal);
+             PreparedStatement stmtAtivos = conn.prepareStatement(sqlAtivos);
+             ResultSet rsTotal = stmtTotal.executeQuery();
+             ResultSet rsAtivos = stmtAtivos.executeQuery()) {
+
+            int totalUsers = 0;
+            int ativos = 0;
+
+            if (rsTotal.next()) {
+                totalUsers = rsTotal.getInt("total");
+            }
+
+            if (rsAtivos.next()) {
+                ativos = rsAtivos.getInt("ativos");
+            }
+
+            if (totalUsers > 0) {
+                percent = (double) ativos / totalUsers;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return percent;
+    }
+
+    // 6️⃣ Total Investido (ordem_compra_id != NULL)
+    public static double getTotalInvestido() {
+        double total = 0.0;
+
+        String sql = """
+            SELECT SUM(t.quantidade * t.valor_unitario) AS total_investido
+            FROM transacoes t
+            WHERE t.ordem_compra_id IS NOT NULL
+            """;
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+
+            if (rs.next()) {
+                total = rs.getDouble("total_investido");
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return total;
+    }
 
 }
+
+

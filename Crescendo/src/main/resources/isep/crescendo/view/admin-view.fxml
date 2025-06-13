@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.chart.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
@@ -18,38 +19,59 @@
                 <!-- Título -->
                 <Label text="Dashboard" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;"/>
 
-                <!-- Cards (VBox dentro de HBox para alinhamento) -->
+                <!-- Cards -->
                 <HBox spacing="30" alignment="CENTER">
-
-                    <VBox spacing="10" style="-fx-background-color: #3c3c3c;
-                                              -fx-background-radius: 10;
-                                              -fx-padding: 20;
-                                              -fx-min-width: 200;
-                                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 0);">
+                    <VBox spacing="10" style="-fx-background-color: #3c3c3c; -fx-background-radius: 10; -fx-padding: 20; -fx-min-width: 200;">
                         <Label text="Total Utilizadores" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
                         <Label fx:id="labelTotalUsers" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00bfa5;"/>
                     </VBox>
 
-                    <VBox spacing="10" style="-fx-background-color: #3c3c3c;
-                                              -fx-background-radius: 10;
-                                              -fx-padding: 20;
-                                              -fx-min-width: 200;
-                                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 0);">
+                    <VBox spacing="10" style="-fx-background-color: #3c3c3c; -fx-background-radius: 10; -fx-padding: 20; -fx-min-width: 200;">
                         <Label text="Total Investido" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                        <Label text="13,600" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00bfa5;"/>
+                        <Label fx:id="labelTotalInvestido" text="0" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00bfa5;"/>
                     </VBox>
 
-                    <VBox spacing="10" style="-fx-background-color: #3c3c3c;
-                                              -fx-background-radius: 10;
-                                              -fx-padding: 20;
-                                              -fx-min-width: 200;
-                                              -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 5, 0.3, 0, 0);">
+                    <VBox spacing="10" style="-fx-background-color: #3c3c3c; -fx-background-radius: 10; -fx-padding: 20; -fx-min-width: 200;">
                         <Label text="Atividade" style="-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;"/>
-                        <ProgressBar progress="0.6" prefWidth="150" style="-fx-accent: #00bfa5;"/>
-                        <Label text="60%" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00bfa5;"/>
+                        <ProgressBar fx:id="progressAtividade" progress="0.0" prefWidth="150" style="-fx-accent: #00bfa5;"/>
+                        <Label fx:id="labelAtividadePercent" text="0%" style="-fx-font-size: 26px; -fx-font-weight: bold; -fx-text-fill: #00bfa5;"/>
                     </VBox>
-
                 </HBox>
+
+                <!-- Gráficos -->
+                <VBox spacing="20">
+
+                    <TitledPane text="Volume de Transações Global por Dia" expanded="true">
+                        <LineChart fx:id="lineChartVolumeGlobal">
+                            <xAxis>
+                                <CategoryAxis label="Data"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Volume em Euros"/>
+                            </yAxis>
+                        </LineChart>
+                    </TitledPane>
+
+                    <TitledPane text="Top 5 Utilizadores por Volume" expanded="true">
+                        <BarChart fx:id="barChartTopUsers">
+                            <xAxis>
+                                <CategoryAxis label="Utilizador"/>
+                            </xAxis>
+                            <yAxis>
+                                <NumberAxis label="Volume em Euros"/>
+                            </yAxis>
+                        </BarChart>
+                    </TitledPane>
+
+                    <TitledPane text="Top 3 Moedas com mais Transações" expanded="true">
+                        <PieChart fx:id="pieChartTop3Moedas"/>
+                    </TitledPane>
+
+                    <TitledPane text="Distribuição do Volume por Moeda" expanded="true">
+                        <PieChart fx:id="pieChartVolumePorMoeda"/>
+                    </TitledPane>
+
+                </VBox>
 
             </VBox>
         </VBox>

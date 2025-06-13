@@ -197,7 +197,12 @@ public class MainController implements Initializable, LoginCallback {
             e.printStackTrace();
         }
 
-        loadContent("WalletView.fxml"); // Carrega a vista padrão após o login
+        // CORRIGIDO: carrega a view adequada
+        if (isAdmin) {
+            loadContent("admin-view.fxml");
+        } else {
+            loadContent("WalletView.fxml");
+        }
 
         if (rightBarController != null) {
             rightBarController.showEntireRightBar();

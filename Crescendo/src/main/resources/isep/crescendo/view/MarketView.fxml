@@ -75,7 +75,7 @@
                           -fx-background-insets: 0 30 30 30;"
               maxWidth="800" alignment="CENTER">
 
-           a
+
 
             <!-- Secção Comprar -->
             <VBox spacing="10" >

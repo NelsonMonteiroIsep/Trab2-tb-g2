@@ -238,6 +238,23 @@ public class CriptomoedaRepository {
         return null; // Retorna null se não encontrar
     }
 
+    public int countCriptomoedas() {
+        String sql = "SELECT COUNT(*) FROM criptomoedas";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             Statement stmt = conn.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            if (rs.next()) {
+                return rs.getInt(1);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Erro ao contar criptomoedas: " + e.getMessage());
+        }
+
+        return 0;
+    }
+
     /*
     // O método 'adicionarCriptomoeda(String nome, String simbolo)' da minha versão anterior foi removido
     // pois o método 'adicionar(Criptomoeda cripto)' é mais genérico e provavelmente o que você precisa.
@@ -252,4 +269,23 @@ public class CriptomoedaRepository {
         return new ArrayList<>(getAllCriptomoedas());
     }
     */
+    public String getNomeById(int id) {
+        String sql = "SELECT nome FROM criptomoedas WHERE id = ?";
+
+        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("nome");
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return "Desconhecido"; // caso não encontre
+    }
 }
