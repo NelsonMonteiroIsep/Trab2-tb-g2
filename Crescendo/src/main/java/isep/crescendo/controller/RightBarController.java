@@ -20,15 +20,17 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
-// Novos imports para os controles de ordenação
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.TextField; // Import adicionado
+import javafx.scene.control.Button;   // Import adicionado
 
 import java.net.URL;
-import java.util.Comparator; // Import para ordenação
+import java.util.Comparator;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.stream.Collectors; // Import adicionado
 
 public class RightBarController implements Initializable {
 
@@ -40,7 +42,6 @@ public class RightBarController implements Initializable {
     @FXML
     private ListView<Criptomoeda> coinListView;
 
-    // FXML IDs para os novos controles de ordenação
     @FXML
     private ComboBox<String> sortCriteriaComboBox;
     @FXML
@@ -48,13 +49,20 @@ public class RightBarController implements Initializable {
     @FXML
     private RadioButton descendenteRadioButton;
     @FXML
-    private ToggleGroup sortDirectionToggleGroup; // Este FXML ID será injetado, mas não está no FXML como Node
+    private ToggleGroup sortDirectionToggleGroup;
+
+    // NOVO: FXML IDs para os filtros de preço
+    @FXML
+    private TextField minPriceFilterField;
+    @FXML
+    private TextField maxPriceFilterField;
+    // O botão não precisa de um fx:id se o onAction for definido diretamente no FXML
 
     private final HistoricoValorRepository historicoValorRepository = new HistoricoValorRepository();
     private final BooleanProperty darkModeEnabled = new SimpleBooleanProperty(false);
     private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
 
-    private ObservableList<Criptomoeda> masterCriptoList; // Lista original sem ordenação
+    private ObservableList<Criptomoeda> masterCriptoList; // Lista original, completa, sem ordenação/filtragem
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -69,32 +77,34 @@ public class RightBarController implements Initializable {
             sortCriteriaComboBox.setItems(FXCollections.observableArrayList("Nome", "Preço"));
             sortCriteriaComboBox.setValue("Nome"); // Valor padrão
             sortCriteriaComboBox.valueProperty().addListener((obs, oldVal, newVal) -> {
-                System.out.println("DEBUG: Critério de ordenação alterado para: " + newVal); // Depuração
-                applySorting();
+                System.out.println("DEBUG: Critério de ordenação alterado para: " + newVal);
+                applyFilteringAndSorting(); // Chama o novo método
             });
         } else {
             System.err.println("ERRO (RightBarController): sortCriteriaComboBox NÃO foi injetado pelo FXML! Verifique fx:id.");
         }
 
         // Adicionar listener para os RadioButtons de direção de ordenação
-        // O ToggleGroup é injetado pelo FXML porque os RadioButtons o referenciam.
         if (sortDirectionToggleGroup != null) {
             sortDirectionToggleGroup.selectedToggleProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal != null) {
                     RadioButton selected = (RadioButton) newVal;
-                    System.out.println("DEBUG: Direção de ordenação alterada para: " + selected.getText()); // Depuração
+                    System.out.println("DEBUG: Direção de ordenação alterada para: " + selected.getText());
                 } else {
-                    System.out.println("DEBUG: Nenhuma direção de ordenação selecionada."); // Caso raro
+                    System.out.println("DEBUG: Nenhuma direção de ordenação selecionada.");
                 }
-                applySorting();
+                applyFilteringAndSorting(); // Chama o novo método
             });
-            // Assegurar que o RadioButton ascendente está selecionado por padrão na inicialização
-            // Se já estiver no FXML com selected="true", esta linha pode ser redundante mas não prejudica.
             if (ascendenteRadioButton != null) {
                 ascendenteRadioButton.setSelected(true);
             }
         } else {
             System.err.println("ERRO (RightBarController): sortDirectionToggleGroup NÃO foi injetado pelo FXML! Verifique se os RadioButtons referenciam corretamente o ToggleGroup.");
+        }
+
+        // Inicialização dos campos de filtro de preço (opcional: adicionar listeners se quiser autofiltragem)
+        if (minPriceFilterField == null || maxPriceFilterField == null) {
+            System.err.println("ERRO (RightBarController): minPriceFilterField ou maxPriceFilterField NÃO foi injetado pelo FXML!");
         }
 
 
@@ -156,8 +166,8 @@ public class RightBarController implements Initializable {
                 }
             });
 
-            loadCriptomoedasToList(); // Carrega as criptomoedas e popula masterCriptoList
-            applySorting(); // Aplica a ordenação inicial (por padrão, Nome Ascendente)
+            loadCriptomoedasToList(); // Carrega as criptomoedas na masterCriptoList
+            applyFilteringAndSorting(); // Aplica filtragem e ordenação inicial
         } else {
             System.err.println("ERRO (RightBarController): coinListView NÃO foi injetado pelo FXML! Verifique fx:id no FXML.");
         }
@@ -195,16 +205,68 @@ public class RightBarController implements Initializable {
         }
     }
 
-    private void applySorting() {
+    // NOVO MÉTODO: Aplica filtragem E ordenação
+    @FXML // Este método é chamado pelo onAction do botão Filtrar
+    private void applyFilteringAndSorting() {
         if (masterCriptoList == null || masterCriptoList.isEmpty()) {
-            System.out.println("DEBUG: masterCriptoList está vazia ou nula. Sem ordenação aplicada.");
+            System.out.println("DEBUG: masterCriptoList está vazia ou nula. Sem filtragem/ordenação aplicada.");
             return;
         }
 
+        // 1. Filtragem
+        ObservableList<Criptomoeda> filteredList = FXCollections.observableArrayList(masterCriptoList);
+
+        double minPrice = -Double.MAX_VALUE; // Valor padrão baixo
+        double maxPrice = Double.MAX_VALUE;  // Valor padrão alto
+
+        // Tentar parsear o preço mínimo
+        if (minPriceFilterField != null && !minPriceFilterField.getText().trim().isEmpty()) {
+            try {
+                minPrice = Double.parseDouble(minPriceFilterField.getText().trim().replace(",", ".")); // Lida com vírgula como separador decimal
+            } catch (NumberFormatException e) {
+                System.err.println("Aviso: Preço mínimo inválido. Usando valor padrão. Erro: " + e.getMessage());
+                // Poderia mostrar um alerta ao usuário aqui
+            }
+        }
+
+        // Tentar parsear o preço máximo
+        if (maxPriceFilterField != null && !maxPriceFilterField.getText().trim().isEmpty()) {
+            try {
+                maxPrice = Double.parseDouble(maxPriceFilterField.getText().trim().replace(",", ".")); // Lida com vírgula como separador decimal
+            } catch (NumberFormatException e) {
+                System.err.println("Aviso: Preço máximo inválido. Usando valor padrão. Erro: " + e.getMessage());
+                // Poderia mostrar um alerta ao usuário aqui
+            }
+        }
+
+        final double finalMinPrice = minPrice;
+        final double finalMaxPrice = maxPrice;
+
+        // Filtra a lista com base nos preços
+        List<Criptomoeda> tempFilteredList = filteredList.stream()
+                .filter(cripto -> {
+                    try {
+                        HistoricoValor ultimoValor = historicoValorRepository.getUltimoValorPorCripto(cripto.getId());
+                        if (ultimoValor != null) {
+                            double valor = ultimoValor.getValor();
+                            return valor >= finalMinPrice && valor <= finalMaxPrice;
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Erro ao obter valor para filtragem de " + cripto.getNome() + ": " + e.getMessage());
+                    }
+                    return false; // Se não conseguir obter o valor, não inclui na lista filtrada
+                })
+                .collect(Collectors.toList());
+
+        filteredList = FXCollections.observableArrayList(tempFilteredList);
+        System.out.println("DEBUG: Lista filtrada para " + filteredList.size() + " criptomoedas. (Min: " + finalMinPrice + ", Max: " + finalMaxPrice + ")");
+
+
+        // 2. Ordenação (Aplicada à lista JÁ FILTRADA)
         String criteria = sortCriteriaComboBox.getValue();
         boolean ascending = ascendenteRadioButton.isSelected();
 
-        System.out.println("DEBUG (applySorting): Critério: " + criteria + ", Ascendente: " + ascending);
+        System.out.println("DEBUG (applyFilteringAndSorting): Critério: " + criteria + ", Ascendente: " + ascending);
 
         Comparator<Criptomoeda> comparator = null;
 
@@ -234,11 +296,13 @@ public class RightBarController implements Initializable {
             if (!ascending) {
                 comparator = comparator.reversed();
             }
-            FXCollections.sort(masterCriptoList, comparator);
-            coinListView.setItems(masterCriptoList);
-            System.out.println("Lista de criptomoedas ordenada por " + criteria + (ascending ? " (Ascendente)" : " (Descendente)"));
+            FXCollections.sort(filteredList, comparator); // Ordena a lista filtrada
+            coinListView.setItems(filteredList);
+            System.out.println("Lista final ordenada e filtrada por " + criteria + (ascending ? " (Ascendente)" : " (Descendente)"));
         } else {
-            System.out.println("DEBUG (applySorting): Nenhum comparador definido ou critério inválido.");
+            // Se nenhum comparador, apenas define a lista filtrada
+            coinListView.setItems(filteredList);
+            System.out.println("DEBUG (applyFilteringAndSorting): Nenhum comparador definido ou critério inválido. Exibindo apenas lista filtrada.");
         }
     }
 }

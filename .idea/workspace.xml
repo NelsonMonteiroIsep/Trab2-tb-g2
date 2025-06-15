@@ -5,8 +5,6 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/RightBarController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/RightBarView.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/RightBarView.fxml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -156,7 +154,7 @@
       <workItem from="1749147414142" duration="6613000" />
       <workItem from="1749232430047" duration="765000" />
       <workItem from="1749233525936" duration="3799000" />
-      <workItem from="1750021736598" duration="2260000" />
+      <workItem from="1750021736598" duration="2566000" />
     </task>
     <servers />
   </component>

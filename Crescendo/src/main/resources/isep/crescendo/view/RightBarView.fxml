@@ -8,7 +8,10 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.RadioButton?>
-<?import javafx.scene.control.ToggleGroup?> <?import org.controlsfx.control.ToggleSwitch?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Button?>
+<?import org.controlsfx.control.ToggleSwitch?>
 
 <VBox fx:id="rightBarRoot" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="isep.crescendo.controller.RightBarController"
@@ -28,8 +31,10 @@
         <ComboBox fx:id="sortCriteriaComboBox" promptText="Critério" prefWidth="90"/>
 
         <RadioButton fx:id="ascendenteRadioButton" text="Asc" textFill="white" selected="true"
-                     toggleGroup="$sortDirectionToggleGroup"/> <RadioButton fx:id="descendenteRadioButton" text="Desc" textFill="white"
-                                                                            toggleGroup="$sortDirectionToggleGroup"/> </HBox>
+                     toggleGroup="$sortDirectionToggleGroup"/>
+        <RadioButton fx:id="descendenteRadioButton" text="Desc" textFill="white"
+                     toggleGroup="$sortDirectionToggleGroup"/>
+    </HBox>
 
     <ListView fx:id="coinListView" VBox.vgrow="ALWAYS"
               style="-fx-background-color: #28282b; -fx-background-radius: 8; -fx-control-inner-background: #28282b;">
@@ -40,5 +45,16 @@
             <Insets top="15" right="0" bottom="0" left="0"/>
         </VBox.margin>
     </Separator>
+
+    <HBox alignment="CENTER_LEFT" spacing="5">
+        <VBox.margin>
+            <Insets top="10" right="0" bottom="10" left="0"/>
+        </VBox.margin>
+        <Label text="Preço Min:" style="-fx-text-fill: white;"/>
+        <TextField fx:id="minPriceFilterField" promptText="Min" prefWidth="60"/>
+        <Label text="Max:" style="-fx-text-fill: white;"/>
+        <TextField fx:id="maxPriceFilterField" promptText="Max" prefWidth="60"/>
+        <Button text="Filtrar" onAction="#applyFilteringAndSorting"/>
+    </HBox>
 
 </VBox>
