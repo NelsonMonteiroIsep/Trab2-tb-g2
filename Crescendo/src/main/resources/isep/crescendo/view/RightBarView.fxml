@@ -6,17 +6,34 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.control.ListView?>
-<?import org.controlsfx.control.ToggleSwitch?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?> <?import org.controlsfx.control.ToggleSwitch?>
 
 <VBox fx:id="rightBarRoot" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
       fx:controller="isep.crescendo.controller.RightBarController"
       prefWidth="250" style="-fx-background-color: #1a1a1a; -fx-padding: 10;">
+
+    <fx:define>
+        <ToggleGroup fx:id="sortDirectionToggleGroup" />
+    </fx:define>
+
     <Label text="Principais Criptomoedas" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10 0 5 0;"/>
+
+    <HBox alignment="CENTER_LEFT" spacing="5">
+        <VBox.margin>
+            <Insets top="10" right="0" bottom="10" left="0"/>
+        </VBox.margin>
+        <Label text="Ordenar por:" style="-fx-text-fill: white;"/>
+        <ComboBox fx:id="sortCriteriaComboBox" promptText="Critério" prefWidth="90"/>
+
+        <RadioButton fx:id="ascendenteRadioButton" text="Asc" textFill="white" selected="true"
+                     toggleGroup="$sortDirectionToggleGroup"/> <RadioButton fx:id="descendenteRadioButton" text="Desc" textFill="white"
+                                                                            toggleGroup="$sortDirectionToggleGroup"/> </HBox>
 
     <ListView fx:id="coinListView" VBox.vgrow="ALWAYS"
               style="-fx-background-color: #28282b; -fx-background-radius: 8; -fx-control-inner-background: #28282b;">
     </ListView>
-
 
     <Separator>
         <VBox.margin>
