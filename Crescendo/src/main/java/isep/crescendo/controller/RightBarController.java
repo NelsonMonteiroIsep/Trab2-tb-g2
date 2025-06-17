@@ -27,9 +27,7 @@ import javafx.scene.control.TextField; // Import adicionado
 import javafx.scene.control.Button;   // Import adicionado
 
 import java.net.URL;
-import java.util.Comparator;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 import java.util.stream.Collectors; // Import adicionado
 
 public class RightBarController implements Initializable {
@@ -205,104 +203,69 @@ public class RightBarController implements Initializable {
         }
     }
 
-    // NOVO MÉTODO: Aplica filtragem E ordenação
-    @FXML // Este método é chamado pelo onAction do botão Filtrar
+    @FXML
     private void applyFilteringAndSorting() {
         if (masterCriptoList == null || masterCriptoList.isEmpty()) {
             System.out.println("DEBUG: masterCriptoList está vazia ou nula. Sem filtragem/ordenação aplicada.");
             return;
         }
 
+        // Carrega todos os últimos valores numa só vez para evitar chamadas repetidas
+        Map<Integer, Double> ultimoValoresMap = new HashMap<>();
+        for (Criptomoeda cripto : masterCriptoList) {
+            try {
+                HistoricoValor valor = historicoValorRepository.getUltimoValorPorCripto(cripto.getId());
+                if (valor != null) {
+                    ultimoValoresMap.put(cripto.getId(), valor.getValor());
+                }
+            } catch (Exception e) {
+                System.err.println("Erro ao obter valor inicial de " + cripto.getNome() + ": " + e.getMessage());
+            }
+        }
+
         // 1. Filtragem
-        ObservableList<Criptomoeda> filteredList = FXCollections.observableArrayList(masterCriptoList);
+        double minPrice = -Double.MAX_VALUE;
+        double maxPrice = Double.MAX_VALUE;
 
-        double minPrice = -Double.MAX_VALUE; // Valor padrão baixo
-        double maxPrice = Double.MAX_VALUE;  // Valor padrão alto
-
-        // Tentar parsear o preço mínimo
-        if (minPriceFilterField != null && !minPriceFilterField.getText().trim().isEmpty()) {
-            try {
-                minPrice = Double.parseDouble(minPriceFilterField.getText().trim().replace(",", ".")); // Lida com vírgula como separador decimal
-            } catch (NumberFormatException e) {
-                System.err.println("Aviso: Preço mínimo inválido. Usando valor padrão. Erro: " + e.getMessage());
-                // Poderia mostrar um alerta ao usuário aqui
+        try {
+            if (minPriceFilterField != null && !minPriceFilterField.getText().trim().isEmpty()) {
+                minPrice = Double.parseDouble(minPriceFilterField.getText().trim().replace(",", "."));
             }
+            if (maxPriceFilterField != null && !maxPriceFilterField.getText().trim().isEmpty()) {
+                maxPrice = Double.parseDouble(maxPriceFilterField.getText().trim().replace(",", "."));
+            }
+        } catch (NumberFormatException e) {
+            System.err.println("Erro ao parsear preços: " + e.getMessage());
         }
 
-        // Tentar parsear o preço máximo
-        if (maxPriceFilterField != null && !maxPriceFilterField.getText().trim().isEmpty()) {
-            try {
-                maxPrice = Double.parseDouble(maxPriceFilterField.getText().trim().replace(",", ".")); // Lida com vírgula como separador decimal
-            } catch (NumberFormatException e) {
-                System.err.println("Aviso: Preço máximo inválido. Usando valor padrão. Erro: " + e.getMessage());
-                // Poderia mostrar um alerta ao usuário aqui
-            }
-        }
+        final double finalMin = minPrice;
+        final double finalMax = maxPrice;
 
-        final double finalMinPrice = minPrice;
-        final double finalMaxPrice = maxPrice;
-
-        // Filtra a lista com base nos preços
-        List<Criptomoeda> tempFilteredList = filteredList.stream()
-                .filter(cripto -> {
-                    try {
-                        HistoricoValor ultimoValor = historicoValorRepository.getUltimoValorPorCripto(cripto.getId());
-                        if (ultimoValor != null) {
-                            double valor = ultimoValor.getValor();
-                            return valor >= finalMinPrice && valor <= finalMaxPrice;
-                        }
-                    } catch (Exception e) {
-                        System.err.println("Erro ao obter valor para filtragem de " + cripto.getNome() + ": " + e.getMessage());
-                    }
-                    return false; // Se não conseguir obter o valor, não inclui na lista filtrada
+        List<Criptomoeda> tempFilteredList = masterCriptoList.stream()
+                .filter(c -> {
+                    Double valor = ultimoValoresMap.get(c.getId());
+                    return valor != null && valor >= finalMin && valor <= finalMax;
                 })
                 .collect(Collectors.toList());
 
-        filteredList = FXCollections.observableArrayList(tempFilteredList);
-        System.out.println("DEBUG: Lista filtrada para " + filteredList.size() + " criptomoedas. (Min: " + finalMinPrice + ", Max: " + finalMaxPrice + ")");
+        ObservableList<Criptomoeda> filteredList = FXCollections.observableArrayList(tempFilteredList);
+        System.out.println("DEBUG: Lista filtrada para " + filteredList.size() + " criptomoedas.");
 
-
-        // 2. Ordenação (Aplicada à lista JÁ FILTRADA)
+        // 2. Ordenação
         String criteria = sortCriteriaComboBox.getValue();
         boolean ascending = ascendenteRadioButton.isSelected();
 
-        System.out.println("DEBUG (applyFilteringAndSorting): Critério: " + criteria + ", Ascendente: " + ascending);
-
         Comparator<Criptomoeda> comparator = null;
-
         if ("Nome".equals(criteria)) {
             comparator = Comparator.comparing(Criptomoeda::getNome);
         } else if ("Preço".equals(criteria)) {
-            comparator = (c1, c2) -> {
-                double valor1 = 0.0;
-                double valor2 = 0.0;
-                try {
-                    HistoricoValor hv1 = historicoValorRepository.getUltimoValorPorCripto(c1.getId());
-                    if (hv1 != null) {
-                        valor1 = hv1.getValor();
-                    }
-                    HistoricoValor hv2 = historicoValorRepository.getUltimoValorPorCripto(c2.getId());
-                    if (hv2 != null) {
-                        valor2 = hv2.getValor();
-                    }
-                } catch (Exception e) {
-                    System.err.println("Erro ao obter valor para comparação (para " + c1.getNome() + " ou " + c2.getNome() + "): " + e.getMessage());
-                }
-                return Double.compare(valor1, valor2);
-            };
+            comparator = Comparator.comparingDouble(c -> ultimoValoresMap.getOrDefault(c.getId(), 0.0));
         }
 
         if (comparator != null) {
-            if (!ascending) {
-                comparator = comparator.reversed();
-            }
-            FXCollections.sort(filteredList, comparator); // Ordena a lista filtrada
-            coinListView.setItems(filteredList);
-            System.out.println("Lista final ordenada e filtrada por " + criteria + (ascending ? " (Ascendente)" : " (Descendente)"));
-        } else {
-            // Se nenhum comparador, apenas define a lista filtrada
-            coinListView.setItems(filteredList);
-            System.out.println("DEBUG (applyFilteringAndSorting): Nenhum comparador definido ou critério inválido. Exibindo apenas lista filtrada.");
+            if (!ascending) comparator = comparator.reversed();
+            FXCollections.sort(filteredList, comparator);
         }
-    }
-}
+
+        coinListView.setItems(filteredList);
+    }}

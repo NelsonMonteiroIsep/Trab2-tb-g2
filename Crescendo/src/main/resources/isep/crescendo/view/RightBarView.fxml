@@ -24,45 +24,34 @@
 
     <Label text="Principais Criptomoedas" style="-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold; -fx-padding: 10 0 5 0;"/>
 
-    <HBox alignment="CENTER_LEFT" spacing="5">
-        <VBox.margin>
-            <Insets top="10" right="0" bottom="10" left="0"/>
-        </VBox.margin>
-        <VBox>
-
-            <Label text="Ordenar por:" style="-fx-text-fill: white;"/>
-            <ComboBox fx:id="sortCriteriaComboBox" promptText="Critério" prefWidth="90"/>
-        </VBox>
-
-        <Region VBox.vgrow="ALWAYS" prefWidth="10" maxWidth="10" />
-
-        <HBox alignment="CENTER" spacing="5">
+    <!-- Caixa de ordenação -->
+    <VBox spacing="8" style="-fx-background-color: #2a2a2a; -fx-padding: 10; -fx-background-radius: 10;">
+        <Label text="Ordenar por" style="-fx-text-fill: white; -fx-font-weight: bold;" />
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <ComboBox fx:id="sortCriteriaComboBox" promptText="Critério" prefWidth="100"/>
             <RadioButton fx:id="ascendenteRadioButton" text="Asc" textFill="white" selected="true"
                          toggleGroup="$sortDirectionToggleGroup"/>
             <RadioButton fx:id="descendenteRadioButton" text="Desc" textFill="white"
                          toggleGroup="$sortDirectionToggleGroup"/>
         </HBox>
+    </VBox>
 
-    </HBox>
-    <HBox alignment="CENTER_LEFT" spacing="5">
-        <VBox.margin>
-            <Insets top="10" right="0" bottom="10" left="0"/>
-        </VBox.margin>
-        <VBox>
-            <HBox>
-                <Label text="Preço Min:" style="-fx-text-fill: white;"/>
-                <TextField fx:id="minPriceFilterField" promptText="Min" prefWidth="60"/>
-                <Label text="Max:" style="-fx-text-fill: white;"/>
-                <TextField fx:id="maxPriceFilterField" promptText="Max" prefWidth="60"/>
-            </HBox>
+    <!-- Espaço -->
+    <Region prefHeight="10" />
 
-        </VBox>
-
-        <Button text="Filtrar" onAction="#applyFilteringAndSorting"/>
-    </HBox>
-
+    <!-- Caixa de filtragem -->
+    <VBox spacing="8" style="-fx-background-color: #2a2a2a; -fx-padding: 10; -fx-background-radius: 10;">
+        <Label text="Filtrar por Preço (€)" style="-fx-text-fill: white; -fx-font-weight: bold;" />
+        <HBox spacing="8" alignment="CENTER_LEFT">
+            <TextField fx:id="minPriceFilterField" promptText="Mín" prefWidth="80"/>
+            <TextField fx:id="maxPriceFilterField" promptText="Máx" prefWidth="80"/>
+            <Button text="Filtrar" onAction="#applyFilteringAndSorting"
+                    style="-fx-background-color: #3a84ff; -fx-text-fill: white; -fx-background-radius: 6;" />
+        </HBox>
+    </VBox>
+    <Region prefHeight="10" />
     <ListView fx:id="coinListView" VBox.vgrow="ALWAYS"
-              style="-fx-background-color: #28282b; -fx-background-radius: 8; -fx-control-inner-background: #28282b;">
+              style="-fx-background-color: #28282b;-fx-padding: 10; -fx-background-radius: 8; -fx-control-inner-background: #28282b;">
     </ListView>
 
     <Separator>
