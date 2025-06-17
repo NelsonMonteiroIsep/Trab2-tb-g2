@@ -5,6 +5,7 @@ import isep.crescendo.Repository.TransacaoRepository;
 import isep.crescendo.Repository.UserRepository;
 import isep.crescendo.util.SceneSwitcher;
 import isep.crescendo.util.SessionManager;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -12,6 +13,7 @@ import javafx.collections.transformation.SortedList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.chart.*;
@@ -22,6 +24,7 @@ import javafx.scene.control.Alert.AlertType;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import isep.crescendo.Repository.CriptomoedaRepository;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -565,30 +568,34 @@ public class AdminController {
 
     private void carregarLineChartVolumeGlobal() {
         lineChartVolumeGlobal.getData().clear();
-        var map = new TransacaoRepository().getNumeroTransacoesPorData(LocalDate.now().minusDays(30).atStartOfDay(), LocalDate.now().atTime(23,59,59));
+        var series = new XYChart.Series<String, Number>();
+        series.setName("Volume de Transações");
 
-        XYChart.Series<String, Number> serie = new XYChart.Series<>();
-        serie.setName("Volume de Transações");
+        new TransacaoRepository().getNumeroTransacoesPorData(
+                LocalDate.now().minusDays(30).atStartOfDay(),
+                LocalDate.now().atTime(23,59,59)
+        ).forEach((dia, valor) -> {
+            XYChart.Data<String, Number> data = new XYChart.Data<>(dia, valor);
+            series.getData().add(data);
+            addTooltipToData(data, "Volume", "€");
+        });
 
-        for (var entry : map.entrySet()) {
-            serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-        }
-
-        lineChartVolumeGlobal.getData().add(serie);
+        lineChartVolumeGlobal.getData().add(series);
     }
 
     private void carregarBarChartTopUsers() {
         barChartTopUsers.getData().clear();
-        var map = new TransacaoRepository().getVolumePorUtilizador();
+        var series = new XYChart.Series<String, Number>();
+        series.setName("Volume em Euros");
 
-        XYChart.Series<String, Number> serie = new XYChart.Series<>();
-        serie.setName("Volume em Euros");
+        new TransacaoRepository().getVolumePorUtilizador()
+                .forEach((user, valor) -> {
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(user, valor);
+                    series.getData().add(data);
+                    addTooltipToData(data, user, "€");
+                });
 
-        for (var entry : map.entrySet()) {
-            serie.getData().add(new XYChart.Data<>(entry.getKey(), entry.getValue()));
-        }
-
-        barChartTopUsers.getData().add(serie);
+        barChartTopUsers.getData().add(series);
     }
 
     private void carregarPieChartTop3Moedas() {
@@ -598,27 +605,80 @@ public class AdminController {
         for (var row : list) {
             String nomeMoeda = (String) row[0];
             long numTransacoes = (long) row[1];
-            pieChartTop3Moedas.getData().add(new PieChart.Data(nomeMoeda, numTransacoes));
-        }
+
+            PieChart.Data data = new PieChart.Data(nomeMoeda, numTransacoes);
+            pieChartTop3Moedas.getData().add(data);
+            addTooltipToPieData(data, nomeMoeda, "");
+    }
     }
 
     private void carregarPieChartVolumePorMoeda() {
         pieChartVolumePorMoeda.getData().clear();
-        var map = new TransacaoRepository().getVolumePorMoeda();
+        var repo = new CriptomoedaRepository();
+        new TransacaoRepository().getVolumePorMoeda()
+                .forEach((id, valor) -> {
+                    String nome = repo.getNomeById(id);
+                    PieChart.Data data = new PieChart.Data(nome, valor);
+                    pieChartVolumePorMoeda.getData().add(data);
+                    addTooltipToPieData(data, nome, "€");
+                });
+    }
 
-        CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+    // ————— Método genérico para tooltips em XYChart.Data —————
 
-        for (var entry : map.entrySet()) {
-            int idMoeda = entry.getKey();
-            double volume = entry.getValue();
+    private void addTooltipToData(XYChart.Data<String, Number> data, String label, String suffix) {
+        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                Platform.runLater(() -> {
+                    Tooltip tooltip = new Tooltip(label + ": " + data.getYValue() + " " + suffix);
+                    tooltip.setShowDelay(Duration.millis(100));
+                    Tooltip.install(newNode, tooltip);
+                    newNode.setStyle("-fx-cursor: hand;");
+                });
+            }
+        });
+    }
 
-            String nomeMoeda = criptoRepo.getNomeById(idMoeda); // tens de implementar este método
-            pieChartVolumePorMoeda.getData().add(new PieChart.Data(nomeMoeda, volume));
+    // ————— Método genérico para tooltips em PieChart.Data —————
+
+    private void addTooltipToPieData(PieChart pieChart) {
+        double total = pieChart.getData().stream().mapToDouble(PieChart.Data::getPieValue).sum();
+
+        for (PieChart.Data data : pieChart.getData()) {
+            double percent = (data.getPieValue() / total) * 100;
+
+            data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    Platform.runLater(() -> {
+                        Tooltip tooltip = new Tooltip(
+                                data.getName() + ": " + String.format("%.2f", percent) + "%"
+                        );
+                        tooltip.setShowDelay(Duration.millis(100));
+                        Tooltip.install(newNode, tooltip);
+                        newNode.setStyle("-fx-cursor: hand;");
+                    });
+                }
+            });
         }
     }
+
+    private void addTooltipToPieData(PieChart.Data data, String nome, String unidade) {
+        Platform.runLater(() -> {
+            double total = pieChartVolumePorMoeda.getData().stream()
+                    .mapToDouble(PieChart.Data::getPieValue)
+                    .sum();
+
+            double percent = total > 0 ? (data.getPieValue() / total) * 100 : 0;
+
+            String tooltipText = nome + ": " + String.format("%.2f", data.getPieValue()) +
+                    " " + unidade + " (" + String.format("%.1f", percent) + "%)";
+
+            Tooltip tooltip = new Tooltip(tooltipText);
+            tooltip.setShowDelay(Duration.millis(100));
+            Tooltip.install(data.getNode(), tooltip);
+            data.getNode().setStyle("-fx-cursor: hand;");
+        });
     }
 
 
-
-
-
+}
