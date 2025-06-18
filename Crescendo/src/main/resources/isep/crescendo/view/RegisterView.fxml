@@ -43,12 +43,12 @@
             <PasswordField fx:id="passwordField" promptText="Password"
                            style="-fx-background-color: #28282b; -fx-border-color: #444; -fx-border-radius: 5;
                                   -fx-text-fill: white; -fx-padding: 8;" />
-
+            <Label fx:id="passwordHintLabel" text=""
+                   style="-fx-text-fill: red; -fx-font-size: 11px;" />
             <Button text="📝 Registar" onAction="#handleRegister"
                     style="-fx-background-color: #444; -fx-text-fill: #CC9900; -fx-font-size: 14px;
                            -fx-background-radius: 5; -fx-cursor: hand; -fx-padding: 8 16;"/>
 
-            <Label fx:id="messageLabel" style="-fx-text-fill: red;"/>
 
             <Hyperlink text="← Já tem conta? Faça login" onAction="#handleGoToLogin"
                        style="-fx-text-fill: #CC9900; -fx-underline: true;"/>

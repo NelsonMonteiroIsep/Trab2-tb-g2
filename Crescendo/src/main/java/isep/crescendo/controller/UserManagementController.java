@@ -20,6 +20,8 @@ public class UserManagementController {
 
     private final UserRepository userRepositoryRepo = new UserRepository();
     private static final Map<String, String> tokenToEmailMap = new HashMap<>();
+    @FXML
+    private Label passwordHintLabel;
 
     @FXML
     private TextField nameField;
@@ -147,15 +149,19 @@ public class UserManagementController {
         try {
             isep.crescendo.model.User novoUser = new isep.crescendo.model.User(email, nome, password);
             userRepositoryRepo.adicionar(novoUser);
+
+            // Limpar mensagens
+            passwordHintLabel.setText("");
             setMessage("Registo bem-sucedido! Por favor, faça login.", true, messageLabelRegister);
 
-            // Depois do registo, volta para login
             if (mainController != null) {
                 mainController.loadContent("UserManagementView.fxml");
             }
 
         } catch (IllegalArgumentException e) {
-            setMessage(e.getMessage(), false, messageLabelRegister);
+            // Mostrar erro na label de password
+            passwordHintLabel.setText(e.getMessage());
+            setMessage("", false, messageLabelRegister); // Limpa label principal
         } catch (RuntimeException e) {
             setMessage("Erro ao registar utilizador: " + e.getMessage(), false, messageLabelRegister);
             e.printStackTrace();
@@ -266,6 +272,7 @@ public class UserManagementController {
 
         if (token.isEmpty() || novaPassword.isEmpty()) {
             resetMessageLabel.setText("Preenche todos os campos.");
+            resetMessageLabel.setStyle("-fx-text-fill: red;");
             return;
         }
 
@@ -275,35 +282,56 @@ public class UserManagementController {
             isep.crescendo.model.User user = userRepo.procurarPorEmail(email);
             if (user != null) {
                 try {
+                    // ⚠️ Validação ocorre no setPassword() — pode lançar IllegalArgumentException
                     user.setPassword(novaPassword);
                     userRepo.atualizar(user);
                     removeToken(token);
 
-                    // Mensagem de sucesso
                     resetMessageLabel.setText("Password redefinida com sucesso!");
                     resetMessageLabel.setStyle("-fx-text-fill: green;");
 
-                    // Aguarda 3 segundos e chama handleGoToLogin()
                     PauseTransition pause = new PauseTransition(Duration.seconds(3));
                     pause.setOnFinished(evt -> {
                         SceneSwitcher.switchScene(
                                 "/isep/crescendo/view/UserManagementView.fxml",
                                 "/isep/crescendo/styles/login.css",
                                 "Login",
-                                tokenField    // nó válido nesta cena
+                                tokenField
                         );
                     });
                     pause.play();
 
+                } catch (IllegalArgumentException e) {
+                    resetMessageLabel.setText(e.getMessage());
+                    resetMessageLabel.setStyle("-fx-text-fill: red;");
                 } catch (Exception e) {
                     resetMessageLabel.setText("Erro ao redefinir password.");
+                    resetMessageLabel.setStyle("-fx-text-fill: red;");
                     e.printStackTrace();
                 }
             } else {
                 resetMessageLabel.setText("Utilizador não encontrado.");
+                resetMessageLabel.setStyle("-fx-text-fill: red;");
             }
         } else {
             resetMessageLabel.setText("Token inválido ou expirado.");
+            resetMessageLabel.setStyle("-fx-text-fill: red;");
         }
+    }
+
+
+    private String getPasswordHint(String password) {
+        StringBuilder hints = new StringBuilder();
+
+        if (password.length() < 10)
+            hints.append("• Mínimo 10 caracteres\n");
+        if (!password.matches(".*[A-Z].*"))
+            hints.append("• Pelo menos 1 letra maiúscula\n");
+        if (!password.matches(".*\\d.*"))
+            hints.append("• Pelo menos 1 número\n");
+        if (!password.matches(".*[!@#$%^&*()_+\\-=\\[\\]{}|;:'\",.<>/?].*"))
+            hints.append("• Pelo menos 1 carácter especial\n");
+
+        return hints.toString().trim();
     }
 }

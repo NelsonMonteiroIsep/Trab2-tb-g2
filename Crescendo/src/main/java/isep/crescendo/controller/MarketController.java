@@ -17,6 +17,7 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -446,7 +447,7 @@ public class MarketController implements Initializable {
             double preco = Double.parseDouble(precoCompraField.getText());
 
             if (quantidade <= 0 || preco <= 0) {
-                System.out.println("Quantidade e preço devem ser maiores que zero.");
+                mostrarAlerta("Erro", "Quantidade e preço devem ser maiores que zero.");
                 return;
             }
 
@@ -454,22 +455,20 @@ public class MarketController implements Initializable {
             isep.crescendo.model.Carteira carteira = isep.crescendo.Repository.CarteiraRepository.procurarPorUserId(userId);
 
             if (carteira == null) {
-                System.out.println("Carteira não encontrada.");
+                mostrarAlerta("Erro", "Carteira não encontrada.");
                 return;
             }
 
             int carteiraId = carteira.getId();
-            int idMoedaAtual = moedaSelecionada.getId(); // <--- CORRIGIDO
+            int idMoedaAtual = moedaSelecionada.getId();
 
             Ordem ordemCompra = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "compra");
-
             ordemService.processarOrdemCompra(ordemCompra);
 
-
-            System.out.println("Ordem de compra enviada com sucesso!");
+            mostrarAlerta("Sucesso", "Ordem de compra criada com sucesso!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Erro: campos inválidos para compra.");
+            mostrarAlerta("Erro", "Campos inválidos para compra.");
         }
     }
 
@@ -480,37 +479,44 @@ public class MarketController implements Initializable {
             double preco = Double.parseDouble(precoVendaField.getText());
 
             if (quantidade <= 0 || preco <= 0) {
-                System.out.println("Quantidade e preço devem ser maiores que zero.");
+                mostrarAlerta("Erro", "Quantidade e preço devem ser maiores que zero.");
                 return;
             }
 
             int userId = SessionManager.getCurrentUser().getId();
             Carteira carteira = isep.crescendo.Repository.CarteiraRepository.procurarPorUserId(userId);
             if (carteira == null) {
-                System.out.println("Carteira não encontrada.");
+                mostrarAlerta("Erro", "Carteira não encontrada.");
                 return;
             }
 
             int carteiraId = carteira.getId();
-            int idMoedaAtual = moedaSelecionada.getId(); // <--- CORRIGIDO
+            int idMoedaAtual = moedaSelecionada.getId();
 
             isep.crescendo.Repository.CarteiraRepository carteiraRepo = new isep.crescendo.Repository.CarteiraRepository();
             boolean podeVender = carteiraRepo.podeVender(carteiraId, idMoedaAtual, quantidade);
 
             if (!podeVender) {
-                System.out.println("Saldo insuficiente ou já comprometido em ordens abertas.");
+                mostrarAlerta("Erro", "Saldo insuficiente ou já comprometido em ordens abertas.");
                 return;
             }
 
             Ordem ordemVenda = new Ordem(carteiraId, idMoedaAtual, quantidade, preco, "venda");
             ordemService.processarOrdemVenda(ordemVenda);
 
-
-            System.out.println("Ordem de venda enviada com sucesso!");
+            mostrarAlerta("Sucesso", "Ordem de venda criada com sucesso!");
 
         } catch (NumberFormatException e) {
-            System.out.println("Erro: campos inválidos para venda.");
+            mostrarAlerta("Erro", "Campos inválidos para venda.");
         }
+    }
+
+    private void mostrarAlerta(String titulo, String mensagem) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle(titulo);
+        alert.setHeaderText(null);
+        alert.setContentText(mensagem);
+        alert.showAndWait();
     }
 
 }

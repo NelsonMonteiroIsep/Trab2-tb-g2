@@ -41,29 +41,29 @@ public class UserRepository {
              PreparedStatement pstmtUser = conn.prepareStatement(sqlUser);
              PreparedStatement pstmtUserId = conn.prepareStatement(sqlUserId)) {
 
-            // Inserir o utilizador
             pstmtUser.setString(1, user.getEmail());
             pstmtUser.setString(2, user.getNome());
             pstmtUser.setString(3, user.getPasswordHash());
             pstmtUser.setBoolean(4, user.isAdmin());
             pstmtUser.executeUpdate();
 
-            // Buscar o ID recém-criado
             pstmtUserId.setString(1, user.getEmail());
             ResultSet rs = pstmtUserId.executeQuery();
 
             if (rs.next()) {
                 int userId = rs.getInt("id");
 
-                // Criar a carteira com saldo inicial 0
                 CarteiraRepository carteiraRepositoryRepo = new CarteiraRepository();
                 carteiraRepositoryRepo.adicionarCarteiraParaUser(userId);
             }
 
         } catch (SQLException e) {
-            throw new RuntimeException("Erro ao adicionar utilizador e criar carteira: " + e.getMessage());
-        }
-    }
+            // 🔍 Verifica se a exceção é por duplicação de email
+            if (e.getMessage().toLowerCase().contains("duplicate") || e.getErrorCode() == 1062) {
+                throw new IllegalArgumentException("Já existe um utilizador com este email.");
+            }
+            throw new RuntimeException("Erro ao adicionar utilizador e criar carteira: " + e.getMessage(), e);
+        }}
 
     public isep.crescendo.model.User procurarPorEmail(String email) {
         String sql = "SELECT * FROM users WHERE email = ?";

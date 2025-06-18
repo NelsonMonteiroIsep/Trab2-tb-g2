@@ -34,7 +34,6 @@
     <VBox fx:id="loggedInContentContainer" spacing="10" alignment="CENTER_LEFT" visible="false" managed="false">
         <Button text="🏠 Home" onAction="#handleRedirectPortfolio" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900"/>
         <Button text="💳 Carteira" onAction="#handleRedirectWallet" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
-        <Button text="🔁 Swap" onAction="#handleRedirectSwap" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
         <Button text="💼 Transações" onAction="#handleRedirectTransacoes" styleClass="menu-button-dark" style="-fx-text-fill: #CC9900" />
     </VBox>
 

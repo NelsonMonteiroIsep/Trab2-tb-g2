@@ -97,7 +97,15 @@ public class User {
     }
 
     public void setPassword(String plainPassword) {
-        Preconditions.ensure(plainPassword != null && plainPassword.length() >= 6, "A password deve ter pelo menos 6 caracteres.");
+        Preconditions.ensure(plainPassword != null, "A password não pode ser vazia.");
+        Preconditions.ensure(plainPassword.length() >= 10, "A password deve ter pelo menos 10 caracteres.");
+        Preconditions.ensure(plainPassword.matches(".*[A-Z].*"), "A password deve conter pelo menos uma letra maiúscula.");
+        Preconditions.ensure(plainPassword.matches(".*\\d.*"), "A password deve conter pelo menos um número.");
+        Preconditions.ensure(
+                plainPassword.matches(specialCharsRegex),
+                "A password deve conter pelo menos um caractere especial."
+        );
+
         this.passwordHash = hashPassword(plainPassword);
     }
 }
