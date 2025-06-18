@@ -28,6 +28,8 @@ import javafx.util.Duration;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class AdminController {
@@ -90,6 +92,22 @@ public class AdminController {
             if (labelTotalUsers != null) {
                 int totalUsers = userRepositoryRepo.countUsers();
                 labelTotalUsers.setText(String.valueOf(totalUsers));
+            }
+
+            if (comboSaldoModo != null) {
+                comboSaldoModo.getItems().setAll("Valor em Euros", "Quantidade de Moeda");
+                comboSaldoModo.getSelectionModel().selectFirst(); // opcional: seleciona o primeiro
+                comboSaldoModo.setButtonCell(getStyledCell());
+                comboSaldoModo.setCellFactory(listView -> getStyledCell());
+
+
+            }
+
+            if (comboTransacoesModo != null) {
+                comboTransacoesModo.getItems().setAll("Volume em Euros", "Número de Transações");
+                comboTransacoesModo.getSelectionModel().selectFirst(); // opcional
+                 comboTransacoesModo.setButtonCell(getStyledCell());
+                comboTransacoesModo.setCellFactory(listView -> getStyledCell());
             }
 
             if (labelTotalInvestido != null) {
@@ -461,6 +479,9 @@ public class AdminController {
         xAxis.setLabel("Data");
         yAxis.setLabel(mostrarEmEuros ? "Valor em Euros" : "Quantidade de Moeda");
 
+        String[] cores = {"#FF5733", "#33C1FF", "#75FF33", "#F933FF", "#FFC133", "#33FFB5", "#FF33A8"};
+        int corIndex = 0;
+
         for (var user : selecionados) {
             var historico = isep.crescendo.Repository.TransacaoRepository.getHistoricoSaldoPorCripto(
                     user.getId(),
@@ -476,18 +497,57 @@ public class AdminController {
                 serie.setName(user.getNome() + " - " + nomeCripto);
 
                 for (var saldoEntry : saldoPorDia.entrySet()) {
+                    String dataStr = saldoEntry.getKey();
                     double valor = saldoEntry.getValue();
+
                     if (mostrarEmEuros) {
                         valor *= isep.crescendo.Repository.HistoricoValorRepository.getValorByCriptoNomeAndData(
-                                nomeCripto, saldoEntry.getKey());
+                                nomeCripto, dataStr);
                     }
-                    serie.getData().add(new XYChart.Data<>(saldoEntry.getKey(), valor));
+
+                    XYChart.Data<String, Number> data = new XYChart.Data<>(dataStr, valor);
+                    serie.getData().add(data);
+
+                    // Tooltip melhorado
+                    data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                        if (newNode != null) {
+                            Tooltip tooltip = new Tooltip("Data: " + data.getXValue() + "\nValor: " + String.format("%.2f", data.getYValue().doubleValue()) + (mostrarEmEuros ? " €" : ""));
+                            tooltip.setShowDelay(Duration.millis(100));
+                            Tooltip.install(newNode, tooltip);
+
+                            newNode.setStyle("-fx-background-color: white, #00ffcc; -fx-background-insets: 0, 2;");
+                        }
+                    });
                 }
 
+                // Estilo da linha (cor e espessura)
+                final int finalCorIndex = corIndex;
+                serie.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                    if (newNode != null) {
+                        String cor = cores[finalCorIndex % cores.length];
+                        newNode.setStyle("-fx-stroke: " + cor + "; -fx-stroke-width: 2px;");
+                    }
+                });
+
                 lineChart.getData().add(serie);
+                final String corLegenda = cores[finalCorIndex % cores.length];
+                Platform.runLater(() -> {
+                    for (Node node : lineChart.lookupAll(".chart-legend-item")) {
+                        if (node instanceof Label label && label.getText().equals(serie.getName())) {
+                            label.setStyle("-fx-text-fill: " + corLegenda + ";");
+                        }
+                    }
+                });
+                corIndex++;
             }
         }
+
+        // Estilo do gráfico para fundo escuro com texto claro
+        lineChart.setStyle("-fx-background-color: #1e1e1e; -fx-text-fill: white;");
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
     }
+
 
     @FXML
     private void handleVerGraficoTransacoes() {
@@ -503,6 +563,8 @@ public class AdminController {
         }
 
         boolean mostrarVolumeEuros = "Volume em Euros".equals(comboTransacoesModo.getValue());
+
+        lineChart.setCreateSymbols(true); // necessário para mostrar os pontos (nodes)
         lineChart.getData().clear();
         xAxis.setLabel("Data");
         yAxis.setLabel(mostrarVolumeEuros ? "Volume em Euros" : "Número de Transações");
@@ -514,6 +576,9 @@ public class AdminController {
                 mostrarVolumeEuros
         );
 
+        String[] cores = {"#FF5733", "#33C1FF", "#75FF33", "#F933FF", "#FFC133", "#33FFB5", "#FF33A8"};
+        int corIndex = 0;
+
         for (var entry : historico.entrySet()) {
             int userId = entry.getKey();
             String userName = users.stream().filter(u -> u.getId() == userId).findFirst().map(u -> u.getNome()).orElse("User " + userId);
@@ -522,12 +587,55 @@ public class AdminController {
             XYChart.Series<String, Number> serie = new XYChart.Series<>();
             serie.setName(userName);
 
+            List<XYChart.Data<String, Number>> dataList = new ArrayList<>();
             for (var transEntry : transacoesPorDia.entrySet()) {
-                serie.getData().add(new XYChart.Data<>(transEntry.getKey(), transEntry.getValue()));
+                XYChart.Data<String, Number> data = new XYChart.Data<>(transEntry.getKey(), transEntry.getValue());
+                dataList.add(data);
             }
+            serie.getData().addAll(dataList);
+
+// Só instala os tooltips depois de os nodes estarem visíveis
+            Platform.runLater(() -> {
+                for (XYChart.Data<String, Number> data : dataList) {
+                    Node node = data.getNode();
+                    if (node != null) {
+                        String tooltipText = userName + "\nData: " + data.getXValue() + "\nValor: " + data.getYValue() + (mostrarVolumeEuros ? " €" : " transações");
+
+                        Tooltip tooltip = new Tooltip(tooltipText);
+                        tooltip.setShowDelay(Duration.millis(100));
+                        Tooltip.install(node, tooltip);
+                        node.setStyle("-fx-cursor: hand; -fx-background-radius: 4px; -fx-background-color: #00ffcc, white;");
+                    }
+                }
+            });
+
+            // Cor e espessura da linha
+            final int finalCorIndex = corIndex;
+            serie.nodeProperty().addListener((obs, oldNode, newNode) -> {
+                if (newNode != null) {
+                    String cor = cores[finalCorIndex % cores.length];
+                    newNode.setStyle("-fx-stroke: " + cor + "; -fx-stroke-width: 2px;");
+                }
+            });
 
             lineChart.getData().add(serie);
+            final String corLegenda = cores[finalCorIndex % cores.length];
+
+// Aguarda render da cena para aplicar estilo à legenda
+            Platform.runLater(() -> {
+                for (Node node : lineChart.lookupAll(".chart-legend-item")) {
+                    if (node instanceof Label label && label.getText().equals(serie.getName())) {
+                        label.setStyle("-fx-text-fill: " + corLegenda + ";");
+                    }
+                }
+            });
+            corIndex++;
         }
+
+        // Estilo do gráfico (opcional)
+        lineChart.setStyle("-fx-background-color: #1e1e1e; -fx-text-fill: white;");
+        xAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
+        yAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
     }
 
     @FXML
@@ -608,7 +716,7 @@ public class AdminController {
 
             PieChart.Data data = new PieChart.Data(nomeMoeda, numTransacoes);
             pieChartTop3Moedas.getData().add(data);
-            addTooltipToPieData(data, nomeMoeda, "");
+            addTooltipToPieDataT(data, nomeMoeda, "");
     }
     }
 
@@ -626,14 +734,17 @@ public class AdminController {
 
     // ————— Método genérico para tooltips em XYChart.Data —————
 
-    private void addTooltipToData(XYChart.Data<String, Number> data, String label, String suffix) {
+    private void addTooltipToData(XYChart.Data<String, Number> data, String nome, String unidade) {
         data.nodeProperty().addListener((obs, oldNode, newNode) -> {
             if (newNode != null) {
                 Platform.runLater(() -> {
-                    Tooltip tooltip = new Tooltip(label + ": " + data.getYValue() + " " + suffix);
+                    String tooltipText = nome + ": " + data.getYValue() + " " + unidade;
+
+                    Tooltip tooltip = new Tooltip(tooltipText);
                     tooltip.setShowDelay(Duration.millis(100));
                     Tooltip.install(newNode, tooltip);
-                    newNode.setStyle("-fx-cursor: hand;");
+
+                    newNode.setStyle("-fx-cursor: hand; -fx-background-radius: 4px; -fx-background-color: #00ffcc, white;");
                 });
             }
         });
@@ -641,26 +752,7 @@ public class AdminController {
 
     // ————— Método genérico para tooltips em PieChart.Data —————
 
-    private void addTooltipToPieData(PieChart pieChart) {
-        double total = pieChart.getData().stream().mapToDouble(PieChart.Data::getPieValue).sum();
 
-        for (PieChart.Data data : pieChart.getData()) {
-            double percent = (data.getPieValue() / total) * 100;
-
-            data.nodeProperty().addListener((obs, oldNode, newNode) -> {
-                if (newNode != null) {
-                    Platform.runLater(() -> {
-                        Tooltip tooltip = new Tooltip(
-                                data.getName() + ": " + String.format("%.2f", percent) + "%"
-                        );
-                        tooltip.setShowDelay(Duration.millis(100));
-                        Tooltip.install(newNode, tooltip);
-                        newNode.setStyle("-fx-cursor: hand;");
-                    });
-                }
-            });
-        }
-    }
 
     private void addTooltipToPieData(PieChart.Data data, String nome, String unidade) {
         Platform.runLater(() -> {
@@ -680,5 +772,37 @@ public class AdminController {
         });
     }
 
+    private void addTooltipToPieDataT(PieChart.Data data, String nome, String unidade) {
+        Platform.runLater(() -> {
+            double total = pieChartVolumePorMoeda.getData().stream()
+                    .mapToDouble(PieChart.Data::getPieValue)
+                    .sum();
+
+            double percent = total > 0 ? (data.getPieValue() / total) * 100 : 0;
+
+            String tooltipText = nome + ": " + String.format("%.2f", data.getPieValue()) +
+                    " " + unidade;
+
+            Tooltip tooltip = new Tooltip(tooltipText);
+            tooltip.setShowDelay(Duration.millis(100));
+            Tooltip.install(data.getNode(), tooltip);
+            data.getNode().setStyle("-fx-cursor: hand;");
+        });
+    }
+
+    private ListCell<String> getStyledCell() {
+        return new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setStyle("-fx-text-fill: white; -fx-background-color: #3c3c3c;");
+                }
+            }
+        };
+    }
 
 }

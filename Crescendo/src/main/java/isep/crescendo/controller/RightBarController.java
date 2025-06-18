@@ -12,19 +12,11 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Insets;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
+import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.TextField; // Import adicionado
-import javafx.scene.control.Button;   // Import adicionado
 
 import java.net.URL;
 import java.util.*;
@@ -156,6 +148,16 @@ public class RightBarController implements Initializable {
 
                         itemLayout.setOnMouseClicked(event -> {
                             if (mainController != null && cripto != null) {
+                                var currentUser = isep.crescendo.util.SessionManager.getCurrentUser();
+                                if (currentUser == null) {
+                                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                                    alerta.setTitle("Acesso Restrito");
+                                    alerta.setHeaderText("Autenticação necessária");
+                                    alerta.setContentText("Por favor, inicie sessão ou registe-se para visualizar os detalhes da criptomoeda.");
+                                    alerta.showAndWait();
+                                    return;
+                                }
+
                                 System.out.println("Criptomoeda clicada na RightBar: " + cripto.getNome());
                                 mainController.loadContentWithObject("MarketView.fxml", cripto);
                             }
