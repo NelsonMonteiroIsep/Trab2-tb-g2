@@ -5,14 +5,17 @@ import isep.crescendo.Repository.TransacaoRepository;
 import isep.crescendo.Repository.CriptomoedaRepository;
 import isep.crescendo.model.Criptomoeda;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.chart.BarChart;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.util.Duration;
 
 import java.net.URL;
 import java.util.List;
@@ -61,7 +64,6 @@ public class HomeController implements Initializable {
 
     public void updateBarChart() {
         volumePorUtilizadorBarChart.getData().clear();
-
         XYChart.Series<String, Number> series = new XYChart.Series<>();
         series.setName("Top Utilizadores");
 
@@ -71,23 +73,22 @@ public class HomeController implements Initializable {
             String nomeUtilizador = entry.getKey();
             double volume = entry.getValue();
 
-            series.getData().add(new XYChart.Data<>(nomeUtilizador, volume));
+            XYChart.Data<String, Number> data = new XYChart.Data<>(nomeUtilizador, volume);
+            series.getData().add(data);
+            addTooltipToBarData(data, nomeUtilizador, "€");
         }
 
         volumePorUtilizadorBarChart.getData().add(series);
     }
 
     private void carregarInvestimentoPorMoeda() {
-        // Suponho que já tenhas um método no teu TransacaoRepository:
-        // Map<String, Double> getTotalInvestidoPorMoeda()
-
         Map<String, Double> totalInvestidoPorMoeda = transacaoRepository.getTotalInvestidoPorMoeda();
-
         investimentoPieChart.getData().clear();
 
         for (Map.Entry<String, Double> entry : totalInvestidoPorMoeda.entrySet()) {
             PieChart.Data slice = new PieChart.Data(entry.getKey(), entry.getValue());
             investimentoPieChart.getData().add(slice);
+            addTooltipToPieData(slice, investimentoPieChart, "€");
         }
 
         investimentoPieChart.setLegendVisible(true);
@@ -139,6 +140,36 @@ public class HomeController implements Initializable {
             System.err.println("Erro a carregar imagem para " + nome + ": " + e.getMessage());
             imageView.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
         }
+    }
+
+    private void addTooltipToBarData(XYChart.Data<String, Number> data, String label, String unidade) {
+        data.nodeProperty().addListener((obs, oldNode, newNode) -> {
+            if (newNode != null) {
+                Platform.runLater(() -> {
+                    String tooltipText = label + ": " + String.format("%.2f", data.getYValue().doubleValue()) + " " + unidade;
+                    Tooltip tooltip = new Tooltip(tooltipText);
+                    tooltip.setShowDelay(Duration.millis(100));
+                    Tooltip.install(newNode, tooltip);
+                    newNode.setStyle("-fx-cursor: hand;");
+                });
+            }
+        });
+    }
+
+    // Tooltip para PieChart
+    private void addTooltipToPieData(PieChart.Data data, PieChart chart, String unidade) {
+        Platform.runLater(() -> {
+            double total = chart.getData().stream().mapToDouble(PieChart.Data::getPieValue).sum();
+            double percent = total > 0 ? (data.getPieValue() / total) * 100 : 0;
+
+            String tooltipText = data.getName() + ": " + String.format("%.2f", data.getPieValue()) + " " + unidade +
+                    " (" + String.format("%.1f", percent) + "%)";
+
+            Tooltip tooltip = new Tooltip(tooltipText);
+            tooltip.setShowDelay(Duration.millis(100));
+            Tooltip.install(data.getNode(), tooltip);
+            data.getNode().setStyle("-fx-cursor: hand;");
+        });
     }
 }
 
