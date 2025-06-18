@@ -25,7 +25,7 @@ public class CriptoAlgoritmo {
     private Timeline simulationTimeline;
 
     private int currentMinute = 0;
-    private static final int SIMULATION_INTERVAL_MS = 60; // Frequência de atualização em ms
+    private static final int SIMULATION_INTERVAL_MS = 1000; // Frequência de atualização em ms
 
     private CyclePhase currentPhase = CyclePhase.ADOCAO;
     private int minutesInCurrentPhase = 0;

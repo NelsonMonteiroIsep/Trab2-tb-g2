@@ -320,12 +320,9 @@ public class MarketController implements Initializable {
             // This block runs on the JavaFX Application Thread, safe for UI updates.
             LocalDateTime currentTime = LocalDateTime.now();
             series.getData().add(new XYChart.Data<>(currentTime.format(formatter), newPrice.doubleValue()));
-
+            infoLabel.setText("Valor atual: €" + String.format("%.2f", newPrice.doubleValue()));
             // Limit points on the graph to prevent it from becoming too dense
-            int maxDataPointsLive = 60; // Display the last 60 points in real-time
-            if (series.getData().size() > maxDataPointsLive) {
-                series.getData().remove(0);
-            }
+
             // You can add more debug here to confirm real-time updates
             // System.out.println("DEBUG MC: Live point added: " + String.format("%.2f", newPrice.doubleValue()) + " at " + currentTime.format(formatter) + ". Total points: " + series.getData().size());
         };
