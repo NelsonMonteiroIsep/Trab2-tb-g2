@@ -106,64 +106,88 @@ public class RightBarController implements Initializable {
                     if (empty || cripto == null) {
                         setText(null);
                         setGraphic(null);
-                    } else {
-                        HBox itemLayout = new HBox(10);
-                        itemLayout.setPadding(new Insets(5));
+                    } else{ HBox itemLayout = new HBox(10);
+                    itemLayout.setPadding(new Insets(5));
 
-                        ImageView icon = new ImageView();
-                        icon.setFitHeight(24);
-                        icon.setFitWidth(24);
-                        if (cripto.getImagemUrl() != null && !cripto.getImagemUrl().isEmpty()) {
-                            try {
-                                icon.setImage(new Image(cripto.getImagemUrl(), true));
-                            } catch (Exception e) {
-                                System.err.println("Erro ao carregar imagem para " + cripto.getNome() + ": " + e.getMessage());
-                                icon.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
-                            }
-                        } else {
+                    ImageView icon = new ImageView();
+                    icon.setFitHeight(24);
+                    icon.setFitWidth(24);
+                    if (cripto.getImagemUrl() != null && !cripto.getImagemUrl().isEmpty()) {
+                        try {
+                            icon.setImage(new Image(cripto.getImagemUrl(), true));
+                        } catch (Exception e) {
+                            System.err.println("Erro ao carregar imagem para " + cripto.getNome() + ": " + e.getMessage());
                             icon.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
                         }
-
-                        Label nameLabel = new Label(cripto.getNome() + " (" + cripto.getSimbolo() + ")");
-                        nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
-                        Label priceLabel = new Label();
-                        priceLabel.setStyle("-fx-text-fill: lightgreen; -fx-font-weight: bold;");
-
-                        try {
-                            HistoricoValor ultimoValor = historicoValorRepository.getUltimoValorPorCripto(cripto.getId());
-
-                            if (ultimoValor != null) {
-                                priceLabel.setText(String.format("%.2f €", ultimoValor.getValor()));
-                            } else {
-                                priceLabel.setText("-- €");
-                            }
-                        } catch (Exception e) {
-                            System.err.println("Erro ao buscar último valor para " + cripto.getNome() + ": " + e.getMessage());
-                            priceLabel.setText("-- €");
-                        }
-
-
-                        itemLayout.getChildren().addAll(icon, nameLabel, priceLabel);
-                        setGraphic(itemLayout);
-
-                        itemLayout.setOnMouseClicked(event -> {
-                            if (mainController != null && cripto != null) {
-                                var currentUser = isep.crescendo.util.SessionManager.getCurrentUser();
-                                if (currentUser == null) {
-                                    Alert alerta = new Alert(Alert.AlertType.INFORMATION);
-                                    alerta.setTitle("Acesso Restrito");
-                                    alerta.setHeaderText("Autenticação necessária");
-                                    alerta.setContentText("Por favor, inicie sessão ou registe-se para visualizar os detalhes da criptomoeda.");
-                                    alerta.showAndWait();
-                                    return;
-                                }
-
-                                System.out.println("Criptomoeda clicada na RightBar: " + cripto.getNome());
-                                mainController.loadContentWithObject("MarketView.fxml", cripto);
-                            }
-                        });
+                    } else {
+                        icon.setImage(new Image(getClass().getResourceAsStream("/isep/crescendo/images/default_coin.png")));
                     }
-                }
+
+                    Label nameLabel = new Label(cripto.getNome() + " (" + cripto.getSimbolo() + ")");
+                    nameLabel.setStyle("-fx-text-fill: white; -fx-font-weight: bold;");
+
+                    Label priceLabel = new Label();
+                    priceLabel.setStyle("-fx-text-fill: lightgreen; -fx-font-weight: bold;");
+
+                    Label variationLabel = new Label();
+                    variationLabel.setStyle("-fx-font-size: 11;");
+
+                    try {
+                        List<HistoricoValor> ultimos2 = historicoValorRepository.getDoisUltimosValores(cripto.getId());
+
+                        if (!ultimos2.isEmpty()) {
+                            HistoricoValor atual = ultimos2.get(0);
+                            priceLabel.setText(String.format("%.2f €", atual.getValor()));
+
+                            if (ultimos2.size() >= 2) {
+                                double anterior = ultimos2.get(1).getValor();
+                                double variacao = ((atual.getValor() - anterior) / anterior) * 100.0;
+                                String sinal = variacao > 0 ? "+" : "";
+                                variationLabel.setText(String.format("Variação: %s%.2f%%", sinal, variacao));
+
+                                if (variacao > 0) {
+                                    variationLabel.setStyle("-fx-text-fill: #00ff00; -fx-font-size: 11;"); // verde
+                                } else if (variacao < 0) {
+                                    variationLabel.setStyle("-fx-text-fill: red; -fx-font-size: 11;"); // vermelho
+                                } else {
+                                    variationLabel.setStyle("-fx-text-fill: orange; -fx-font-size: 11;"); // neutro
+                                }
+                            } else {
+                                variationLabel.setText("Variação: --");
+                                variationLabel.setStyle("-fx-text-fill: orange; -fx-font-size: 11;");
+                            }
+                        } else {
+                            priceLabel.setText("-- €");
+                            variationLabel.setText("Variação: --");
+                        }
+                    } catch (Exception e) {
+                        System.err.println("Erro ao buscar valores para " + cripto.getNome() + ": " + e.getMessage());
+                        priceLabel.setText("-- €");
+                        variationLabel.setText("Variação: --");
+                    }
+
+                    VBox vboxLabels = new VBox(2, nameLabel, priceLabel, variationLabel);
+                    itemLayout.getChildren().addAll(icon, vboxLabels);
+                    setGraphic(itemLayout);
+
+// Clique para abrir detalhes
+                    itemLayout.setOnMouseClicked(event -> {
+                        if (mainController != null && cripto != null) {
+                            var currentUser = isep.crescendo.util.SessionManager.getCurrentUser();
+                            if (currentUser == null) {
+                                Alert alerta = new Alert(Alert.AlertType.INFORMATION);
+                                alerta.setTitle("Acesso Restrito");
+                                alerta.setHeaderText("Autenticação necessária");
+                                alerta.setContentText("Por favor, inicie sessão ou registe-se para visualizar os detalhes da criptomoeda.");
+                                alerta.showAndWait();
+                                return;
+                            }
+
+                            System.out.println("Criptomoeda clicada na RightBar: " + cripto.getNome());
+                            mainController.loadContentWithObject("MarketView.fxml", cripto);
+                        }
+                    });
+                }}
             });
 
             loadCriptomoedasToList(); // Carrega as criptomoedas na masterCriptoList

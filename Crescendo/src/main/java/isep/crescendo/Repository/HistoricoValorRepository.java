@@ -201,4 +201,35 @@ public class HistoricoValorRepository {
         // Se não houver NENHUM valor anterior → 0.0
         return 0.0;
     }
+
+    public List<HistoricoValor> getDoisUltimosValores(int criptoId) {
+        String sql = """
+        SELECT cripto_id, data, valor 
+        FROM historico_valores 
+        WHERE cripto_id = ? 
+        ORDER BY data DESC 
+        LIMIT 2
+    """;
+        List<HistoricoValor> valores = new ArrayList<>();
+
+        try (Connection conn = getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, criptoId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                HistoricoValor hv = new HistoricoValor();
+                hv.setCriptoId(rs.getInt("cripto_id"));
+                hv.setData(rs.getTimestamp("data").toLocalDateTime());
+                hv.setValor(rs.getDouble("valor"));
+                valores.add(hv);
+            }
+
+        } catch (SQLException e) {
+            System.err.println("Erro ao obter dois últimos valores: " + e.getMessage());
+        }
+
+        return valores;
+    }
 }
