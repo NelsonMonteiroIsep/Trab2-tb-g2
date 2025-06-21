@@ -31,7 +31,7 @@ dependencies {
     implementation("com.dlsc.formsfx:formsfx-core:11.6.0") {
         exclude(group = "org.openjfx")
     }
-    implementation ("org.openjfx:javafx-controls:17")
+    // implementation ("org.openjfx:javafx-controls:17") // REMOVA ESTA LINHA
     implementation("net.synedra:validatorfx:0.5.0") {
         exclude(group = "org.openjfx")
     }
@@ -40,11 +40,6 @@ dependencies {
     implementation("eu.hansolo:tilesfx:21.0.3") {
         exclude(group = "org.openjfx")
     }
-    // FXGL - Comente/Remova se não usa
-    // implementation("com.github.almasb:fxgl:17.3") {
-    //     exclude(group = "org.openjfx")
-    //     exclude(group = "org.jetbrains.kotlin")
-    // }
 
     implementation("net.java.dev.jna:jna:5.17.0")
     implementation("net.java.dev.jna:jna-platform:5.17.0")
@@ -52,12 +47,12 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.21")
     implementation("jakarta.mail:jakarta.mail-api:2.1.2")
     implementation("org.eclipse.angus:angus-mail:2.0.2")
-    // Jackson Core - Comente/Remova se não usa
-    // implementation("com.fasterxml.jackson.core:jackson-core:2.15.2")
 
     // === Dependências de Teste ===
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
 }
 
 application {
