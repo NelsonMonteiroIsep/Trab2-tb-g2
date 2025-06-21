@@ -36,7 +36,7 @@ public class MenuLateralController {
     }
     @FXML
     public void handleRedirectGestao(ActionEvent actionEvent) {
-        SceneSwitcher.switchScene("/isep/crescendo/gestao-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
+        SceneSwitcher.switchScene("/isep/crescendo/view/gestao-view.fxml", "/isep/crescendo/styles/login.css", "Carteira", menu_label);
     }
     @FXML
     public void handleRedirectEmContrucao(ActionEvent actionEvent) {

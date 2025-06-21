@@ -15,15 +15,12 @@ import isep.crescendo.model.Carteira;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.Optional;
 
 
 public class WalletController {
@@ -135,7 +132,7 @@ public class WalletController {
     @FXML
     private void handleAdicionarSaldo() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/adicionar-saldo-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/adicionar-saldo-view.fxml"));
             Parent root = loader.load();
 
             AdicionarSaldoDialogController controller = loader.getController();
@@ -181,7 +178,7 @@ public class WalletController {
     @FXML
     private void handlelevantarSaldo() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/levantar-saldo-view.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/levantar-saldo-view.fxml"));
             Parent root = loader.load();
 
             AdicionarSaldoDialogController controller = loader.getController();

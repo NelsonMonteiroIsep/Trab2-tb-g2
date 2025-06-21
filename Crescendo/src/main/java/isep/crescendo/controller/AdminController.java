@@ -391,7 +391,7 @@ public class AdminController {
     @FXML
     private void handleCriar() {
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/cripto-criar-dialog.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/cripto-criar-dialog.fxml"));
             Parent root = loader.load();
 
             Stage dialogStage = new Stage();
