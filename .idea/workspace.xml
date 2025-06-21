@@ -5,29 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e7de4bca-7104-4bce-a18f-17dd9b179ebb" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/AdminController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/MenuLateralController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/WalletController.java" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/controller/WalletController.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/MenuLateral-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/adicionar-saldo-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/adicionar-saldo-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-componente.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-list-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/coin-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/cripto-criar-dialog.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/cripto-criar-dialog.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/enviar-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/gestao-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/gestao-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/leftbar-componente.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/levantar-saldo-view.fxml" beforeDir="false" afterPath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/view/levantar-saldo-view.fxml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/market-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/navbar.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/portfolio-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/receber-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/rightbar-componente.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/swap-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/transacoes-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/underconstruction-view.fxml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Crescendo/src/main/resources/isep/crescendo/wallet-view.fxml" beforeDir="false" />
+      <change afterPath="$PROJECT_DIR$/Crescendo/src/main/java/isep/crescendo/util/ContentManager.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

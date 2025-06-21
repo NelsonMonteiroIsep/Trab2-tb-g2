@@ -1,6 +1,9 @@
+// isep.crescendo.controller.MainController.java
+
 package isep.crescendo.controller;
 
 import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.util.ContentManager; // Importe o novo ContentManager
 import isep.crescendo.util.SessionManager;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -19,15 +22,15 @@ public class MainController implements Initializable, LoginCallback {
     @FXML
     private BorderPane rootPane;
     @FXML
-    private StackPane contentArea;
+    private StackPane contentArea; // Onde os conteúdos FXML serão exibidos
 
+    // Mantemos as referências aos controladores da barra lateral, se necessário,
+    // mas o ContentManager gerenciará o cache dos conteúdos principais.
     private LeftBarController leftBarController;
     private RightBarController rightBarController;
-    // Removido marketController se não for usado após a remoção de navigateToMarket,
-    // mas mantido se handleCriptomoedaClick ainda precisar dele.
-    private MarketController marketController;
 
-    private String currentContentFxml = "";
+    // Remover currentContentFxml se o ContentManager for o único a rastreá-lo.
+    // private String currentContentFxml = ""; // O ContentManager cuidará disso
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -35,26 +38,45 @@ public class MainController implements Initializable, LoginCallback {
             System.err.println("ERRO CRÍTICO (MainController): rootPane é null no initialize. Verifique o fx:id no MainView.fxml.");
             return;
         }
+        if (contentArea == null) {
+            System.err.println("ERRO CRÍTICO (MainController): contentArea é null no initialize. Verifique o fx:id no MainView.fxml.");
+            return;
+        }
+
+        // *** PASSO 1: Inicialize o ContentManager ***
+        ContentManager.getInstance().initialize(contentArea, this);
+        System.out.println("DEBUG (MainController): ContentManager inicializado.");
 
         try {
+            // Carregamento das barras laterais (elas não são gerenciadas pelo ContentManager
+            // porque são partes fixas do BorderPane)
             loadLeftBar();
             loadRightBar();
 
+            // *** PASSO 2: Pré-carregar conteúdos principais para acesso rápido ***
+            // Estes FXMLs serão carregados uma única vez na inicialização e armazenados.
+            ContentManager.getInstance().showContent("MarketView.fxml"); // Carrega e exibe MarketView para que o MarketController seja inicializado e disponível para injetar criptomoeda.
+            ContentManager.getInstance().showContent("WalletView.fxml");
+            ContentManager.getInstance().showContent("admin-view.fxml"); // Se você tiver uma view de administração
+            ContentManager.getInstance().showContent("UserManagementView.fxml"); // Para o formulário de login/registro
+
+            // Lógica inicial para exibir a view correta
             isep.crescendo.model.User currentUser = SessionManager.getCurrentUser();
             if (currentUser != null) {
-                System.out.println("DEBUG (MainController): Usuário logado. Carregando wallet-view.fxml.");
-                loadContent("WalletView.fxml");
+                System.out.println("DEBUG (MainController): Usuário logado. Exibindo wallet-view.fxml.");
+                ContentManager.getInstance().showContent("WalletView.fxml");
             } else {
                 System.out.println("DEBUG (MainController): Nenhum usuário logado. Exibindo formulário de login.");
-                loadUserManagementView();
+                ContentManager.getInstance().showContent("UserManagementView.fxml");
             }
 
         } catch (IOException e) {
-            System.err.println("Erro geral ao carregar layout inicial ou gestão de utilizadores: " + e.getMessage());
+            System.err.println("Erro geral ao carregar layout inicial ou barras laterais: " + e.getMessage());
             e.printStackTrace();
         }
     }
 
+    // Métodos para carregar as barras laterais (mantidos como estão, pois não são no StackPane)
     private void loadLeftBar() throws IOException {
         System.out.println("DEBUG (MainController): Tentando carregar LeftBarView.fxml...");
         String leftBarFxml = SessionManager.isAdminSession() ? "AdminLeftBarView.fxml" : "LeftBarView.fxml";
@@ -63,28 +85,22 @@ public class MainController implements Initializable, LoginCallback {
         Parent leftBar = leftBarLoader.load();
         if (SessionManager.isAdminSession()) {
             AdminLeftBarController adminLeftBarController = leftBarLoader.getController();
-            adminLeftBarController.setMainController(this);
+            // Garante que o MainController seja injetado no AdminLeftBarController
+            if (adminLeftBarController != null) {
+                adminLeftBarController.setMainController(this);
+            }
         } else {
             leftBarController = leftBarLoader.getController();
-            leftBarController.setMainController(this);
-        }
-        if (leftBarController != null) {
-            leftBarController.setMainController(this);
-            System.out.println("DEBUG (MainController): LeftBarController obtido e MainController injetado.");
-        } else {
-            System.err.println("ERRO (MainController): getController() retornou null para LeftBarController!");
+            // Garante que o MainController seja injetado no LeftBarController
+            if (leftBarController != null) {
+                leftBarController.setMainController(this);
+                System.out.println("DEBUG (MainController): LeftBarController obtido e MainController injetado.");
+            } else {
+                System.err.println("ERRO (MainController): getController() retornou null para LeftBarController!");
+            }
         }
         rootPane.setLeft(leftBar);
         System.out.println("DEBUG (MainController): LeftBar definida na região LEFT do rootPane.");
-    }
-
-    // Mantido loadNavbar se estiver no seu código, mas não é central para a discussão atual
-    private void loadNavbar() throws IOException {
-        System.out.println("DEBUG (MainController): Tentando carregar navbar.fxml...");
-        FXMLLoader navbarLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/navbar.fxml"));
-        Parent navbar = navbarLoader.load();
-        rootPane.setTop(navbar);
-        System.out.println("DEBUG (MainController): Navbar definida na região TOP do rootPane.");
     }
 
     private void loadRightBar() {
@@ -116,74 +132,36 @@ public class MainController implements Initializable, LoginCallback {
         }
     }
 
-    private void loadUserManagementView() throws IOException {
-        FXMLLoader userManagementLoader = new FXMLLoader(getClass().getResource("/isep/crescendo/view/UserManagementView.fxml"));
-        Parent userManagementContent = userManagementLoader.load();
-        UserManagementController userManagementController = userManagementLoader.getController();
-        if (userManagementController != null) {
-            userManagementController.setLoginCallback(this);
-            userManagementController.setMainController(this); // <---- ADICIONAR ESTA LINHA
-            System.out.println("DEBUG (MainController): LoginCallback e MainController definidos para UserManagementController.");
-        } else {
-            System.err.println("ERRO (MainController): getController() retornou null para UserManagementController!");
-        }
+    // Métodos de navegação simplificados para usar o ContentManager
 
-        contentArea.getChildren().clear();
-        contentArea.getChildren().add(userManagementContent);
-        this.currentContentFxml = "UserManagementView.fxml";
-        System.out.println("DEBUG (MainController): Conteúdo 'UserManagementView.fxml' carregado na inicialização.");
-    }
+    // Antigo loadUserManagementView() pode ser removido ou apenas chamar showContent
+    // private void loadUserManagementView() throws IOException { /* Removido */ }
 
+
+    /**
+     * Carrega e exibe um conteúdo FXML na área principal.
+     * Agora usa o ContentManager para gerenciar o cache.
+     * @param fxmlFileName O nome do arquivo FXML a ser carregado e exibido.
+     */
     public void loadContent(String fxmlFileName) {
-        loadContentWithObject(fxmlFileName, null); // Chama o método mais genérico
-
+        ContentManager.getInstance().showContent(fxmlFileName);
     }
 
+    /**
+     * Carrega e exibe um conteúdo FXML na área principal, passando um objeto de dados.
+     * Agora usa o ContentManager para gerenciar o cache e a injeção de dados.
+     * @param fxmlFileName O nome do arquivo FXML.
+     * @param dataObject O objeto de dados a ser passado para o controlador.
+     * @param <T> O tipo do objeto de dados.
+     */
     public <T> void loadContentWithObject(String fxmlFileName, T dataObject) {
-        try {
-            URL fxmlUrl = getClass().getResource("/isep/crescendo/view/" + fxmlFileName);
-            if (fxmlUrl == null) {
-                System.err.println("FXML file not found: /isep/crescendo/view/" + fxmlFileName);
-                return;
-            }
-            FXMLLoader loader = new FXMLLoader(fxmlUrl);
-            Parent content = loader.load();
-
-            Object controller = loader.getController();
-            // Apenas para o CoinController/MarketController
-            if (controller instanceof CoinController && dataObject instanceof Criptomoeda) {
-                ((CoinController) controller).setCriptomoeda((Criptomoeda) dataObject);
-                System.out.println("DEBUG (MainController): Criptomoeda passada para CoinController.");
-            } else if (controller instanceof MarketController && dataObject instanceof Criptomoeda) {
-                ((MarketController) controller).setCriptomoedaSelecionada((Criptomoeda) dataObject);
-                System.out.println("DEBUG (MainController): Criptomoeda passada para MarketController.");
-            }
-            if (controller instanceof UserManagementController) {
-                ((UserManagementController) controller).setMainController(this);
-                ((UserManagementController) controller).setLoginCallback(this);
-                System.out.println("DEBUG (MainController): LoginCallback e MainController definidos para UserManagementController.");
-            } else if (controller instanceof UserManagementController) {
-                ((UserManagementController) controller).setMainController(this);
-                System.out.println("DEBUG (MainController): MainController definido para RegisterController.");
-            } else if (controller instanceof UserManagementController) {
-                ((UserManagementController) controller).setMainController(this);
-                System.out.println("DEBUG (MainController): MainController definido para RecoveryController.");
-            }
-
-            contentArea.getChildren().clear();
-            contentArea.getChildren().add(content);
-
-            this.currentContentFxml = fxmlFileName;
-            System.out.println("DEBUG (MainController): Conteúdo '" + fxmlFileName + "' carregado.");
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar conteúdo " + fxmlFileName + ": " + e.getMessage());
-            e.printStackTrace();
-        }
+        ContentManager.getInstance().showContentWithObject(fxmlFileName, dataObject);
     }
 
-    public String getCurrentContentFxml() {
-        return currentContentFxml;
-    }
+    // Removido getCurrentContentFxml() se não for mais rastreado pelo MainController
+    // public String getCurrentContentFxml() {
+    //     return ContentManager.getInstance().getCurrentContentFileName(); // Ou adicione um método ao ContentManager
+    // }
 
     @Override
     public void onLoginSuccess(boolean isAdmin) {
@@ -197,7 +175,7 @@ public class MainController implements Initializable, LoginCallback {
             e.printStackTrace();
         }
 
-        // CORRIGIDO: carrega a view adequada
+        // CORRIGIDO: carrega a view adequada usando o ContentManager
         if (isAdmin) {
             loadContent("admin-view.fxml");
         } else {
@@ -219,14 +197,10 @@ public class MainController implements Initializable, LoginCallback {
         if (leftBarController != null) {
             leftBarController.hideEntireLeftBar();
             leftBarController.hideLoggedInContent();
-            rootPane.setLeft(null);
+            rootPane.setLeft(null); // Remove a LeftBar para garantir que o layout fique limpo
         }
-        try {
-            loadUserManagementView();
-        } catch (IOException e) {
-            System.err.println("Erro ao carregar tela de login após logout: " + e.getMessage());
-            e.printStackTrace();
-        }
+        // Exibe a tela de login usando o ContentManager
+        ContentManager.getInstance().showContent("UserManagementView.fxml");
     }
 
     // --- Métodos Adicionados para Navegação e Manipulação de Criptomoedas ---
@@ -234,23 +208,22 @@ public class MainController implements Initializable, LoginCallback {
     /**
      * Lida com o clique em uma criptomoeda na RightBar.
      * Altera o conteúdo principal para a MarketView e exibe o gráfico da criptomoeda.
+     * Agora usa o ContentManager.
      * @param cripto O objeto Criptomoeda que foi clicado.
      */
     public void handleCriptomoedaClick(Criptomoeda cripto) {
         System.out.println("DEBUG (MainController): Criptomoeda clicada na RightBar: " + cripto.getNome());
-        // Assumindo que 'MarketView.fxml' é a vista que mostra o gráfico e seu controlador é um CoinController
         loadContentWithObject("MarketView.fxml", cripto);
     }
 
     /**
      * Navega para a vista da carteira, geralmente chamada da LeftBar.
+     * Agora usa o ContentManager.
      */
     public void navigateToWallet() {
         System.out.println("DEBUG (MainController): Navegando para a Vista da Carteira (via menu).");
         loadContent("WalletView.fxml");
     }
-
-    // REMOVIDO: O método 'navigateToMarket()' e toda a sua lógica.
 
     // Exemplo de manipulação de configuração global do RightBarController (se necessário)
     public void handleGlobalSettingChange(Boolean newValue) {
@@ -261,5 +234,4 @@ public class MainController implements Initializable, LoginCallback {
             // Faça algo quando falso ou nulo
         }
     }
-
 }
