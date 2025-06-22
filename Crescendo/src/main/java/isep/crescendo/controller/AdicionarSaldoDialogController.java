@@ -10,7 +10,8 @@ import java.util.function.Consumer;
 public class AdicionarSaldoDialogController {
 
     @FXML
-    private TextField valorTextField;
+    // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    TextField valorTextField; // OU protected TextField valorTextField;
 
     private Stage dialogStage;
     private Consumer<Double> onValorConfirmado;
@@ -29,7 +30,8 @@ public class AdicionarSaldoDialogController {
     }
 
     @FXML
-    private void handleConfirmar() {
+        // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    void handleConfirmar() { // OU protected void handleConfirmar()
         try {
             double valor = Double.parseDouble(valorTextField.getText());
             if (valor <= 0) {
@@ -46,7 +48,8 @@ public class AdicionarSaldoDialogController {
     }
 
     @FXML
-    private void handleConfirmarLevantar() {
+        // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    void handleConfirmarLevantar() { // OU protected void handleConfirmarLevantar()
         try {
             double valor = Double.parseDouble(valorTextField.getText());
 

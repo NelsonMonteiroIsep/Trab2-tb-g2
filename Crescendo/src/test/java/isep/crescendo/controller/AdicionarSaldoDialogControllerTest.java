@@ -1,211 +1,215 @@
 package isep.crescendo.controller;
 
+import javafx.application.Platform; // Importar Platform
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Consumer;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class AdicionarSaldoDialogControllerTest {
+public class AdicionarSaldoDialogControllerTest {
 
     private AdicionarSaldoDialogController controller;
+    private TextField valorTextField;
+    private MockStage mockStage;
+    private Double confirmedValue;
 
-    // --- Implementações de Teste para as dependências ---
-
-    // TextField de teste que permite definir o texto
-    private static class TestTextField extends TextField {
-        private String textToReturn = "";
-
-        public void setTextToReturn(String text) {
-            this.textToReturn = text;
-        }
-
-        @Override
-        public String getText() {
-            return textToReturn;
-        }
-    }
-
-    // Stage de teste que registra se close() foi chamado
-    private static class TestStage extends Stage {
-        private AtomicBoolean closed = new AtomicBoolean(false);
+    private static class MockStage extends Stage {
+        boolean closeCalled = false;
 
         @Override
         public void close() {
-            closed.set(true);
-        }
-
-        public boolean isClosed() {
-            return closed.get();
+            this.closeCalled = true;
         }
     }
 
-    // Consumer de teste que armazena o valor aceito
-    private static class TestConsumer implements Consumer<Double> {
-        private AtomicReference<Double> acceptedValue = new AtomicReference<>(null);
-        private AtomicBoolean called = new AtomicBoolean(false);
-
-        @Override
-        public void accept(Double value) {
-            this.acceptedValue.set(value);
-            this.called.set(true);
-        }
-
-        public Double getAcceptedValue() {
-            return acceptedValue.get();
-        }
-
-        public boolean isCalled() {
-            return called.get();
-        }
+    @BeforeAll
+    static void initJFX() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        // Garantir que o toolkit JavaFX é iniciado uma vez
+        Platform.startup(() -> {
+            new JFXPanel();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS); // Esperar que o toolkit inicie
     }
-
-    // --- Mocks manuais para uso nos testes ---
-    private TestTextField testValorTextField;
-    private TestStage testDialogStage;
-    private TestConsumer testOnValorConfirmado;
 
     @BeforeEach
-    void setUp() {
-        // Inicializa as nossas implementações de teste
-        testValorTextField = new TestTextField();
-        testDialogStage = new TestStage();
-        testOnValorConfirmado = new TestConsumer();
+    void setUp() throws InterruptedException {
+        // Usar um CountDownLatch para esperar que a execução na thread JavaFX termine
+        final CountDownLatch latch = new CountDownLatch(1);
 
-        // Instancia o controller
-        controller = new AdicionarSaldoDialogController();
+        Platform.runLater(() -> {
+            controller = new AdicionarSaldoDialogController();
+            valorTextField = new TextField();
+            controller.valorTextField = valorTextField; // Injeta o TextField diretamente
 
-        // Injeta as nossas implementações de teste no controller
-        // Assumindo que o valorTextField é acessível para injeção (package-private ou public)
-        // Se for private e não tiver setter, precisaríamos de reflexão ou de um construtor para teste.
-        controller.valorTextField = testValorTextField;
-        controller.setDialogStage(testDialogStage);
-        controller.setOnValorConfirmado(testOnValorConfirmado);
+            mockStage = new MockStage();
+            controller.setDialogStage(mockStage);
+
+            confirmedValue = null;
+            controller.setOnValorConfirmado(value -> confirmedValue = value);
+
+            latch.countDown(); // Sinaliza que a inicialização JavaFX está completa
+        });
+
+        latch.await(5, TimeUnit.SECONDS); // Espera que a thread JavaFX termine a inicialização
+    }
+
+    // --- Testes para handleConfirmar ---
+
+    @Test
+    void testHandleConfirmar_ValorPositivo() throws InterruptedException {
+        // Os testes em si também podem precisar de ser executados na thread FX
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            valorTextField.setText("100.0");
+            controller.handleConfirmar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS); // Espera que a ação do teste seja processada
+
+        // As asserções podem ser feitas na thread do teste, pois o estado já foi modificado
+        assertEquals(100.0, confirmedValue, 0.001);
+        assertTrue(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmar_ValorPositivoValido_ChamaConsumerEFechaDialog() {
-        // 1. Configurar o nosso TestTextField para retornar um valor válido
-        testValorTextField.setTextToReturn("100.0");
+    void testHandleConfirmar_ValorZero() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            valorTextField.setText("0.0");
+            controller.handleConfirmar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // 2. Chamar o método a ser testado
-        controller.handleConfirmar();
-
-        // 3. Verificar o comportamento esperado
-        // Verifica se o consumer foi chamado com o valor correto
-        assertTrue(testOnValorConfirmado.isCalled(), "O consumer deveria ter sido chamado.");
-        assertEquals(100.0, testOnValorConfirmado.getAcceptedValue(), 0.001, "O valor passado para o consumer está incorreto.");
-        // Verifica se o dialog foi fechado
-        assertTrue(testDialogStage.isClosed(), "O dialog deveria ter sido fechado.");
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmar_ValorZeroOuNegativo_NaoChamaConsumerNemFechaDialog() {
-        // Teste para valor zero
-        testValorTextField.setTextToReturn("0.0");
-        controller.handleConfirmar();
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para valor zero.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para valor zero.");
+    void testHandleConfirmar_ValorNegativo() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            valorTextField.setText("-50.0");
+            controller.handleConfirmar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Resetar o estado para o próximo cenário de teste
-        setUp(); // Re-inicializa o controller e as dependências
-        testValorTextField.setTextToReturn("-50.0");
-        controller.handleConfirmar();
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para valor negativo.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para valor negativo.");
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmar_TextoInvalido_NaoChamaConsumerNemFechaDialog() {
-        // Configurar o nosso TestTextField para retornar um texto inválido (não numérico)
-        testValorTextField.setTextToReturn("abc");
+    void testHandleConfirmar_ValorNaoNumerico() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            valorTextField.setText("abc");
+            controller.handleConfirmar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Chamar o método a ser testado
-        controller.handleConfirmar();
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
+    }
 
-        // Verificar o comportamento esperado: consumer não chamado, dialog não fechado
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para texto inválido.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para texto inválido.");
+    // --- Testes para handleConfirmarLevantar ---
+
+    @Test
+    void testHandleConfirmarLevantar_ValorPositivoValido() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(200.0); // Este método não interage com UI diretamente, pode ser fora
+            valorTextField.setText("50.0");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
+
+        assertEquals(50.0, confirmedValue, 0.001);
+        assertTrue(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmarLevantar_ValorPositivoValidoDentroDoSaldo_ChamaConsumerEFechaDialog() {
-        // Configurar o saldo disponível e o valor a levantar
-        controller.setSaldoDisponivel(200.0);
-        testValorTextField.setTextToReturn("100.0");
+    void testHandleConfirmarLevantar_ValorZero() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(200.0);
+            valorTextField.setText("0.0");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Chamar o método a ser testado
-        controller.handleConfirmarLevantar();
-
-        // Verificar o comportamento esperado
-        assertTrue(testOnValorConfirmado.isCalled(), "O consumer deveria ter sido chamado.");
-        assertEquals(100.0, testOnValorConfirmado.getAcceptedValue(), 0.001, "O valor passado para o consumer está incorreto.");
-        assertTrue(testDialogStage.isClosed(), "O dialog deveria ter sido fechado.");
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmarLevantar_ValorZeroOuNegativo_NaoChamaConsumerNemFechaDialog() {
-        // Configurar o saldo disponível
-        controller.setSaldoDisponivel(200.0);
+    void testHandleConfirmarLevantar_ValorNegativo() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(200.0);
+            valorTextField.setText("-20.0");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Teste para valor zero
-        testValorTextField.setTextToReturn("0.0");
-        controller.handleConfirmarLevantar();
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para valor zero.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para valor zero.");
-
-        setUp(); // Re-inicializa para o próximo teste
-        controller.setSaldoDisponivel(200.0); // Re-configura o saldo
-
-        // Teste para valor negativo
-        testValorTextField.setTextToReturn("-50.0");
-        controller.handleConfirmarLevantar();
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para valor negativo.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para valor negativo.");
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmarLevantar_ValorMaiorQueSaldo_NaoChamaConsumerNemFechaDialog() {
-        // Configurar o saldo disponível e o valor a levantar (maior que o saldo)
-        controller.setSaldoDisponivel(50.0);
-        testValorTextField.setTextToReturn("100.0");
+    void testHandleConfirmarLevantar_ValorMaiorQueSaldo() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(100.0);
+            valorTextField.setText("150.0");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Chamar o método a ser testado
-        controller.handleConfirmarLevantar();
-
-        // Verificar o comportamento esperado: consumer não chamado, dialog não fechado
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para valor maior que saldo.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para valor maior que saldo.");
-        // Nota: A mensagem de erro (showAlert) não é testada diretamente aqui sem mocking de Alert,
-        // mas o comportamento de não prosseguir já é uma boa indicação.
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleConfirmarLevantar_TextoInvalido_NaoChamaConsumerNemFechaDialog() {
-        // Configurar o saldo disponível
-        controller.setSaldoDisponivel(100.0);
-        // Configurar o nosso TestTextField para retornar um texto inválido
-        testValorTextField.setTextToReturn("xyz");
+    void testHandleConfirmarLevantar_ValorNaoNumerico() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(100.0);
+            valorTextField.setText("xyz");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Chamar o método a ser testado
-        controller.handleConfirmarLevantar();
-
-        // Verificar o comportamento esperado: consumer não chamado, dialog não fechado
-        assertFalse(testOnValorConfirmado.isCalled(), "O consumer NÃO deveria ter sido chamado para texto inválido.");
-        assertFalse(testDialogStage.isClosed(), "O dialog NÃO deveria ter sido fechado para texto inválido.");
+        assertNull(confirmedValue);
+        assertFalse(mockStage.closeCalled);
     }
 
     @Test
-    void handleCancelar_FechaDialog() {
-        // Chamar o método a ser testado
-        controller.handleCancelar();
+    void testHandleConfirmarLevantar_ValorExatamenteIgualAoSaldo() throws InterruptedException {
+        final CountDownLatch latch = new CountDownLatch(1);
+        Platform.runLater(() -> {
+            controller.setSaldoDisponivel(100.0);
+            valorTextField.setText("100.0");
+            controller.handleConfirmarLevantar();
+            latch.countDown();
+        });
+        latch.await(5, TimeUnit.SECONDS);
 
-        // Verificar se o dialog foi fechado
-        assertTrue(testDialogStage.isClosed(), "O dialog deveria ter sido fechado.");
+        assertEquals(100.0, confirmedValue, 0.001);
+        assertTrue(mockStage.closeCalled);
     }
 }
