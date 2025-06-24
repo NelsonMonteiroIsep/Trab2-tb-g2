@@ -130,20 +130,22 @@ public class CoinComponent extends VBox {
         }
     }
 
+    // Atualiza a exibição do preço e da percentagem de variação
     public void updatePriceDisplay(double newPrice, double priceChange) {
         currentPriceLabel.setText(df.format(newPrice) + " €");
         if (priceChange > 0) {
             priceChangeLabel.setText("+" + df.format(priceChange) + "%");
-            priceChangeLabel.setStyle("-fx-text-fill: #4CAF50;");
+            priceChangeLabel.setStyle("-fx-text-fill: #4CAF50;"); // Verde
         } else if (priceChange < 0) {
             priceChangeLabel.setText(df.format(priceChange) + "%");
-            priceChangeLabel.setStyle("-fx-text-fill: #F44336;");
+            priceChangeLabel.setStyle("-fx-text-fill: #F44336;"); // Vermelho
         } else {
             priceChangeLabel.setText("0.00%");
-            priceChangeLabel.setStyle("-fx-text-fill: #b0b0b0;");
+            priceChangeLabel.setStyle("-fx-text-fill: #b0b0b0;"); // Cinza
         }
     }
 
+    // Adiciona novo ponto ao gráfico de linha
     public void addDataToChart(double newPrice) {
         int nextTimePoint = series.getData().size();
         series.getData().add(new XYChart.Data<>(nextTimePoint, newPrice));
@@ -160,11 +162,12 @@ public class CoinComponent extends VBox {
         yAxis.setAutoRanging(true);
     }
 
+    // Carrega dados históricos do repositório e desenha no gráfico
     private void loadHistoricalData() {
         if (criptomoeda != null) {
             List<HistoricoValor> historicalRecords = historicoRepo.listarPorCripto(criptomoeda.getId());
             if (historicalRecords != null && !historicalRecords.isEmpty()) {
-                System.out.println("DEBUG (CoinComponent): Carregando " + historicalRecords.size() + " valores históricos para " + criptomoeda.getNome());
+                System.out.println("DEBUG (CoinComponent): " + historicalRecords.size() + " valores carregados para " + criptomoeda.getNome());
                 series.getData().clear();
                 for (int i = 0; i < historicalRecords.size(); i++) {
                     series.getData().add(new XYChart.Data<>(i, historicalRecords.get(i).getValor()));
@@ -173,11 +176,12 @@ public class CoinComponent extends VBox {
                 xAxis.setUpperBound(historicalRecords.size() + 10);
                 yAxis.setAutoRanging(true);
             } else {
-                System.out.println("DEBUG (CoinComponent): Nenhum histórico encontrado para " + criptomoeda.getNome() + ". Usando preço inicial passado.");
+                System.out.println("DEBUG (CoinComponent): Sem histórico para " + criptomoeda.getNome());
             }
         }
     }
 
+    // Atualiza o gráfico com novo preço, calculando a variação
     public void updateChartWithNewPrice(double newPrice) {
         double oldPrice = newPrice;
         if (!series.getData().isEmpty()) {
@@ -190,6 +194,7 @@ public class CoinComponent extends VBox {
         addDataToChart(newPrice);
     }
 
+    // Getter para obter a instância da criptomoeda
     public Criptomoeda getCriptomoeda() {
         return criptomoeda;
     }

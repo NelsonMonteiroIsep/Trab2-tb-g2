@@ -1,5 +1,6 @@
 package isep.crescendo.controller;
 
+// Importações necessárias para controlo de UI e manipulação de dados
 import isep.crescendo.Repository.CarteiraRepository;
 import isep.crescendo.Repository.TransacaoRepository;
 import isep.crescendo.Repository.UserRepository;
@@ -32,20 +33,35 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+// Controlador da view de Admin, gerindo tanto a dashboard como a gestão de utilizadores e criptomoedas
 public class AdminController {
 
+    // Repositórios para acesso a dados
     private final CriptomoedaRepository criptoRepo = new CriptomoedaRepository();
+    private final UserRepository userRepositoryRepo = new UserRepository();
+
+    // Listas observáveis para popular tabelas
     private final ObservableList<isep.crescendo.model.Criptomoeda> criptomoedas = FXCollections.observableArrayList();
+    private final ObservableList<isep.crescendo.model.User> users = FXCollections.observableArrayList();
+
+    // === Componentes da view (injetados via FXML) ===
+
+    // Tabela de utilizadores e colunas
     @FXML private TableView<isep.crescendo.model.User> userTable;
     @FXML private TableColumn<isep.crescendo.model.User, Integer> idColumn;
     @FXML private TableColumn<isep.crescendo.model.User, String> nomeColumn;
     @FXML private TableColumn<isep.crescendo.model.User, String> emailColumn;
     @FXML private TableColumn<isep.crescendo.model.User, Boolean> isAdminColumn;
+
+    // Botões de gestão
     @FXML private Button btnUser;
-    @FXML
-    private Button btnCriar, btnDesativar;
+    @FXML private Button btnCriar, btnDesativar;
+
+    // Filtros de data e modo
     @FXML private DatePicker datePickerInicio;
     @FXML private DatePicker datePickerFim;
+
+    // Gráficos para análise de dados
     @FXML private LineChart<String, Number> lineChart;
     @FXML private CategoryAxis xAxis;
     @FXML private NumberAxis yAxis;
@@ -53,93 +69,78 @@ public class AdminController {
     @FXML private BarChart<String, Number> barChartTopUsers;
     @FXML private PieChart pieChartTop3Moedas;
     @FXML private PieChart pieChartVolumePorMoeda;
+
+    // Indicadores de atividade
     @FXML private ProgressBar progressAtividade;
     @FXML private Label labelAtividadePercent;
     @FXML private Label labelTotalInvestido;
+    @FXML private Label labelTotalUsers;
+    @FXML private Label labelTotalMoedas;
 
-    @FXML
-    private Label labelTotalUsers;
-
-    @FXML
-    private Label labelTotalMoedas;
-
-
-    private final UserRepository userRepositoryRepo = new UserRepository();
-    private final ObservableList<isep.crescendo.model.User> users = FXCollections.observableArrayList();
-    @FXML
-    private TextField searchField;
-
-
-    @FXML
-    private TableView<isep.crescendo.model.Criptomoeda> listaCriptomoedas;
-
+    // Pesquisa e tabela de criptomoedas
+    @FXML private TextField searchField;
+    @FXML private TableView<isep.crescendo.model.Criptomoeda> listaCriptomoedas;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, Integer> idCriptoColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> nomeCriptoColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> simboloColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, String> descricaoColumn;
     @FXML private TableColumn<isep.crescendo.model.Criptomoeda, Boolean> ativoColumn;
 
+    // Combobox para selecionar modos de visualização de gráficos
     @FXML private ComboBox<String> comboSaldoModo;
     @FXML private ComboBox<String> comboTransacoesModo;
 
-
+    // Lista auxiliar de utilizadores
     private ObservableList<isep.crescendo.model.User> userList = FXCollections.observableArrayList();
 
     @FXML
     public void initialize() {
-        // === DASHBOARD ===
+        // Ao iniciar o controlador, carregam-se os dados da dashboard, tabelas e gráficos
+
+        // Tentativa de carregar dados da dashboard
         try {
             if (labelTotalUsers != null) {
                 int totalUsers = userRepositoryRepo.countUsers();
                 labelTotalUsers.setText(String.valueOf(totalUsers));
             }
 
+            // Configurações dos comboboxes de modo
             if (comboSaldoModo != null) {
                 comboSaldoModo.getItems().setAll("Valor em Euros", "Quantidade de Moeda");
-                comboSaldoModo.getSelectionModel().selectFirst(); // opcional: seleciona o primeiro
+                comboSaldoModo.getSelectionModel().selectFirst();
                 comboSaldoModo.setButtonCell(getStyledCell());
                 comboSaldoModo.setCellFactory(listView -> getStyledCell());
-
-
             }
 
             if (comboTransacoesModo != null) {
                 comboTransacoesModo.getItems().setAll("Volume em Euros", "Número de Transações");
-                comboTransacoesModo.getSelectionModel().selectFirst(); // opcional
-                 comboTransacoesModo.setButtonCell(getStyledCell());
+                comboTransacoesModo.getSelectionModel().selectFirst();
+                comboTransacoesModo.setButtonCell(getStyledCell());
                 comboTransacoesModo.setCellFactory(listView -> getStyledCell());
             }
 
+            // Total investido em todas as moedas
             if (labelTotalInvestido != null) {
                 double totalInvestido = new TransacaoRepository().getTotalInvestidoPorMoeda().values().stream().mapToDouble(Double::doubleValue).sum();
                 labelTotalInvestido.setText(String.format("%.2f €", totalInvestido));
             }
 
+            // Atualiza indicador de atividade
             if (progressAtividade != null && labelAtividadePercent != null) {
                 updateAtividade();
             }
 
-            if (lineChartVolumeGlobal != null) {
-                carregarLineChartVolumeGlobal();
-            }
-
-            if (barChartTopUsers != null) {
-                carregarBarChartTopUsers();
-            }
-
-            if (pieChartTop3Moedas != null) {
-                carregarPieChartTop3Moedas();
-            }
-
-            if (pieChartVolumePorMoeda != null) {
-                carregarPieChartVolumePorMoeda();
-            }
+            // Carrega gráficos da dashboard
+            if (lineChartVolumeGlobal != null) carregarLineChartVolumeGlobal();
+            if (barChartTopUsers != null) carregarBarChartTopUsers();
+            if (pieChartTop3Moedas != null) carregarPieChartTop3Moedas();
+            if (pieChartVolumePorMoeda != null) carregarPieChartVolumePorMoeda();
 
         } catch (Exception e) {
             System.out.println("Dashboard não presente nesta view.");
         }
 
-        // === GESTÃO UTILIZADORES ===
+        // Configuração da tabela de utilizadores
         if (userTable != null) {
             userTable.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
@@ -152,7 +153,7 @@ public class AdminController {
             }
         }
 
-        // === GESTÃO CRIPTOMOEDAS ===
+        // Configuração da tabela de criptomoedas
         if (listaCriptomoedas != null) {
             idCriptoColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
             nomeCriptoColumn.setCellValueFactory(new PropertyValueFactory<>("nome"));
@@ -160,6 +161,7 @@ public class AdminController {
             descricaoColumn.setCellValueFactory(new PropertyValueFactory<>("descricao"));
             ativoColumn.setCellValueFactory(new PropertyValueFactory<>("ativo"));
 
+            // Customiza o texto da coluna "ativo" (sim/não)
             ativoColumn.setCellFactory(column -> new TableCell<isep.crescendo.model.Criptomoeda, Boolean>() {
                 @Override
                 protected void updateItem(Boolean ativo, boolean empty) {
@@ -173,16 +175,20 @@ public class AdminController {
     }
 
 
+    // Carrega todos os utilizadores da base de dados e define-os na tabela
     private void carregarUtilizadores() {
         users.setAll(userRepositoryRepo.listarTodos());
         userTable.setItems(users);
     }
 
+    // Carrega todas as criptomoedas da base de dados e define-as na tabela
     private void carregarCriptomoedas() {
         criptomoedas.clear();
         criptomoedas.addAll(criptoRepo.getAllCriptomoedas());
         listaCriptomoedas.setItems(criptomoedas);
     }
+
+    // Método central que chama todos os outros métodos de carga para atualizar a dashboard
     private void carregarDashboard() {
         carregarVolumeGlobalPorDia();
         carregarTop5UsersPorVolume();
@@ -191,6 +197,8 @@ public class AdminController {
         carregarAtividade();
         carregarTotalInvestido();
     }
+
+    // Carrega o gráfico de linha com o volume global de transações por dia
     private void carregarVolumeGlobalPorDia() {
         lineChartVolumeGlobal.getData().clear();
         var volumePorDia = isep.crescendo.Repository.TransacaoRepository.getVolumeGlobalPorDia();
@@ -204,6 +212,8 @@ public class AdminController {
 
         lineChartVolumeGlobal.getData().add(series);
     }
+
+    // Carrega o gráfico de barras com os top 5 utilizadores por volume de transações
     private void carregarTop5UsersPorVolume() {
         barChartTopUsers.getData().clear();
         var topUsers = isep.crescendo.Repository.TransacaoRepository.getTop5UsersPorVolume();
@@ -217,6 +227,8 @@ public class AdminController {
 
         barChartTopUsers.getData().add(series);
     }
+
+    // Carrega o gráfico circular com as 3 criptomoedas com mais transações
     private void carregarTop3MoedasPorTransacoes() {
         pieChartTop3Moedas.getData().clear();
         var topMoedas = isep.crescendo.Repository.TransacaoRepository.getTop3MoedasPorTransacoes();
@@ -225,6 +237,8 @@ public class AdminController {
             pieChartTop3Moedas.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
         }
     }
+
+    // Carrega o gráfico circular com a distribuição de volume por moeda
     private void carregarDistribuicaoVolumePorMoeda() {
         pieChartVolumePorMoeda.getData().clear();
         var volumePorMoeda = isep.crescendo.Repository.TransacaoRepository.getDistribuicaoVolumePorMoeda();
@@ -233,16 +247,24 @@ public class AdminController {
             pieChartVolumePorMoeda.getData().add(new PieChart.Data(entry.getKey(), entry.getValue()));
         }
     }
+
+    // Atualiza o progresso de atividade com base nas transações dos últimos 30 dias
     private void carregarAtividade() {
         double atividadePercent = isep.crescendo.Repository.TransacaoRepository.getPercentAtividadeUltimos30Dias();
         progressAtividade.setProgress(atividadePercent);
         labelAtividadePercent.setText((int)(atividadePercent * 100) + "%");
     }
+
+    // Calcula e apresenta o total investido pelos utilizadores em todas as criptomoedas
     private void carregarTotalInvestido() {
         double totalInvestido = isep.crescendo.Repository.TransacaoRepository.getTotalInvestido();
         labelTotalInvestido.setText(String.format("%.2f €", totalInvestido));
     }
 
+
+// === MÉTODOS DE AÇÃO (HANDLERS) ===
+
+    // Edita o nome do utilizador selecionado na tabela
     @FXML
     private void handleEditarNome() {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
@@ -256,7 +278,7 @@ public class AdminController {
             result.ifPresent(novoNome -> {
                 selecionado.setNome(novoNome);
                 userRepositoryRepo.atualizar(selecionado);
-                carregarUtilizadores();      // <--- repõe dados da DB
+                carregarUtilizadores(); // Recarrega a lista para refletir alterações
                 userTable.refresh();
             });
         } else {
@@ -264,6 +286,7 @@ public class AdminController {
         }
     }
 
+    // Promove um utilizador a administrador, desde que ele não tenha saldo na carteira
     @FXML
     private void handleTornarAdmin() {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
@@ -276,7 +299,7 @@ public class AdminController {
                 return;
             }
 
-            // Apagar carteira se existir
+            // Se a carteira estiver vazia, remove-a
             if (carteira != null && carteira.getSaldo() == 0) {
                 CarteiraRepository.apagarPorUserId(selecionado.getId());
             }
@@ -290,8 +313,7 @@ public class AdminController {
         }
     }
 
-
-
+    // Apaga um utilizador após confirmação
     @FXML
     private void handleApagarUtilizador() {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
@@ -308,6 +330,7 @@ public class AdminController {
         }
     }
 
+    // Edita o email do utilizador após validar o novo formato
     @FXML
     private void handleEditarEmail() {
         isep.crescendo.model.User selecionado = userTable.getSelectionModel().getSelectedItem();
@@ -326,7 +349,7 @@ public class AdminController {
 
                 selecionado.setEmail(novoEmail);
                 userRepositoryRepo.atualizar(selecionado);
-                carregarUtilizadores();      // <--- repõe dados da DB
+                carregarUtilizadores();
                 userTable.refresh();
             });
         } else {
@@ -334,16 +357,7 @@ public class AdminController {
         }
     }
 
-    @FXML
-    private void handleVoltar(ActionEvent event) {
-        SceneSwitcher.switchScene(
-                "/isep/crescendo/view/admin-view.fxml",
-                "/isep/crescendo/styles/login.css",
-                "Área do Administrador",
-                userTable  // qualquer Control da cena atual
-        );
-    }
-
+    // Mostra uma janela de alerta com a mensagem recebida
     private void mostrarAlerta(String mensagem) {
         Alert alert = new Alert(AlertType.INFORMATION);
         alert.setTitle("Informação");
@@ -351,6 +365,8 @@ public class AdminController {
         alert.showAndWait();
     }
 
+
+    // Abre a vista de gestão de utilizadores (admin-user-management-view)
     @FXML
     private void handleUserManagement(ActionEvent event) {
         SceneSwitcher.switchScene(
@@ -360,12 +376,15 @@ public class AdminController {
                 (Control) event.getSource()
         );
     }
+
+    // Efetua logout e redireciona para o ecrã de login
     @FXML
     private void handleLogout() {
         SessionManager.setCurrentUser(null);
         SceneSwitcher.switchScene("/isep/crescendo/view/login-view.fxml", "/isep/crescendo/styles/login.css", "Login",searchField );
     }
 
+    // Abre a vista de gestão de criptomoedas (admin-cripto-view)
     @FXML
     private void handleCripto() {
         SceneSwitcher.switchScene(
@@ -376,6 +395,7 @@ public class AdminController {
         );
     }
 
+    // Abre o dashboard principal (admin-view)
     @FXML
     private void handleDash() {
         SceneSwitcher.switchScene(
@@ -387,7 +407,7 @@ public class AdminController {
     }
 
 
-
+    // Abre um diálogo para criar nova criptomoeda e guarda no repositório
     @FXML
     private void handleCriar() {
         try {
@@ -420,7 +440,7 @@ public class AdminController {
         }
     }
 
-
+    // Ativa ou desativa uma criptomoeda selecionada
     @FXML
     private void handleToggleAtivo() {
         isep.crescendo.model.Criptomoeda selecionada = listaCriptomoedas.getSelectionModel().getSelectedItem();
@@ -428,12 +448,12 @@ public class AdminController {
             boolean estadoAtual = selecionada.isAtivo();
             selecionada.setAtivo(!estadoAtual);
 
-            // Atualiza o banco de dados, se tiver método no repo
+            // Atualiza o banco de dados
             criptoRepo.atualizar(selecionada);
 
             listaCriptomoedas.refresh();
 
-            // Atualiza o texto do botão para a próxima ação
+            // Atualiza o texto do botão
             if (selecionada.isAtivo()) {
                 btnDesativar.setText("Desativar Criptomoeda");
             } else {
@@ -444,6 +464,7 @@ public class AdminController {
         }
     }
 
+    // Filtra os utilizadores na tabela conforme o texto introduzido no campo de pesquisa
     @FXML
     private void handlePesquisar() {
         String filtro = searchField.getText().toLowerCase();
@@ -461,19 +482,24 @@ public class AdminController {
         userTable.setItems(sortedData);
     }
 
+
+    // === GRÁFICO DE SALDOS POR UTILIZADOR ===
     @FXML
     private void handleVerGraficoSaldos() {
+        // Verifica se os componentes necessários estão disponíveis
         if (userTable == null || comboSaldoModo == null || lineChart == null || datePickerInicio == null || datePickerFim == null) {
             mostrarAlerta("Esta funcionalidade só está disponível na Gestão de Utilizadores.");
             return;
         }
 
+        // Verifica se o utilizador selecionou pelo menos um utilizador e intervalo de datas
         var selecionados = userTable.getSelectionModel().getSelectedItems();
         if (selecionados.isEmpty() || datePickerInicio.getValue() == null || datePickerFim.getValue() == null) {
             mostrarAlerta("Selecione pelo menos um utilizador e um intervalo de datas.");
             return;
         }
 
+        // Determina se o gráfico deve mostrar valores em euros
         boolean mostrarEmEuros = "Valor em Euros".equals(comboSaldoModo.getValue());
         lineChart.getData().clear();
         xAxis.setLabel("Data");
@@ -508,13 +534,12 @@ public class AdminController {
                     XYChart.Data<String, Number> data = new XYChart.Data<>(dataStr, valor);
                     serie.getData().add(data);
 
-                    // Tooltip melhorado
+                    // Tooltip melhorado para cada ponto do gráfico
                     data.nodeProperty().addListener((obs, oldNode, newNode) -> {
                         if (newNode != null) {
                             Tooltip tooltip = new Tooltip("Data: " + data.getXValue() + "\nValor: " + String.format("%.2f", data.getYValue().doubleValue()) + (mostrarEmEuros ? " €" : ""));
                             tooltip.setShowDelay(Duration.millis(100));
                             Tooltip.install(newNode, tooltip);
-
                             newNode.setStyle("-fx-background-color: white, #00ffcc; -fx-background-insets: 0, 2;");
                         }
                     });
@@ -530,6 +555,8 @@ public class AdminController {
                 });
 
                 lineChart.getData().add(serie);
+
+                // Aplica a mesma cor à legenda
                 final String corLegenda = cores[finalCorIndex % cores.length];
                 Platform.runLater(() -> {
                     for (Node node : lineChart.lookupAll(".chart-legend-item")) {
@@ -542,7 +569,7 @@ public class AdminController {
             }
         }
 
-        // Estilo do gráfico para fundo escuro com texto claro
+        // Estilo do gráfico (modo escuro)
         lineChart.setStyle("-fx-background-color: #1e1e1e; -fx-text-fill: white;");
         xAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);
         yAxis.setTickLabelFill(javafx.scene.paint.Color.WHITE);

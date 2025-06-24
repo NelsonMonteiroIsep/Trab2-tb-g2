@@ -17,12 +17,12 @@ public class CoinComponentController {
         if (moeda != null) {
             nomeLabel.setText(moeda.getNome());
             simboloLabel.setText(moeda.getSimbolo());
-            // Set the price
+            // Coloca o preco
 
             String imagemUrl = moeda.getImagemUrl();
             if (imagemUrl != null && !imagemUrl.trim().isEmpty()) {
                 try {
-                    Image imagem = new Image(imagemUrl, true); // true for background loading
+                    Image imagem = new Image(imagemUrl, true); // carrega no background
                     imagemView.setImage(imagem);
                 } catch (IllegalArgumentException e) {
                     System.err.println("Imagem inválida, não será carregada: " + imagemUrl);
@@ -32,7 +32,7 @@ public class CoinComponentController {
                 imagemView.setImage(null);
             }
         } else {
-            // Clear fields if the item is null (e.g., empty cells)
+            // Limpas os campos
             nomeLabel.setText("");
             simboloLabel.setText("");
             imagemView.setImage(null);
