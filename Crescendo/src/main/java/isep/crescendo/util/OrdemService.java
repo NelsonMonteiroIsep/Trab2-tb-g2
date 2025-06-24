@@ -5,6 +5,8 @@ import isep.crescendo.Repository.OrdemRepo;
 import isep.crescendo.Repository.TransacaoRepo;
 import isep.crescendo.model.Ordem;
 import isep.crescendo.model.Transacao;
+import isep.crescendo.util.Fakes.CarteiraRepositoryFake;
+
 import java.time.LocalDateTime;
 
 import java.util.List;
@@ -227,6 +229,12 @@ public class OrdemService {
         }
 
         ordemRepo.marcarComoCancelada(ordem.getId());
+    }
+
+    public OrdemService(OrdemRepo ordemRepo, TransacaoRepo transacaoRepo, CarteiraRepositoryFake carteiraRepo) {
+        this.ordemRepo = ordemRepo;
+        this.transacaoRepo = transacaoRepo;
+        this.carteiraRepo = carteiraRepo;
     }
 
 }

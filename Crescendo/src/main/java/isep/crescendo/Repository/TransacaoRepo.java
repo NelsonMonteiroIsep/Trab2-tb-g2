@@ -1,6 +1,7 @@
 package isep.crescendo.Repository;
 
 import isep.crescendo.model.Transacao;
+import isep.crescendo.util.DatabaseConfig;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -8,9 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TransacaoRepo {
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
+
 
     public TransacaoRepo() {
         criarTabela();
@@ -31,7 +30,7 @@ public class TransacaoRepo {
             );
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -45,7 +44,7 @@ public class TransacaoRepo {
             VALUES (?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, t.getOrdemCompraId());
             stmt.setInt(2, t.getOrdemVendaId());
@@ -61,7 +60,7 @@ public class TransacaoRepo {
 
     public double somarQuantidadeExecutadaPorOrdemCompra(int ordemCompraId) {
         String sql = "SELECT SUM(quantidade) FROM transacoes WHERE ordem_compra_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, ordemCompraId);
             ResultSet rs = stmt.executeQuery();
@@ -76,7 +75,7 @@ public class TransacaoRepo {
 
     public double somarValorExecutadoPorOrdemCompra(int ordemCompraId) {
         String sql = "SELECT SUM(quantidade * valor_unitario) FROM transacoes WHERE ordem_compra_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, ordemCompraId);
             ResultSet rs = stmt.executeQuery();

@@ -7,11 +7,9 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import isep.crescendo.model.*;
+import isep.crescendo.util.DatabaseConfig;
 
 public class OrdemRepo {
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
 
     public OrdemRepo() {
         criarTabela();
@@ -33,7 +31,7 @@ public class OrdemRepo {
             );
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -47,7 +45,7 @@ public class OrdemRepo {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             stmt.setInt(1, ordem.getCarteiraId());
@@ -80,7 +78,7 @@ public class OrdemRepo {
             ORDER BY valor ASC, data_hora ASC
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idMoeda);
             stmt.setDouble(2, precoMax);
@@ -117,7 +115,7 @@ public class OrdemRepo {
             ORDER BY data_hora ASC
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idMoeda);
             stmt.setDouble(2, precoMin);
@@ -147,7 +145,7 @@ public class OrdemRepo {
         List<Ordem> ordens = new ArrayList<>();
         String sql = "SELECT * FROM ordens WHERE status = 'pendente'";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -175,7 +173,7 @@ public class OrdemRepo {
     public void marcarComoExecutada(int id) {
         String sql = "UPDATE ordens SET status = 'executada' WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             stmt.executeUpdate();
@@ -187,7 +185,7 @@ public class OrdemRepo {
     public void atualizarQuantidade(int id, double novaQuantidade) {
         String sql = "UPDATE ordens SET quantidade = ? WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, novaQuantidade);
             stmt.setInt(2, id);
@@ -200,7 +198,7 @@ public class OrdemRepo {
     public void atualizarValor(int id, double novoValor) {
         String sql = "UPDATE ordens SET valor = ? WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, novoValor);
             stmt.setInt(2, id);
@@ -213,7 +211,7 @@ public class OrdemRepo {
     public void marcarComoExpirada(int ordemId) {
         String sql = "UPDATE ordens SET status = 'expirada' WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, ordemId);
@@ -230,7 +228,7 @@ public class OrdemRepo {
         WHERE carteira_id = ? AND id_moeda = ? AND tipo = ? AND status = 'pendente'
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, carteiraId);
             stmt.setInt(2, idMoeda);
@@ -254,7 +252,7 @@ public class OrdemRepo {
         ORDER BY data_hora DESC
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -307,7 +305,7 @@ public class OrdemRepo {
         ORDER BY o.data_hora DESC
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -345,7 +343,7 @@ public class OrdemRepo {
     public void marcarComoCancelada(int ordemId) {
         String sql = "UPDATE ordens SET status = 'cancelada' WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, ordemId);

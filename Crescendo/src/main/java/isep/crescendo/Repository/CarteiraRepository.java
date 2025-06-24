@@ -1,15 +1,13 @@
 package isep.crescendo.Repository;
 
 import java.sql.*;
+
+import isep.crescendo.util.DatabaseConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import isep.crescendo.model.MoedaSaldo;
 
 public class CarteiraRepository {
-
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
 
     public CarteiraRepository() {
         criarTabelaSeNaoExistir();
@@ -25,7 +23,7 @@ public class CarteiraRepository {
             );
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -35,7 +33,7 @@ public class CarteiraRepository {
 
     public static void apagarPorUserId(int userId) {
         String sql = "DELETE FROM carteiras WHERE user_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, userId);
             stmt.executeUpdate();
@@ -47,7 +45,7 @@ public class CarteiraRepository {
     public void adicionar(isep.crescendo.model.Carteira carteira) {
         String sql = "INSERT INTO carteiras (user_id, saldo) VALUES (?, ?)";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             pstmt.setInt(1, carteira.getUserId());
@@ -67,7 +65,7 @@ public class CarteiraRepository {
     public static isep.crescendo.model.Carteira procurarPorUserId(int userId) {
         String sql = "SELECT * FROM carteiras WHERE user_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, userId);
@@ -89,7 +87,7 @@ public class CarteiraRepository {
     public void adicionarCarteiraParaUser(int userId) {
         String sql = "INSERT INTO carteiras (user_id, saldo) VALUES (?, 0.00)";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setInt(1, userId);
@@ -103,7 +101,7 @@ public class CarteiraRepository {
     public void atualizarSaldo(int userId, double novoSaldo) {
         String sql = "UPDATE carteiras SET saldo = ? WHERE user_id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setDouble(1, novoSaldo);
@@ -118,7 +116,7 @@ public class CarteiraRepository {
     public void adicionarSaldo(int carteiraId, double valor) {
         String sql = "UPDATE carteiras SET saldo = saldo + ? WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
             pstmt.setDouble(1, valor);
@@ -145,7 +143,7 @@ public class CarteiraRepository {
 
         double saldo = 0.0;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -167,7 +165,7 @@ public class CarteiraRepository {
 
     public boolean temSaldo(int carteiraId, double valor) {
         String sql = "SELECT saldo FROM carteiras WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, carteiraId);
             ResultSet rs = stmt.executeQuery();
@@ -182,7 +180,7 @@ public class CarteiraRepository {
 
     public void removerSaldo(int carteiraId, double valor) {
         String sql = "UPDATE carteiras SET saldo = saldo - ? WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDouble(1, valor);
@@ -222,7 +220,7 @@ public class CarteiraRepository {
         WHERE t.id_moeda = ?
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -245,7 +243,7 @@ public class CarteiraRepository {
         WHERE carteira_id = ? AND id_moeda = ? AND tipo = 'venda' AND status = 'pendente'
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -272,7 +270,7 @@ public class CarteiraRepository {
         WHERE t.id_moeda = ?
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId); // para compra
@@ -320,7 +318,7 @@ public class CarteiraRepository {
         HAVING quantidade > 0
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -371,7 +369,7 @@ public class CarteiraRepository {
         ) AS subquery
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);

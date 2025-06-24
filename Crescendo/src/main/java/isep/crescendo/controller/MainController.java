@@ -55,16 +55,16 @@ public class MainController implements Initializable, LoginCallback {
 
             // *** PASSO 2: Pré-carregar conteúdos principais para acesso rápido ***
             // Estes FXMLs serão carregados uma única vez na inicialização e armazenados.
-            ContentManager.getInstance().showContent("MarketView.fxml"); // Carrega e exibe MarketView para que o MarketController seja inicializado e disponível para injetar criptomoeda.
-            ContentManager.getInstance().showContent("WalletView.fxml");
-            ContentManager.getInstance().showContent("admin-view.fxml"); // Se você tiver uma view de administração
-            ContentManager.getInstance().showContent("UserManagementView.fxml"); // Para o formulário de login/registro
+
 
             // Lógica inicial para exibir a view correta
             isep.crescendo.model.User currentUser = SessionManager.getCurrentUser();
             if (currentUser != null) {
                 System.out.println("DEBUG (MainController): Usuário logado. Exibindo wallet-view.fxml.");
+                ContentManager.getInstance().showContent("MarketView.fxml"); // Carrega e exibe MarketView para que o MarketController seja inicializado e disponível para injetar criptomoeda.
                 ContentManager.getInstance().showContent("WalletView.fxml");
+                ContentManager.getInstance().showContent("admin-view.fxml"); // Se você tiver uma view de administração
+                ContentManager.getInstance().showContent("UserManagementView.fxml"); // Para o formulário de login/registro
             } else {
                 System.out.println("DEBUG (MainController): Nenhum usuário logado. Exibindo formulário de login.");
                 ContentManager.getInstance().showContent("UserManagementView.fxml");
@@ -222,7 +222,7 @@ public class MainController implements Initializable, LoginCallback {
      */
     public void navigateToWallet() {
         System.out.println("DEBUG (MainController): Navegando para a Vista da Carteira (via menu).");
-        loadContent("WalletView.fxml");
+        reloadContent("WalletView.fxml");
     }
 
     // Exemplo de manipulação de configuração global do RightBarController (se necessário)
@@ -233,5 +233,14 @@ public class MainController implements Initializable, LoginCallback {
         } else {
             // Faça algo quando falso ou nulo
         }
+    }
+
+
+    public void reloadContent(String fxmlFileName) {
+        ContentManager.getInstance().reloadContent(fxmlFileName);
+    }
+
+    public <T> void reloadContentWithObject(String fxmlFileName, T dataObject) {
+        ContentManager.getInstance().reloadContentWithObject(fxmlFileName, dataObject);
     }
 }

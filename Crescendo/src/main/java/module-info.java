@@ -14,6 +14,7 @@ module isep.crescendo {
     requires eu.hansolo.tilesfx;
     requires java.sql;
     requires jakarta.mail;
+    requires mysql.connector.j;
 
     // Garante que o JavaFX pode refletir sobre classes no pacote raiz para o FXMLLoader
     // (Útil se você carregar FXMLs diretamente do pacote 'isep.crescendo')

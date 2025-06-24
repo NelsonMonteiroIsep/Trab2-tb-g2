@@ -1,6 +1,7 @@
 package isep.crescendo.Repository;
 
 import isep.crescendo.model.Transacao;
+import isep.crescendo.util.DatabaseConfig;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -8,9 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class TransacaoRepository {
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
+
 
     public TransacaoRepository() {
         criarTabela();
@@ -31,7 +30,7 @@ public class TransacaoRepository {
             );
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(sql);
         } catch (SQLException e) {
@@ -45,7 +44,7 @@ public class TransacaoRepository {
             VALUES (?, ?, ?, ?, ?, ?)
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, t.getOrdemCompraId());
             stmt.setInt(2, t.getOrdemVendaId());
@@ -61,7 +60,7 @@ public class TransacaoRepository {
 
     public double somarQuantidadeExecutadaPorOrdemCompra(int ordemCompraId) {
         String sql = "SELECT SUM(quantidade) FROM transacoes WHERE ordem_compra_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, ordemCompraId);
             ResultSet rs = stmt.executeQuery();
@@ -76,7 +75,7 @@ public class TransacaoRepository {
 
     public double somarValorExecutadoPorOrdemCompra(int ordemCompraId) {
         String sql = "SELECT SUM(quantidade * valor_unitario) FROM transacoes WHERE ordem_compra_id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, ordemCompraId);
             ResultSet rs = stmt.executeQuery();
@@ -100,7 +99,7 @@ public class TransacaoRepository {
         ORDER BY t.data_execucao ASC
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, carteiraId);
@@ -141,7 +140,7 @@ public class TransacaoRepository {
         GROUP BY t.id_moeda, c.nome
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -172,7 +171,7 @@ public class TransacaoRepository {
         LIMIT 3
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -199,7 +198,7 @@ public class TransacaoRepository {
         String sql = "SELECT id_moeda, SUM(quantidade * valor_unitario) AS volume_total " +
                 "FROM transacoes GROUP BY id_moeda";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -232,7 +231,7 @@ public class TransacaoRepository {
         LIMIT 5
         """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -260,7 +259,7 @@ public class TransacaoRepository {
     ORDER BY dia ASC
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setTimestamp(1, Timestamp.valueOf(inicio));
@@ -303,7 +302,7 @@ public class TransacaoRepository {
         GROUP BY tipo
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, userId);
@@ -333,7 +332,7 @@ public class TransacaoRepository {
     public static Map<String, Map<String, Double>> getHistoricoSaldoPorCripto(int userId, LocalDate dataInicio, LocalDate dataFim) {
         Map<String, Map<String, Double>> historico = new HashMap<>();
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
             for (LocalDate data = dataInicio; !data.isAfter(dataFim); data = data.plusDays(1)) {
                 String sql = """
                 SELECT nome_cripto, SUM(saldo) AS saldo_total
@@ -388,7 +387,7 @@ public class TransacaoRepository {
     public static Map<Integer, Map<String, Double>> getVolumeTransacoesPorDia(List<Integer> userIdList, LocalDate dataInicio, LocalDate dataFim, boolean volumeEmEuros) {
         Map<Integer, Map<String, Double>> historico = new HashMap<>();
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD)) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
             String sql = """
             SELECT c.user_id,
                    DATE(t.data_execucao) AS dia,
@@ -436,7 +435,7 @@ public class TransacaoRepository {
 
     public String getNomeById(int id) {
         String sql = "SELECT nome FROM criptomoedas WHERE id = ?";
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, id);
             ResultSet rs = stmt.executeQuery();
@@ -460,7 +459,7 @@ public class TransacaoRepository {
             ORDER BY dia ASC
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -492,7 +491,7 @@ public class TransacaoRepository {
             LIMIT 5
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -522,7 +521,7 @@ public class TransacaoRepository {
             LIMIT 3
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -551,7 +550,7 @@ public class TransacaoRepository {
             ORDER BY volume DESC
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 
@@ -581,7 +580,7 @@ public class TransacaoRepository {
             WHERE t.data_execucao >= (CURRENT_DATE - INTERVAL 30 DAY)
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmtTotal = conn.prepareStatement(sqlTotal);
              PreparedStatement stmtAtivos = conn.prepareStatement(sqlAtivos);
              ResultSet rsTotal = stmtTotal.executeQuery();
@@ -619,7 +618,7 @@ public class TransacaoRepository {
             WHERE t.ordem_compra_id IS NOT NULL
             """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {
 

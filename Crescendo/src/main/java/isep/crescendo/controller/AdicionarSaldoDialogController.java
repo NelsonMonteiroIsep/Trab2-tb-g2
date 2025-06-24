@@ -11,7 +11,8 @@ public class AdicionarSaldoDialogController {
 
     // Campo de texto onde o utilizador insere o valor a adicionar ou levantar
     @FXML
-    private TextField valorTextField;
+    // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    TextField valorTextField; // OU protected TextField valorTextField;
 
     // Janela do diálogo atual
     private Stage dialogStage;
@@ -37,7 +38,8 @@ public class AdicionarSaldoDialogController {
 
     // Trata a confirmação de valor quando o objetivo é adicionar saldo
     @FXML
-    private void handleConfirmar() {
+        // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    void handleConfirmar() { // OU protected void handleConfirmar()
         try {
             // Converte o texto introduzido num número
             double valor = Double.parseDouble(valorTextField.getText());
@@ -64,7 +66,8 @@ public class AdicionarSaldoDialogController {
 
     // Trata a confirmação de valor quando o objetivo é levantar saldo
     @FXML
-    private void handleConfirmarLevantar() {
+        // Alterar de 'private' para 'protected' ou remover o modificador (package-private)
+    void handleConfirmarLevantar() { // OU protected void handleConfirmarLevantar()
         try {
             double valor = Double.parseDouble(valorTextField.getText());
 
