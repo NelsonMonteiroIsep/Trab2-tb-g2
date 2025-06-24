@@ -31,6 +31,10 @@ public class Ordem {
         this(0, carteiraId, idMoeda, quantidade, valor, tipo, "pendente", LocalDateTime.now(), 0.0);
     }
 
+    public Ordem() {
+
+    }
+
     // Getters
     public int getId() { return id; }
     public int getCarteiraId() { return carteiraId; }
@@ -47,4 +51,24 @@ public class Ordem {
     public void setQuantidade(double quantidade) { this.quantidade = quantidade; }
     public void setStatus(String status) { this.status = status; }
     public void setValorTotalReservado(double valorTotalReservado) { this.valorTotalReservado = valorTotalReservado; }
+
+    public void setValor(double valor) {
+        this.valor = valor;
+    }
+
+    public void setDataHora(LocalDateTime dataHora) {
+        this.dataHora = dataHora;
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public void setCarteiraId(int carteiraId) {
+        this.carteiraId = carteiraId;
+    }
+
+    public void setIdMoeda(int idMoeda) {
+        this.idMoeda = idMoeda;
+    }
 }

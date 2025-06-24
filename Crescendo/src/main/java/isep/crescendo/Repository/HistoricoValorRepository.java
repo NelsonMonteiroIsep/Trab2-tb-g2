@@ -1,6 +1,7 @@
 package isep.crescendo.Repository;
 
 import isep.crescendo.model.HistoricoValor;
+import isep.crescendo.util.DatabaseConfig;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -8,11 +9,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class HistoricoValorRepository {
-
-    // Credenciais da base de dados MySQL (FreeSQLDatabase.com)
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
 
 
     /**
@@ -29,7 +25,7 @@ public class HistoricoValorRepository {
      * @throws SQLException Se ocorrer um erro ao estabelecer a conexão.
      */
     private static Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return DatabaseConfig.getConnection();
     }
 
     /**
@@ -183,7 +179,7 @@ public class HistoricoValorRepository {
         LIMIT 1
     """;
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, nomeCripto);

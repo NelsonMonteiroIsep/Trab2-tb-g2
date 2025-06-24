@@ -1,6 +1,7 @@
 package isep.crescendo.Repository;
 
 import isep.crescendo.model.Criptomoeda;
+import isep.crescendo.util.DatabaseConfig;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -11,11 +12,6 @@ import java.util.Optional;
 
 public class CriptomoedaRepository {
 
-    // --- Configuração da Base de Dados (AJUSTE PARA A SUA DB REAL!) ---
-    // Você tinha duas configurações, mantive a que parecia ser a real para o seu servidor.
-    private static final String DB_URL = "jdbc:mysql://sql7.freesqldatabase.com:3306/sql7779870";
-    private static final String DB_USER = "sql7779870";
-    private static final String DB_PASSWORD = "vUwAKDaynR";
 
     public CriptomoedaRepository() {
         criarTabelaSeNaoExistir();
@@ -32,7 +28,7 @@ public class CriptomoedaRepository {
             System.err.println("Driver JDBC não encontrado: " + e.getMessage());
             throw new SQLException("Driver JDBC não encontrado. Verifique suas dependências (build.gradle).", e);
         }
-        return DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        return DatabaseConfig.getConnection();
     }
 
     private void criarTabelaSeNaoExistir() {
@@ -241,7 +237,7 @@ public class CriptomoedaRepository {
     public int countCriptomoedas() {
         String sql = "SELECT COUNT(*) FROM criptomoedas";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
 
@@ -272,7 +268,7 @@ public class CriptomoedaRepository {
     public String getNomeById(int id) {
         String sql = "SELECT nome FROM criptomoedas WHERE id = ?";
 
-        try (Connection conn = DriverManager.getConnection(DB_URL, DB_USER, DB_PASSWORD);
+        try (Connection conn = DatabaseConfig.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setInt(1, id);

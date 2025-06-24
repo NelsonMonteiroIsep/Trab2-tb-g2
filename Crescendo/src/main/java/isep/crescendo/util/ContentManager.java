@@ -164,7 +164,7 @@ public class ContentManager {
             System.err.println("ERRO (ContentManager): StackPane 'contentArea' não foi inicializado. Chame initialize() primeiro.");
             return;
         }
-
+        unloadContent(fxmlFileName);
         // Carrega (ou recupera do cache) o conteúdo e injeta os dados
         Parent content = loadAndCacheContent(fxmlFileName, dataObject);
 
@@ -187,5 +187,16 @@ public class ContentManager {
             controllerCache.remove(fxmlFileName); // Remove o controlador também
             System.out.println("DEBUG (ContentManager): Conteúdo '" + fxmlFileName + "' removido do cache.");
         }
+    }
+
+    public void reloadContent(String fxmlFileName) {
+        contentCache.remove(fxmlFileName);
+        controllerCache.remove(fxmlFileName);
+        showContent(fxmlFileName); // Recarrega e exibe
+    }
+
+    public <T> void reloadContentWithObject(String fxmlFileName, T dataObject) {
+        unloadContent(fxmlFileName);
+        showContentWithObject(fxmlFileName, dataObject);
     }
 }
