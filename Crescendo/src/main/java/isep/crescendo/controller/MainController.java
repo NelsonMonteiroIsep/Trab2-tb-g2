@@ -65,6 +65,7 @@ public class MainController implements Initializable, LoginCallback {
                 ContentManager.getInstance().showContent("WalletView.fxml");
                 ContentManager.getInstance().showContent("admin-view.fxml"); // Se você tiver uma view de administração
                 ContentManager.getInstance().showContent("UserManagementView.fxml"); // Para o formulário de login/registro
+                ContentManager.getInstance().showContent("admin-user-management-view.fxml"); // Para o formulário de login/registro
             } else {
                 System.out.println("DEBUG (MainController): Nenhum usuário logado. Exibindo formulário de login.");
                 ContentManager.getInstance().showContent("UserManagementView.fxml");
